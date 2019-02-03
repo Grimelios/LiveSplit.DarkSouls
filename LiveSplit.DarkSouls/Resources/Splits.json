@@ -1,0 +1,447 @@
+﻿{
+	"Bonfires": [
+		{
+			"Name": "Anor Londo - Entrance",
+			"Description": ""
+		},
+		{
+			"Name": "Anor Londo - Interior",
+			"Description": ""
+		},
+		{
+			"Name": "Anor Londo - Princess",
+			"Description": ""
+		},
+		{
+			"Name": "Anor Londo - Tomb",
+			"Description": ""
+		},
+		{
+			"Name": "Ash Lake - Entrance",
+			"Description": ""
+		},
+		{
+			"Name": "Ash Lake - Dragon",
+			"Description": ""
+		},
+		{
+			"Name": "Blighttown - Bridge",
+			"Description": ""
+		},
+		{
+			"Name": "Blighttown - Swamp",
+			"Description": ""
+		},
+		{
+			"Name": "Catacombs - Entrance",
+			"Description": ""
+		},
+		{
+			"Name": "Catacombs - Illusion",
+			"Description": ""
+		},
+		{
+			"Name": "Chasm of the Abyss",
+			"Description": ""
+		},
+		{
+			"Name": "Crystal Caves",
+			"Description": ""
+		},
+		{
+			"Name": "Darkroot Basin",
+			"Description": ""
+		},
+		{
+			"Name": "Darkroot Garden",
+			"Description": ""
+		},
+		{
+			"Name": "Daughter of Chaos",
+			"Description": ""
+		},
+		{
+			"Name": "Demon Ruins - Centipede",
+			"Description": ""
+		},
+		{
+			"Name": "Demon Ruins - Entrance",
+			"Description": ""
+		},
+		{
+			"Name": "Demon Ruins - Staircase",
+			"Description": ""
+		},
+		{
+			"Name": "Duke's Archives - Balcony",
+			"Description": ""
+		},
+		{
+			"Name": "Duke's Archives - Entrance",
+			"Description": ""
+		},
+		{
+			"Name": "Duke's Archives - Prison",
+			"Description": ""
+		},
+		{
+			"Name": "Firelink Altar",
+			"Description": ""
+		},
+		{
+			"Name": "Firelink Shrine",
+			"Description": ""
+		},
+		{
+			"Name": "Great Hollow",
+			"Description": ""
+		},
+		{
+			"Name": "Kiln of the First Flame",
+			"Description": ""
+		},
+		{
+			"Name": "Lost Izalith - Bed of Chaos",
+			"Description": ""
+		},
+		{
+			"Name": "Lost Izalith - Centipede",
+			"Description": ""
+		},
+		{
+			"Name": "Lost Izalith - Lava Field",
+			"Description": ""
+		},
+		{
+			"Name": "Oolacile Sanctuary",
+			"Description": ""
+		},
+		{
+			"Name": "Oolacile Township - Artorias",
+			"Description": ""
+		},
+		{
+			"Name": "Oolacile Township - Dungeon",
+			"Description": ""
+		},
+		{
+			"Name": "Painted World",
+			"Description": ""
+		},
+		{
+			"Name": "Sanctuary Garden",
+			"Description": ""
+		},
+		{
+			"Name": "Sen's Fortress",
+			"Description": ""
+		},
+		{
+			"Name": "The Abyss",
+			"Description": ""
+		},
+		{
+			"Name": "The Depths",
+			"Description": ""
+		},
+		{
+			"Name": "Tomb of the Giants - Beast",
+			"Description": ""
+		},
+		{
+			"Name": "Tomb of the Giants - Nito",
+			"Description": ""
+		},
+		{
+			"Name": "Tomb of the Giants - Patches",
+			"Description": ""
+		},
+		{
+			"Name": "Undead Asylum - Courtyard",
+			"Description": ""
+		},
+		{
+			"Name": "Undead Asylum - Escape",
+			"Description": ""
+		},
+		{
+			"Name": "Undead Burg - Entrance",
+			"Description": ""
+		},
+		{
+			"Name": "Undead Burg - Bridge",
+			"Description": ""
+		},
+		{
+			"Name": "Undead Parish",
+			"Description": ""
+		}
+	],
+
+	"Bosses": [
+		"Asylum Demon",
+		"Bed of Chaos",
+		"Capra Demon",
+		"Ceaseless Discharge",
+		"Centipede Demon",
+		"Firesage",
+		"Four Kings",
+		"Gaping Dragon",
+		"Gwyn",
+		"Gwyndolin",
+		"Iron Golem",
+		"Moonlight Butterfly",
+		"Nito",
+		"Ornstein and Smough",
+		"Pinwheel",
+		"Priscilla",
+		"Quelaag",
+		"Seath",
+		"Sif",
+		"Stray Demon",
+		"Taurus Demon"
+	],
+
+	"Covenants": [
+		"Blade of the Darkmoon",
+		"Chaos Servant",
+		"Darkwraith",
+		"Forest Hunter",
+		"Gravelord Servant",
+		"Path of the Dragon",
+		"Princess Guard",
+		"Warrior of Sunlight",
+		"Way of White"
+	],
+
+	"Items": {
+		"Ammunition": [
+
+		],
+
+		"Armor": [
+
+		],
+
+		"Bonfire": [
+			"Armor Smithbox",
+			"Bottomless Box",
+			"Lordvessel",
+			"Repairbox",
+			"Rite of Kindling",
+			"Weapon Smithbox"
+		],
+
+		"Consumables": [
+			"- Regular Consumables -",
+			"Bloodred Moss Clump",
+			"Blooming Purple Moss Clump",
+			"Charcoal Pine Resin",
+			"Divine Blessing",
+			"Egg Vermifuge",
+			"Elizabeth's Mushroom",
+			"Estus Flask",
+			"Fire Keeper Soul",
+			"Green Blossom",
+			"Gold Pine Resin",
+			"Homeward Bone",
+			"Humanity",
+			"Prism Stone",
+			"Purging Stone",
+			"Purple Moss Clump",
+			"Repair Powder",
+			"Rotten Pine Resin",
+			"Transient Curse",
+			"Twin Humanities",
+
+			"- Carvings -",
+			"Hello Carving",
+			"Help Me Carving",
+			"I'm Sorry Carving",
+			"Thank You Carving",
+			"Very Good Carving"
+		],
+
+		"Covenant": [
+			"Dried Finger",
+			"Eye of Death",
+			"Sunlight Medal",
+			"Souvenir of Reprisal"
+		],
+
+		"Embers": [
+			"Chaos Flame Ember",
+			"Crystal Ember",
+			"Dark Ember",
+			"Divine Ember",
+			"Enchanted Ember",
+			"Large Divine Ember",
+			"Large Ember",
+			"Large Flame Ember",
+			"Large Magic Ember",
+			"Very Large Ember"
+		],
+
+		"Keys": [
+			"Annex Key",
+			"Archive Prison Extra Key",
+			"Archive Tower Cell Key",
+			"Archive Tower Giant Cell Key",
+			"Archive Tower Giant Door Key",
+			"Basement Key",
+			"Big Pilgrim's Key",
+			"Blighttown Key",
+			"Broken Pendant",
+			"Cage Key",
+			"Crest Key",
+			"Crest of Artorias",
+			"Dungeon Cell Key",
+			"Key to the Depths",
+			"Key to New Londo Ruins",
+			"Key to the Seal",
+			"Master Key",
+			"Mystery Key",
+			"Peculiar Doll",
+			"Residence Key",
+			"Sewer Chamber Key",
+			"Undead Asylum F2 East Key",
+			"Undead Asylum F2 West Key",
+			"Watchtower Basement Key"
+		],
+
+		"Miracles": [
+
+		],
+
+		"Multiplayer": [
+			"Black Separation Crystal",
+			"Blue Eye Orb",
+			"Book of the Guilty",
+			"Cracked Red Eye Orb",
+			"Dragon Eye",
+			"Indictment",
+			"Orange Guidance Soapstone",
+			"Purple Coward's Crystal",
+			"Red Eye Orb",
+			"Red Sign Soapstone",
+			"Servant Roster",
+			"White Sign Soapstone"
+		],
+
+		"Ore": [
+			"Blue Titanite Chunk",
+			"Blue Titanite Slab",
+			"Demon Titanite",
+			"Dragon Scale",
+			"Green Titanite Shard",
+			"Large Titanite Shard",
+			"Red Titanite Chunk",
+			"Red Titanite Slab",
+			"Titanite Chunk",
+			"Titanite Slab",
+			"Titanite Shard",
+			"Twinkling Titanite",
+			"White Titanite Chunk",
+			"White Titanite Slab"
+		],
+
+		"Other": [
+			"Binoculars",
+			"Black Eye Orb",
+			"Copper Coin",
+			"Darksign",
+			"Dragon Head Stone",
+			"Dragon Torso Stone",
+			"Gold Coin",
+			"Pendant",
+			"Rubbish",
+			"Silver Coin",
+			"Silver Pendant",
+			"Skull Lantern"
+		],
+
+		"Projectiles": [
+
+		],
+
+		"Rings": [
+
+		],
+
+		"Sorceries": [
+
+		],
+
+		"Souls": [
+			"- Regular Souls -",
+			"Large Soul of a Brave Warrior",
+			"Large Soul of a Lost Undead",
+			"Large Soul of a Nameless Soldier",
+			"Large Soul of a Proud Knight",
+			"Soul of a Brave Warrior",
+			"Soul of a Great Hero",
+			"Soul of a Hero",
+			"Soul of a Lost Undead",
+			"Soul of a Nameless Soldier",
+			"Soul of a Proud Knight",
+
+			"- Boss Souls -",
+			"Core of an Iron Golem",
+			"Guardian Soul",
+			"Soul of Artorias",
+			"Soul of Gwyn, Lord of Cinder",
+			"Soul of Gwyndolin",
+			"Soul of Manus",
+			"Soul of the Moonlight Butterfly",
+			"Soul of Ornstein",
+			"Soul of Priscilla",
+			"Soul of Sif",
+			"Soul of Smough",
+			"Soul of Quelaag",
+
+			"- Key Boss Souls -",
+			"Bequeathed Lord Soul Shard",
+			"Soul of Bed of Chaos",
+			"Soul of Gravelord Nito",
+			"Soul of Seath the Scaleless"
+		]
+	}, 
+
+	"Npcs": [
+
+	],
+
+	"Zones": [
+		"Anor Londo",
+		"Ash Lake",
+		"Battle of Stoicism",
+		"Battle of Stoicism Gazebo",
+		"Blighttown",
+		"The Catacombs",
+		"Chasm of the Abyss",
+		"Crystal Cave",
+		"Darkroot Basin",
+		"Darkroot Garden",
+		"Demon Ruins",
+		"The Duke's Archives",
+		"Firelink Shrine",
+		"The Great Hollow",
+		"Kiln of the First Flame",
+		"Lost Izalith",
+		"New Londo Ruins",
+		"Oolacile Sanctuary",
+		"Oolacile Township",
+		"Painted World of Ariamis",
+		"Royal Wood",
+		"Quelaag's Domain",
+		"Sanctuary Garden",
+		"Sen's Fortress",
+		"The Abyss",
+		"The Depths",
+		"Tomb of the Giants",
+		"Undead Asylum",
+		"Undead Burg",
+		"Undead Parish",
+		"Valley of Drakes"
+	] 
+}
