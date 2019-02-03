@@ -106,14 +106,14 @@ namespace LiveSplit.DarkSouls.Controls
 
 		private Control[] GetBossControls()
 		{
-			var bossCriteria = GetComboBox(new[]
+			var bossCriteria = GetDropdown(new[]
 			{
 				"On final hit",
 				"On victory message",
 				"On warp"
 			}, false);
 
-			var bossList = GetComboBox(lists.Bosses);
+			var bossList = GetDropdown(lists.Bosses);
 			bossList.SelectedIndexChanged += (sender, args) =>
 			{
 				bossCriteria.Enabled = true;
@@ -129,13 +129,13 @@ namespace LiveSplit.DarkSouls.Controls
 
 		private Control[] GetCovenantControls()
 		{
-			var covenantCriteria = GetComboBox(new []
+			var covenantCriteria = GetDropdown(new []
 			{
 				"On discovery",
 				"On join"
 			}, false);
 
-			var covenantList = GetComboBox(lists.Covenants);
+			var covenantList = GetDropdown(lists.Covenants);
 			covenantList.SelectedIndexChanged += (sender, args) =>
 			{
 				covenantCriteria.Enabled = true;
@@ -151,20 +151,20 @@ namespace LiveSplit.DarkSouls.Controls
 
 		private Control[] GetItemControls()
 		{
-			var itemCriteria = GetComboBox(new[]
+			var itemCriteria = GetDropdown(new[]
 			{
 				"Acquired",
 				"Sold"
 			}, false);
 
-			var itemList = GetComboBox(null, false);
+			var itemList = GetDropdown(null, false);
 			itemList.SelectedIndexChanged += (sender, args) =>
 			{
 				itemCriteria.Enabled = true;
 				itemCriteria.SelectedIndex = 0;
 			};
 
-			var itemTypes = GetComboBox(new []
+			var itemTypes = GetDropdown(new []
 			{
 				"Ammunition",
 				"Armor",
@@ -208,13 +208,10 @@ namespace LiveSplit.DarkSouls.Controls
 			return null;
 		}
 
-		private ComboBox GetComboBox(string[] items, bool enabled = true)
+		private SoulsDropdown GetDropdown(string[] items, bool enabled = true)
 		{
-			ComboBox box = new ComboBox
-			{
-				DropDownStyle = ComboBoxStyle.DropDownList,
-				Enabled = enabled
-			};
+			SoulsDropdown box = new SoulsDropdown();
+			box.Enabled = enabled;
 
 			if (items != null)
 			{

@@ -40,13 +40,19 @@ namespace LiveSplit.DarkSouls
 			XmlElement igtElement = document.CreateElement("PauseIGT", PauseIgt.ToString());
 			XmlElement splitsElement = document.CreateElement("Splits");
 
-			foreach (var split in splitCollection.Splits)
-			{
-				string data = string.Join("|", split.Data);
+			var splits = splitCollection.Splits;
 
-				XmlElement splitElement = document.CreateElement("Split");
-				splitElement.AppendChild(document.CreateElement("Type", split.Type.ToString()));
-				splitElement.AppendChild(document.CreateElement("Data", data));
+			// Splits can be null if the user hasn't added any splits through the LiveSplit UI.
+			if (splits != null)
+			{
+				foreach (var split in splitCollection.Splits)
+				{
+					string data = string.Join("|", split.Data);
+
+					XmlElement splitElement = document.CreateElement("Split");
+					splitElement.AppendChild(document.CreateElement("Type", split.Type.ToString()));
+					splitElement.AppendChild(document.CreateElement("Data", data));
+				}
 			}
 
 			root.AppendChild(igtElement);

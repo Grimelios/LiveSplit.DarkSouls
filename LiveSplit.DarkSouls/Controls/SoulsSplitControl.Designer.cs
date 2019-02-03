@@ -28,9 +28,19 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.splitTypeComboBox = new System.Windows.Forms.ComboBox();
 			this.splitDetailsPanel = new System.Windows.Forms.Panel();
+			this.splitTypeComboBox = new LiveSplit.DarkSouls.Controls.SoulsDropdown();
+			this.upButton = new System.Windows.Forms.Button();
+			this.downButton = new System.Windows.Forms.Button();
+			this.deleteButton = new System.Windows.Forms.Button();
 			this.SuspendLayout();
+			// 
+			// splitDetailsPanel
+			// 
+			this.splitDetailsPanel.Location = new System.Drawing.Point(89, 4);
+			this.splitDetailsPanel.Name = "splitDetailsPanel";
+			this.splitDetailsPanel.Size = new System.Drawing.Size(390, 21);
+			this.splitDetailsPanel.TabIndex = 1;
 			// 
 			// splitTypeComboBox
 			// 
@@ -49,31 +59,56 @@
 			this.splitTypeComboBox.Location = new System.Drawing.Point(4, 4);
 			this.splitTypeComboBox.Name = "splitTypeComboBox";
 			this.splitTypeComboBox.Size = new System.Drawing.Size(81, 21);
-			this.splitTypeComboBox.TabIndex = 0;
+			this.splitTypeComboBox.TabIndex = 2;
 			this.splitTypeComboBox.SelectedIndexChanged += new System.EventHandler(this.splitTypeComboBox_SelectedIndexChanged);
 			// 
-			// splitDetailsPanel
+			// upButton
 			// 
-			this.splitDetailsPanel.Location = new System.Drawing.Point(89, 4);
-			this.splitDetailsPanel.Name = "splitDetailsPanel";
-			this.splitDetailsPanel.Size = new System.Drawing.Size(390, 21);
-			this.splitDetailsPanel.TabIndex = 1;
+			this.upButton.Image = global::LiveSplit.DarkSouls.Resources.Up;
+			this.upButton.Location = new System.Drawing.Point(482, 2);
+			this.upButton.Name = "upButton";
+			this.upButton.Size = new System.Drawing.Size(24, 24);
+			this.upButton.TabIndex = 3;
+			this.upButton.UseVisualStyleBackColor = true;
+			// 
+			// downButton
+			// 
+			this.downButton.Image = global::LiveSplit.DarkSouls.Resources.Down;
+			this.downButton.Location = new System.Drawing.Point(506, 2);
+			this.downButton.Name = "downButton";
+			this.downButton.Size = new System.Drawing.Size(24, 24);
+			this.downButton.TabIndex = 4;
+			this.downButton.UseVisualStyleBackColor = true;
+			// 
+			// deleteButton
+			// 
+			this.deleteButton.Image = global::LiveSplit.DarkSouls.Resources.Delete;
+			this.deleteButton.Location = new System.Drawing.Point(530, 2);
+			this.deleteButton.Name = "deleteButton";
+			this.deleteButton.Size = new System.Drawing.Size(24, 24);
+			this.deleteButton.TabIndex = 5;
+			this.deleteButton.UseVisualStyleBackColor = true;
 			// 
 			// SoulsSplitControl
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.Controls.Add(this.splitDetailsPanel);
+			this.Controls.Add(this.deleteButton);
+			this.Controls.Add(this.downButton);
+			this.Controls.Add(this.upButton);
 			this.Controls.Add(this.splitTypeComboBox);
+			this.Controls.Add(this.splitDetailsPanel);
 			this.Name = "SoulsSplitControl";
-			this.Size = new System.Drawing.Size(535, 200);
+			this.Size = new System.Drawing.Size(597, 27);
 			this.ResumeLayout(false);
 
 		}
 
 		#endregion
-
-		private System.Windows.Forms.ComboBox splitTypeComboBox;
 		private System.Windows.Forms.Panel splitDetailsPanel;
+		private SoulsDropdown splitTypeComboBox;
+		private System.Windows.Forms.Button upButton;
+		private System.Windows.Forms.Button downButton;
+		private System.Windows.Forms.Button deleteButton;
 	}
 }

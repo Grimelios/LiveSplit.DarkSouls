@@ -30,7 +30,7 @@ namespace LiveSplit.DarkSouls
 
 		public IComponent Create(LiveSplitState state)
 		{
-			return new SoulsComponent(state);
+			return new SoulsComponent();
 		}
 	}
 }
