@@ -34,7 +34,9 @@
 			// 
 			// splitTypeComboBox
 			// 
+			this.splitTypeComboBox.BackColor = System.Drawing.SystemColors.ControlLight;
 			this.splitTypeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.splitTypeComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.splitTypeComboBox.FormattingEnabled = true;
 			this.splitTypeComboBox.Items.AddRange(new object[] {
             "Bonfire",
@@ -42,16 +44,17 @@
             "Covenant",
             "Item",
             "Npc",
-            "Zone"});
+            "Zone",
+            "VeryLongStringMeantToTestEllipses"});
 			this.splitTypeComboBox.Location = new System.Drawing.Point(4, 4);
 			this.splitTypeComboBox.Name = "splitTypeComboBox";
-			this.splitTypeComboBox.Size = new System.Drawing.Size(131, 21);
+			this.splitTypeComboBox.Size = new System.Drawing.Size(81, 21);
 			this.splitTypeComboBox.TabIndex = 0;
 			this.splitTypeComboBox.SelectedIndexChanged += new System.EventHandler(this.splitTypeComboBox_SelectedIndexChanged);
 			// 
 			// splitDetailsPanel
 			// 
-			this.splitDetailsPanel.Location = new System.Drawing.Point(142, 4);
+			this.splitDetailsPanel.Location = new System.Drawing.Point(89, 4);
 			this.splitDetailsPanel.Name = "splitDetailsPanel";
 			this.splitDetailsPanel.Size = new System.Drawing.Size(390, 21);
 			this.splitDetailsPanel.TabIndex = 1;

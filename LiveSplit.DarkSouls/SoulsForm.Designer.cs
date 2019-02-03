@@ -28,22 +28,22 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.soulsSplitControl1 = new LiveSplit.DarkSouls.Controls.SoulsSplitControl();
+			this.soulsMasterControl1 = new LiveSplit.DarkSouls.Controls.SoulsMasterControl();
 			this.SuspendLayout();
 			// 
-			// soulsSplitControl1
+			// soulsMasterControl1
 			// 
-			this.soulsSplitControl1.Location = new System.Drawing.Point(13, 13);
-			this.soulsSplitControl1.Name = "soulsSplitControl1";
-			this.soulsSplitControl1.Size = new System.Drawing.Size(535, 200);
-			this.soulsSplitControl1.TabIndex = 0;
+			this.soulsMasterControl1.Location = new System.Drawing.Point(13, 13);
+			this.soulsMasterControl1.Name = "soulsMasterControl1";
+			this.soulsMasterControl1.Size = new System.Drawing.Size(554, 588);
+			this.soulsMasterControl1.TabIndex = 0;
 			// 
 			// SoulsForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(800, 450);
-			this.Controls.Add(this.soulsSplitControl1);
+			this.Controls.Add(this.soulsMasterControl1);
 			this.Name = "SoulsForm";
 			this.Text = "SoulsForm";
 			this.ResumeLayout(false);
@@ -52,6 +52,6 @@
 
 		#endregion
 
-		private Controls.SoulsSplitControl soulsSplitControl1;
+		private Controls.SoulsMasterControl soulsMasterControl1;
 	}
 }

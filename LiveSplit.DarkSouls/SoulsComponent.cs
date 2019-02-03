@@ -23,11 +23,19 @@ namespace LiveSplit.DarkSouls
 		private SoulsSettings settings;
 		private SoulsMasterControl masterControl;
 
-		public SoulsComponent()
+		public SoulsComponent(LiveSplitState state)
 		{
 			splitCollection = new SplitCollection();
 			settings = new SoulsSettings(splitCollection);
 			masterControl = new SoulsMasterControl();
+
+			timer = new TimerModel();
+			timer.CurrentState = state;
+
+			state.OnSplit += (sender, args) => { splitCollection.OnSplit(); };
+			state.OnUndoSplit += (sender, args) => { splitCollection.OnUndoSplit(); };
+			state.OnSkipSplit += (sender, args) => { splitCollection.OnSkipSplit(); };
+			state.OnReset += (sender, value) => { splitCollection.OnReset(); };
 		}
 
 		public string ComponentName => DisplayName;
@@ -70,16 +78,6 @@ namespace LiveSplit.DarkSouls
 
 		public void Update(IInvalidator invalidator, LiveSplitState state, float width, float height, LayoutMode mode)
 		{
-			if (timer == null)
-			{
-				timer = new TimerModel();
-				timer.CurrentState = state;
-
-				//state.OnSplit += OnSplit;
-				//state.OnUndoSplit += OnUndoSplit;
-				//state.OnSkipSplit += OnSkipSplit;
-				//state.OnReset += OnReset;
-			}
 		}
 
 		public void Refresh()

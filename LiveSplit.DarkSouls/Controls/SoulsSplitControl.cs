@@ -27,7 +27,6 @@ namespace LiveSplit.DarkSouls.Controls
 			lists = JsonConvert.DeserializeObject<SplitLists>(Resources.Splits);
 			functionMap = new Dictionary<string, Func<Control[]>>()
 			{
-				{ "Bonfire", GetBonfireControls },
 				{ "Boss", GetBossControls },
 				{ "Covenant", GetCovenantControls },
 				{ "Item", GetItemControls }
@@ -78,6 +77,11 @@ namespace LiveSplit.DarkSouls.Controls
 
 		private void splitTypeComboBox_SelectedIndexChanged(object sender, EventArgs e)
 		{
+			if (!functionMap.ContainsKey(splitTypeComboBox.Text))
+			{
+				return;
+			}
+
 			Control[] controls = functionMap[splitTypeComboBox.Text]();
 			ControlCollection panelControls = splitDetailsPanel.Controls;
 			panelControls.Clear();

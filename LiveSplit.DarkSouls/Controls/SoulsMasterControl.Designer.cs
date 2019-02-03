@@ -28,12 +28,21 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.soulsSplitCollectionControl1 = new LiveSplit.DarkSouls.Controls.SoulsSplitCollectionControl();
 			this.SuspendLayout();
+			// 
+			// soulsSplitCollectionControl1
+			// 
+			this.soulsSplitCollectionControl1.Location = new System.Drawing.Point(4, 4);
+			this.soulsSplitCollectionControl1.Name = "soulsSplitCollectionControl1";
+			this.soulsSplitCollectionControl1.Size = new System.Drawing.Size(577, 467);
+			this.soulsSplitCollectionControl1.TabIndex = 0;
 			// 
 			// SoulsMasterControl
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.Controls.Add(this.soulsSplitCollectionControl1);
 			this.Name = "SoulsMasterControl";
 			this.Size = new System.Drawing.Size(554, 588);
 			this.ResumeLayout(false);
@@ -41,5 +50,7 @@
 		}
 
 		#endregion
+
+		private SoulsSplitCollectionControl soulsSplitCollectionControl1;
 	}
 }

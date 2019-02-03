@@ -16,5 +16,15 @@ namespace LiveSplit.DarkSouls.Controls
 		{
 			InitializeComponent();
 		}
+
+		private void addSplitButton_Click(object sender, EventArgs e)
+		{
+			splitsPanel.Controls.Add(new SoulsSplitControl());
+		}
+
+		private void clearSplitsButton_Click(object sender, EventArgs e)
+		{
+			splitsPanel.Controls.Clear();
+		}
 	}
 }
