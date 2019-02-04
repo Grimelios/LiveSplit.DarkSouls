@@ -15,6 +15,8 @@ namespace LiveSplit.DarkSouls.Controls
 {
 	public partial class SoulsSplitControl : UserControl
 	{
+		private const int ControlWidth = 89;
+
 		private SplitLists lists;
 		private Dictionary<string, Func<Control[]>> functionMap;
 
@@ -210,8 +212,11 @@ namespace LiveSplit.DarkSouls.Controls
 
 		private SoulsDropdown GetDropdown(string[] items, bool enabled = true)
 		{
-			SoulsDropdown box = new SoulsDropdown();
-			box.Enabled = enabled;
+			SoulsDropdown box = new SoulsDropdown
+			{
+				Enabled = enabled,
+				Width = ControlWidth
+			};
 
 			if (items != null)
 			{
@@ -227,6 +232,7 @@ namespace LiveSplit.DarkSouls.Controls
 			{
 				Text = "1",
 				Visible = false,
+				Width = ControlWidth,
 				MaxLength = 3
 			};
 

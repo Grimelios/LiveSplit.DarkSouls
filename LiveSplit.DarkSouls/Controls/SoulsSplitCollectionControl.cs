@@ -29,11 +29,20 @@ namespace LiveSplit.DarkSouls.Controls
 			}
 
 			controls.Add(control);
+			UpdateSplitCount();
 		}
 
 		private void clearSplitsButton_Click(object sender, EventArgs e)
 		{
 			splitsPanel.Controls.Clear();
+			UpdateSplitCount();
+		}
+
+		private void UpdateSplitCount()
+		{
+			int count = splitsPanel.Controls.Count;
+
+			splitCountLabel.Text = count + " split" + (count != 1 ? "s" : "");
 		}
 	}
 }
