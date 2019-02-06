@@ -190,6 +190,8 @@
 		"Gwyn",
 		"Gwyndolin",
 		"Iron Golem",
+		"Kalameet",
+		"Manus",
 		"Moonlight Butterfly",
 		"Nito",
 		"Ornstein and Smough",
@@ -216,11 +218,23 @@
 
 	"Items": {
 		"Ammunition": [
-
-		],
-
-		"Armor": [
-
+			"- Arrows -",
+			"Dragonslayer Arrow",
+			"Feather Arrow",
+			"Fire Arrow",
+			"Gough's Great Arrow",
+			"Large Arrow",
+			"Moonlight Arrow",
+			"Poison Arrow",
+			"Standard Arrow",
+			"Wooden Arrow",
+			"",
+			"- Bolts -",
+			"Heavy Bolt",
+			"Lightning Bolt",
+			"Sniper Bolt",
+			"Standard Bolt",
+			"Wood Bolt"
 		],
 
 		"Bonfire": [
@@ -230,6 +244,14 @@
 			"Repairbox",
 			"Rite of Kindling",
 			"Weapon Smithbox"
+		],
+
+		"Catalysts": [
+
+		],
+
+		"Chest Pieces": [
+
 		],
 
 		"Consumables": [
@@ -282,6 +304,14 @@
 			"Very Large Ember"
 		],
 
+		"Gauntlets": [
+
+		],
+
+		"Helmets": [
+
+		], 
+
 		"Keys": [
 			"Annex Key",
 			"Archive Prison Extra Key",
@@ -309,8 +339,38 @@
 			"Watchtower Basement Key"
 		],
 
-		"Miracles": [
+		"Leggings": [
 
+		],
+
+		"MeleeWeapons": [
+
+		], 
+
+		"Miracles": [
+			"Bountiful Sunlight",
+			"Darkmoon Blade",
+			"Emit Force",
+			"Force",
+			"Gravelord Greatsword Dance",
+			"Gravelord Sword Dance",
+			"Great Heal",
+			"Great Heal Excerpt",
+			"Great Lightning Spear",
+			"Great Magic Barrier",
+			"Heal",
+			"Homeward",
+			"Karmic Justice",
+			"Lightning Spear",
+			"Magic Barrier",
+			"Replenishment",
+			"Seek Guidance",
+			"Soothing Sunlight",
+			"Sunlight Blade",
+			"Sunlight Spear",
+			"Tranquil Walk of Peace",
+			"Vow of Silence",
+			"Wrath of the Gods"
 		],
 
 		"Multiplayer": [
@@ -361,15 +421,119 @@
 		],
 
 		"Projectiles": [
-
+			"Alluring Skull",
+			"Black Firebomb",
+			"Dung Pie",
+			"Firebomb",
+			"Lloyd's Talisman",
+			"Poison Throwing Knife",
+			"Throwing Knife"
 		],
 
+		"Pyromancies": [
+			"Acid Surge",
+			"Black Flame",
+			"Chaos Fire Whip",
+			"Chaos Storm",
+			"Combustion",
+			"Fireball",
+			"Firestorm",
+			"Fire Orb",
+			"Fire Surge",
+			"Fire Tempest",
+			"Fire Whip",
+			"Flash Sweat",
+			"Great Chaos Fireball",
+			"Great Combustion",
+			"Great Fireball",
+			"Iron Flesh",
+			"Poison Mist",
+			"Power Within",
+			"Toxic Mist",
+			"Undead Rapport"
+		], 
+
+		"RangedWeapons": [
+
+		], 
+
 		"Rings": [
+			"Bellowing Dragoncrest Ring",
+			"Bloodbite Ring",
+			"Blue Tearstone Ring",
+			"Calamity Ring",
+			"Cat Covenant Ring",
+			"Cloranthy Ring",
+			"Covenant of Artorias",
+			"Covetous Gold Serpent Ring",
+			"Covetous Silver Serpent Ring",
+			"Cursebite Ring",
+			"Darkmoon Blade Covenant Ring",
+			"Darkmoon Seance Ring",
+			"Dark Wood Grain Ring",
+			"Dusk Crown Ring",
+			"East Wood Grain Ring",
+			"Flame Stoneplate Ring",
+			"Havel's Ring",
+			"Hawk Ring",
+			"Hornet Ring",
+			"Leo Ring",
+			"Lingering Dragoncrest Ring",
+			"Old Witch's Ring",
+			"Orange Charred Ring",
+			"Poisonbite Ring",
+			"Red Tearstone Ring",
+			"Rare Ring of Sacrifice",
+			"Ring of Favor and Protection",
+			"Ring of Fog",
+			"Ring of Sacrifice",
+			"Ring of Steel Protection",
+			"Ring of The Evil Eye",
+			"Ring of the Sun Princess",
+			"Ring of the Sun's Firstborn",
+			"Rusted Iron Ring",
+			"Slumbering Dragoncrest Ring",
+			"Speckled Stoneplate Ring",
+			"Spell Stoneplate Ring",
+			"Tiny Being's Ring",
+			"Thunder Stoneplate Ring",
+			"White Seance Ring",
+			"Wolf Ring"
+		],
+
+		"Shields": [
 
 		],
 
 		"Sorceries": [
-
+			"Aural Decoy",
+			"Cast Light",
+			"Chameleon",
+			"Crystal Magic Weapon",
+			"Crystal Soul Spear",
+			"Dark Bead",
+			"Dark Fog",
+			"Dark Orb",
+			"Fall Control",
+			"Great Heavy Soul Arrow",
+			"Great Magic Weapon",
+			"Great Soul Arrow",
+			"Heavy Soul Arrow",
+			"Hidden Body",
+			"Hidden Weapon",
+			"Homing Crystal Soulmass",
+			"Homing Soulmass",
+			"Hush",
+			"Magic Shield",
+			"Magic Weapon",
+			"Pursuers",
+			"Remedy",
+			"Repair",
+			"Resist Curse",
+			"Soul Arrow",
+			"Soul Spear",
+			"Strong Magic Shield",
+			"White Dragon Breath"
 		],
 
 		"Souls": [
@@ -404,7 +568,11 @@
 			"Soul of Bed of Chaos",
 			"Soul of Gravelord Nito",
 			"Soul of Seath the Scaleless"
-		]
+		],
+
+		"Talismans": [
+
+		] 
 	}, 
 
 	"Npcs": [
@@ -424,6 +592,7 @@
 		"Darkroot Garden",
 		"Demon Ruins",
 		"The Duke's Archives",
+		"Firelink Altar",
 		"Firelink Shrine",
 		"The Great Hollow",
 		"Kiln of the First Flame",

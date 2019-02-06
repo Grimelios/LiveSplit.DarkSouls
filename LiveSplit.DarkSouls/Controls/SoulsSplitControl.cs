@@ -166,20 +166,29 @@ namespace LiveSplit.DarkSouls.Controls
 			var itemTypes = GetDropdown(new []
 			{
 				"Ammunition",
-				"Armor",
 				"Bonfire",
+				"Catalysts",
+				"Chest Pieces",
 				"Consumables",
 				"Covenant",
 				"Embers",
+				"Gauntlets",
+				"Helmets",
 				"Keys",
+				"Leggings",
+				"Melee Weapons",
 				"Miracles",
 				"Multiplayer",
 				"Ore",
 				"Other",
 				"Projectiles",
+				"Pyromancies",
+				"Ranged Weapons",
 				"Rings",
+				"Shields",
 				"Sorceries",
-				"Souls"
+				"Souls",
+				"Talismans"
 			}, DefaultControlWidth);
 
 			itemTypes.SelectedIndexChanged += (sender, args) =>
