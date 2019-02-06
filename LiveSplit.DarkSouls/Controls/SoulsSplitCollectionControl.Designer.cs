@@ -29,12 +29,12 @@
 		private void InitializeComponent()
 		{
 			this.splitCollectionBox = new System.Windows.Forms.GroupBox();
+			this.splitCountLabel = new System.Windows.Forms.Label();
 			this.splitsPanel = new System.Windows.Forms.Panel();
 			this.clearSplitsButton = new System.Windows.Forms.Button();
 			this.addSplitButton = new System.Windows.Forms.Button();
 			this.splitDetailsLabel = new LiveSplit.DarkSouls.Controls.SoulsLabel();
 			this.splitTypeLabel = new LiveSplit.DarkSouls.Controls.SoulsLabel();
-			this.splitCountLabel = new System.Windows.Forms.Label();
 			this.splitCollectionBox.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -52,6 +52,15 @@
 			this.splitCollectionBox.TabIndex = 0;
 			this.splitCollectionBox.TabStop = false;
 			this.splitCollectionBox.Text = "Splits";
+			// 
+			// splitCountLabel
+			// 
+			this.splitCountLabel.AutoSize = true;
+			this.splitCountLabel.Location = new System.Drawing.Point(176, 25);
+			this.splitCountLabel.Name = "splitCountLabel";
+			this.splitCountLabel.Size = new System.Drawing.Size(39, 13);
+			this.splitCountLabel.TabIndex = 7;
+			this.splitCountLabel.Text = "0 splits";
 			// 
 			// splitsPanel
 			// 
@@ -91,7 +100,7 @@
 			// 
 			this.splitDetailsLabel.Location = new System.Drawing.Point(93, 52);
 			this.splitDetailsLabel.Name = "splitDetailsLabel";
-			this.splitDetailsLabel.Size = new System.Drawing.Size(275, 13);
+			this.splitDetailsLabel.Size = new System.Drawing.Size(325, 13);
 			this.splitDetailsLabel.TabIndex = 2;
 			this.splitDetailsLabel.Text = "Details";
 			// 
@@ -102,15 +111,6 @@
 			this.splitTypeLabel.Size = new System.Drawing.Size(78, 13);
 			this.splitTypeLabel.TabIndex = 0;
 			this.splitTypeLabel.Text = "Type";
-			// 
-			// splitCountLabel
-			// 
-			this.splitCountLabel.AutoSize = true;
-			this.splitCountLabel.Location = new System.Drawing.Point(176, 25);
-			this.splitCountLabel.Name = "splitCountLabel";
-			this.splitCountLabel.Size = new System.Drawing.Size(39, 13);
-			this.splitCountLabel.TabIndex = 7;
-			this.splitCountLabel.Text = "0 splits";
 			// 
 			// SoulsSplitCollectionControl
 			// 

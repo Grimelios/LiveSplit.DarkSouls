@@ -15,7 +15,7 @@ namespace LiveSplit.DarkSouls.Controls
 {
 	public partial class SoulsSplitControl : UserControl
 	{
-		private const int ControlWidth = 89;
+		private const int DefaultControlWidth = 89;
 
 		private SplitLists lists;
 		private Dictionary<string, Func<Control[]>> functionMap;
@@ -113,9 +113,9 @@ namespace LiveSplit.DarkSouls.Controls
 				"On final hit",
 				"On victory message",
 				"On warp"
-			}, false);
+			}, DefaultControlWidth, false);
 
-			var bossList = GetDropdown(lists.Bosses);
+			var bossList = GetDropdown(lists.Bosses, DefaultControlWidth);
 			bossList.SelectedIndexChanged += (sender, args) =>
 			{
 				bossCriteria.Enabled = true;
@@ -135,9 +135,9 @@ namespace LiveSplit.DarkSouls.Controls
 			{
 				"On discovery",
 				"On join"
-			}, false);
+			}, DefaultControlWidth, false);
 
-			var covenantList = GetDropdown(lists.Covenants);
+			var covenantList = GetDropdown(lists.Covenants, DefaultControlWidth);
 			covenantList.SelectedIndexChanged += (sender, args) =>
 			{
 				covenantCriteria.Enabled = true;
@@ -153,17 +153,14 @@ namespace LiveSplit.DarkSouls.Controls
 
 		private Control[] GetItemControls()
 		{
-			var itemCriteria = GetDropdown(new[]
-			{
-				"Acquired",
-				"Sold"
-			}, false);
+			const int ItemListWidth = 182;
 
-			var itemList = GetDropdown(null, false);
+			var itemCount = GetItemTextbox();
+			var itemList = GetDropdown(null, ItemListWidth, false);
 			itemList.SelectedIndexChanged += (sender, args) =>
 			{
-				itemCriteria.Enabled = true;
-				itemCriteria.SelectedIndex = 0;
+				itemCount.Enabled = true;
+				itemCount.Text = "1";
 			};
 
 			var itemTypes = GetDropdown(new []
@@ -183,7 +180,7 @@ namespace LiveSplit.DarkSouls.Controls
 				"Rings",
 				"Sorceries",
 				"Souls"
-			});
+			}, DefaultControlWidth);
 
 			itemTypes.SelectedIndexChanged += (sender, args) =>
 			{
@@ -194,13 +191,10 @@ namespace LiveSplit.DarkSouls.Controls
 				items.AddRange(itemLists[itemTypes.SelectedIndex]);
 			};
 
-			var itemCount = GetNumericTextbox();
-
 			return new Control[]
 			{
 				itemTypes,
 				itemList,
-				itemCriteria,
 				itemCount
 			};
 		}
@@ -210,12 +204,12 @@ namespace LiveSplit.DarkSouls.Controls
 			return null;
 		}
 
-		private SoulsDropdown GetDropdown(string[] items, bool enabled = true)
+		private SoulsDropdown GetDropdown(string[] items, int width, bool enabled = true)
 		{
 			SoulsDropdown box = new SoulsDropdown
 			{
 				Enabled = enabled,
-				Width = ControlWidth
+				Width = width
 			};
 
 			if (items != null)
@@ -226,13 +220,13 @@ namespace LiveSplit.DarkSouls.Controls
 			return box;
 		}
 
-		private TextBox GetNumericTextbox()
+		private TextBox GetItemTextbox()
 		{
 			TextBox textbox = new TextBox
 			{
 				Text = "1",
-				Visible = false,
-				Width = ControlWidth,
+				Enabled = false,
+				Width = DefaultControlWidth,
 				MaxLength = 3
 			};
 
