@@ -36,22 +36,32 @@ namespace LiveSplit.DarkSouls.Controls
 
 			var items = lists.Items;
 
-			itemLists = new string[15][];
+			itemLists = new string[25][];
 			itemLists[0] = items.Ammunition;
-			itemLists[1] = items.Armor;
-			itemLists[2] = items.Bonfire;
-			itemLists[3] = items.Consumables;
-			itemLists[4] = items.Covenant;
-			itemLists[5] = items.Embers;
-			itemLists[6] = items.Keys;
-			itemLists[7] = items.Miracles;
-			itemLists[8] = items.Multiplayer;
-			itemLists[9] = items.Ore;
-			itemLists[10] = items.Other;
-			itemLists[11] = items.Projectiles;
-			itemLists[12] = items.Rings;
-			itemLists[13] = items.Sorceries;
-			itemLists[14] = items.Souls;
+			itemLists[1] = items.Bonfire;
+			itemLists[2] = items.Catalysts;
+			itemLists[3] = items.ChestPieces;
+			itemLists[4] = items.Consumables;
+			itemLists[5] = items.Covenant;
+			itemLists[6] = items.Embers;
+			itemLists[7] = items.Gauntlets;
+			itemLists[8] = items.Helmets;
+			itemLists[9] = items.Keys;
+			itemLists[10] = items.Leggings;
+			itemLists[11] = items.MeleeWeapons;
+			itemLists[12] = items.Miracles;
+			itemLists[13] = items.Multiplayer;
+			itemLists[14] = items.Ore;
+			itemLists[15] = items.Other;
+			itemLists[16] = items.Projectiles;
+			itemLists[17] = items.Pyromancies;
+			itemLists[18] = items.RangedWeapons;
+			itemLists[19] = items.Rings;
+			itemLists[20] = items.Sets;
+			itemLists[21] = items.Shields;
+			itemLists[22] = items.Sorceries;
+			itemLists[23] = items.Souls;
+			itemLists[24] = items.Talismans;
 		}
 
 		public Split ExtractSplit()
@@ -185,6 +195,7 @@ namespace LiveSplit.DarkSouls.Controls
 				"Pyromancies",
 				"Ranged Weapons",
 				"Rings",
+				"Sets",
 				"Shields",
 				"Sorceries",
 				"Souls",
