@@ -5,6 +5,12 @@ VisualStudioVersion = 15.0.27703.2042
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiveSplit.DarkSouls", "LiveSplit.DarkSouls\LiveSplit.DarkSouls.csproj", "{4B6EC3BB-5C5D-4682-8714-8A6B7C455E52}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiveSplit.DarkSoulsIGT", "..\DarkSoulsIGT\LiveSplit.DarkSoulsIGT\LiveSplit.DarkSoulsIGT.csproj", "{439D6CD1-72FA-4CE5-AB37-6F55611B748F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiveSplit.DarkSouls100Tracker", "..\DarkSoulsTracker\Livesplit.DarkSoulsTracker\LiveSplit.DarkSouls100Tracker.csproj", "{B709C220-558D-4040-986F-9C383B06CFB5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DarkSoulsMemory", "..\DarkSoulsTracker\CapitaineToinon.DarkSoulsMemory\DarkSoulsMemory.csproj", "{5DB2B8D5-6B2F-4615-950E-45596F8ADF61}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +21,15 @@ Global
 		{4B6EC3BB-5C5D-4682-8714-8A6B7C455E52}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4B6EC3BB-5C5D-4682-8714-8A6B7C455E52}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4B6EC3BB-5C5D-4682-8714-8A6B7C455E52}.Release|Any CPU.Build.0 = Release|Any CPU
+		{439D6CD1-72FA-4CE5-AB37-6F55611B748F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{439D6CD1-72FA-4CE5-AB37-6F55611B748F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{439D6CD1-72FA-4CE5-AB37-6F55611B748F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B709C220-558D-4040-986F-9C383B06CFB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B709C220-558D-4040-986F-9C383B06CFB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B709C220-558D-4040-986F-9C383B06CFB5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5DB2B8D5-6B2F-4615-950E-45596F8ADF61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5DB2B8D5-6B2F-4615-950E-45596F8ADF61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5DB2B8D5-6B2F-4615-950E-45596F8ADF61}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

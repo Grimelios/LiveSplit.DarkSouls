@@ -8,11 +8,10 @@ namespace LiveSplit.DarkSouls.Data
 {
 	public class SplitCollection
 	{
-		private Split currentSplit;
-
 		private int splitIndex;
 
 		public Split[] Splits { get; set; }
+		public Split CurrentSplit { get; private set; }
 
 		public void OnSplit()
 		{
@@ -31,7 +30,7 @@ namespace LiveSplit.DarkSouls.Data
 				return;
 			}
 
-			currentSplit = Splits[--splitIndex];
+			CurrentSplit = Splits[--splitIndex];
 		}
 
 		public void OnSkipSplit()
@@ -46,7 +45,7 @@ namespace LiveSplit.DarkSouls.Data
 
 		private void AdvanceSplit()
 		{
-			currentSplit = ++splitIndex < Splits.Length ? Splits[splitIndex] : null;
+			CurrentSplit = ++splitIndex < Splits.Length ? Splits[splitIndex] : null;
 		}
 
 		public void OnReset()
@@ -56,7 +55,7 @@ namespace LiveSplit.DarkSouls.Data
 				return;
 			}
 
-			currentSplit = null;
+			CurrentSplit = null;
 			splitIndex = 0;
 		}
 	}

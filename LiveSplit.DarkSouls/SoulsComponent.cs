@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using System.Xml;
 using LiveSplit.DarkSouls.Controls;
 using LiveSplit.DarkSouls.Data;
+using LiveSplit.DarkSouls.Memory;
 using LiveSplit.Model;
 using LiveSplit.UI;
 using LiveSplit.UI.Components;
@@ -20,12 +21,14 @@ namespace LiveSplit.DarkSouls
 
 		private TimerModel timer;
 		private SplitCollection splitCollection;
+		private SoulsMemory memory;
 		private SoulsSettings settings;
 		private SoulsMasterControl masterControl;
-
+		
 		public SoulsComponent()
 		{
 			splitCollection = new SplitCollection();
+			memory = new SoulsMemory();
 			settings = new SoulsSettings(splitCollection);
 			masterControl = new SoulsMasterControl();
 		}
@@ -80,10 +83,29 @@ namespace LiveSplit.DarkSouls
 				state.OnSkipSplit += (sender, args) => { splitCollection.OnSkipSplit(); };
 				state.OnReset += (sender, value) => { splitCollection.OnReset(); };
 			}
+
+			Refresh();
 		}
 
 		public void Refresh()
 		{
+			bool previouslyHooked = memory.ProcessHooked;
+
+			if (memory.Hook())
+			{
+				if (!previouslyHooked)
+				{
+					Console.WriteLine("Process hooked.");
+				}
+			}
+			else if (previouslyHooked)
+			{
+				Console.WriteLine("Process unhooked.");
+			}
+
+			memory.GetBossesKilled();
+
+			//Console.WriteLine("Game time: " + string.Join(", ", memory.GetBossesKilled()));
 		}
 
 		public void Dispose()
