@@ -237,6 +237,23 @@
 			"Wood Bolt"
 		],
 
+		"Axes": [
+			"- Axes -",
+			"Battle Axe",
+			"Butcher Knife",
+			"Crescent Axe",
+			"Gargoyle Tail Axe",
+			"Golem Axe",
+			"Hand Axe",
+			"",
+			"- Greataxes -",
+			"Black Knight Greataxe",
+			"Demon's Greataxe",
+			"Dragon King Greataxe",
+			"Greataxe",
+			"Stone Greataxe"
+		],
+
 		"Bonfire": [
 			"Armor Smithbox",
 			"Bottomless Box",
@@ -245,6 +262,19 @@
 			"Rite of Kindling",
 			"Weapon Smithbox"
 		],
+
+		"Bows": [
+			"- Bows -",
+			"Black Bow of Pharis",
+			"Composite Bow",
+			"Darkmoon Bow",
+			"Longbow",
+			"Short Bow",
+			"",
+			"- Greatbows -",
+			"Dragonslayer Greatbow",
+			"Gough's Greatbow"
+		], 
 
 		"Catalysts": [
 			"Beatrice's Catalyst",
@@ -301,6 +331,22 @@
 			"Souvenir of Reprisal"
 		],
 
+		"Crossbows": [
+			"Avelyn",
+			"Heavy Crossbow",
+			"Light Crossbow",
+			"Sniper Crossbow"
+		],
+
+		"Daggers": [
+			"Bandit's Knife",
+			"Dagger",
+			"Dark Silver Tracer",
+			"Ghost Blade",
+			"Parrying Dagger",
+			"Priscilla's Dagger"
+		], 
+
 		"Embers": [
 			"Chaos Flame Ember",
 			"Crystal Ember",
@@ -314,8 +360,139 @@
 			"Very Large Ember"
 		],
 
-		"Gauntlets": [
+		"Fist": [
+			"Caestus",
+			"Claws",
+			"Dark Hand",
+			"Dragon Bone Fist"
+		], 
 
+		"Flames": [
+			"Pyromancy Flame",
+			"Pyromancy Flame (Upgraded)"
+		],
+
+		"Gauntlets": [
+			"- Bracelets -",
+			"Bracelet of the Great Lord",
+			"Iron Bracelet",
+			"",
+			"- Gauntlets -",
+			"Balder Gauntlets",
+			"Black Iron Gauntlets",
+			"Black Knight Gauntlets",
+			"Black Sorcerer Gauntlets",
+			"Brass Gauntlets",
+			"Brigand Gauntlets",
+			"Catarina Gauntlets",
+			"Crystalline Gauntlets",
+			"Dark Gauntlets",
+			"Eastern Gauntlets",
+			"Elite Knight Gauntlets",
+			"Havel's Gauntlets",
+			"Gauntlets of Artorias",
+			"Gauntlets of Favor",
+			"Gauntlets of the Channeler",
+			"Gauntlets of the Vanquisher",
+			"Gauntlets of Thorns",
+			"Giant Gauntlets",
+			"Golem Gauntlets",
+			"Gough's Gauntlets",
+			"Guardian Gauntlets",
+			"Hard Leather Gauntlets",
+			"Knight Gauntlets",
+			"Leather Gauntlets",
+			"Ornstein's Gauntlets",
+			"Paladin Gauntlets",
+			"Shadow Gauntlets",
+			"Silver Knight Gauntlets",
+			"Smough's Gauntlets",
+			"Sorcerer Gauntlets",
+			"Steel Gauntlets",
+			"Stone Gauntlets",
+			"",
+			"- Gloves -",
+			"Antiquated Gloves",
+			"Black Leather Gloves",
+			"Chester's Gloves",
+			"Crimson Gloves",
+			"Dingy Gloves",
+			"Gold-Hemmed Black Gloves",
+			"Leather Gloves",
+			"Lord's Blade Gloves",
+			"Maiden Gloves",
+			"Moonlight Gloves",
+			"Painting Guardian Gloves",
+			"Travelling Gloves",
+			"Witch Gloves",
+			"Xanthous Gloves",
+			"",
+			"- Manchettes -",
+			"Black Manchette",
+			"Tattered Cloth Manchette",
+			"Wanderer Manchette"
+		],
+
+		"Greatswords": [
+			"- Curved Greatswords -",
+			"Gravelord Sword",
+			"Murakumo",
+			"Server",
+			"",
+			"- Greatswords -",
+			"Abyss Greatsword",
+			"Bastard Sword",
+			"Black Knight Sword",
+			"Claymore",
+			"Crystal Greatsword",
+			"Flamberge",
+			"Great Lord Greatsword",
+			"Greatsword of Artorias",
+			"Greatsword of Artorias (Cursed)",
+			"Man-Serpent Greatsword",
+			"Moonlight Greatsword",
+			"Obsidian Greatsword",
+			"Stone Greatsword",
+			"",
+			"- Ultra Greatswords -",
+			"Black Knight Greatsword",
+			"Demon Great Machete",
+			"Dragon Greatsword",
+			"Greatsword",
+			"Zweihander"
+		], 
+
+		"Halberds": [
+			"Black Knight Halberd",
+			"Gargoyle's Halberd",
+			"Giant's Halberd",
+			"Great Scythe",
+			"Halberd",
+			"Lifehunt Scythe",
+			"Lucerne",
+			"Scythe",
+			"Titanite Catch Pole"
+		],
+
+		"Hammers": [
+			"- Hammers -",
+			"Blacksmith Giant Hammer",
+			"Blacksmith Hammer",
+			"Club",
+			"Hammer of Vamos",
+			"Mace",
+			"Morning Star",
+			"Pickaxe",
+			"Reinforced Club",
+			"Warpick",
+			"",
+			"- Great Hammers -",
+			"Demon's Great Hammer",
+			"Dragon Tooth",
+			"Grant",
+			"Great Club",
+			"Large Club",
+			"Smough's Hammer"
 		],
 
 		"Helmets": [
@@ -496,10 +673,6 @@
 			"Xanthous Waistcloth"
 		],
 
-		"MeleeWeapons": [
-
-		], 
-
 		"Miracles": [
 			"Bountiful Sunlight",
 			"Darkmoon Blade",
@@ -604,10 +777,6 @@
 			"Power Within",
 			"Toxic Mist",
 			"Undead Rapport"
-		], 
-
-		"RangedWeapons": [
-
 		], 
 
 		"Rings": [
@@ -774,6 +943,58 @@
 			"Soul of Seath the Scaleless"
 		],
 
+		"Spears": [
+			"Channeler's Trident",
+			"Demon's Spear",
+			"Dragonslayer Spear",
+			"Four-Pronged Plow",
+			"Moonlight Butterfly Horn",
+			"Partizan",
+			"Pike",
+			"Silver Knight Spear",
+			"Spear",
+			"Winged Spear"
+		],
+
+		"Swords": [
+			"- Curved Swords -",
+			"Falchion",
+			"Gold Tracer",
+			"Jagged Ghost Blade",
+			"Quelaag's Furysword",
+			"Painting Guardian Sword",
+			"Scimitar",
+			"Shotel",
+			"",
+			"- Katanas -",
+			"Chaos Blade",
+			"Iaito",
+			"Uchigatana",
+			"Washing Pole",
+			"",
+			"- Piercing Swords -",
+			"Estoc",
+			"Mail Breaker",
+			"Rapier",
+			"Ricard's Rapier",
+			"Velka's Rapier",
+			"",
+			"- Straight Swords -",
+			"Astora's Straight Sword",
+			"Balder Side Sword",
+			"Barbed Straight Sword",
+			"Broadsword",
+			"Broken Straight Sword",
+			"Crystal Straight Sword",
+			"Darksword",
+			"Drake Sword",
+			"Longsword",
+			"Shortsword",
+			"Silver Knight Straight Sword",
+			"Straight Sword Hilt",
+			"Sunlight Straight Sword"
+		],
+
 		"Talismans": [
 			"Canvas Talisman",
 			"Darkmoon Talisman",
@@ -782,7 +1003,13 @@
 			"Talisman",
 			"Thorolund Talisman",
 			"Velka's Talisman"
-		] 
+		],
+		
+		"Whips": [
+			"Guardian Tail",
+			"Notched Whip",
+			"Whip"
+		]
 	}, 
 
 	"Npcs": [

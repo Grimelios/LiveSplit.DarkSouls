@@ -20,7 +20,7 @@ namespace LiveSplit.DarkSouls.Controls
 		private SplitLists lists;
 		private Dictionary<string, Func<Control[]>> functionMap;
 
-		private string[][] itemLists;
+		private Dictionary<string, string[]> itemMap;
 
 		public SoulsSplitControl()
 		{
@@ -36,32 +36,44 @@ namespace LiveSplit.DarkSouls.Controls
 
 			var items = lists.Items;
 
-			itemLists = new string[25][];
-			itemLists[0] = items.Ammunition;
-			itemLists[1] = items.Bonfire;
-			itemLists[2] = items.Catalysts;
-			itemLists[3] = items.ChestPieces;
-			itemLists[4] = items.Consumables;
-			itemLists[5] = items.Covenant;
-			itemLists[6] = items.Embers;
-			itemLists[7] = items.Gauntlets;
-			itemLists[8] = items.Helmets;
-			itemLists[9] = items.Keys;
-			itemLists[10] = items.Leggings;
-			itemLists[11] = items.MeleeWeapons;
-			itemLists[12] = items.Miracles;
-			itemLists[13] = items.Multiplayer;
-			itemLists[14] = items.Ore;
-			itemLists[15] = items.Other;
-			itemLists[16] = items.Projectiles;
-			itemLists[17] = items.Pyromancies;
-			itemLists[18] = items.RangedWeapons;
-			itemLists[19] = items.Rings;
-			itemLists[20] = items.Sets;
-			itemLists[21] = items.Shields;
-			itemLists[22] = items.Sorceries;
-			itemLists[23] = items.Souls;
-			itemLists[24] = items.Talismans;
+			itemMap = new Dictionary<string, string[]>
+			{
+				{ "Ammunition", items.Ammunition },
+				{ "Axes", items.Axes },
+				{ "Bonfire", items.Bonfire },
+				{ "Bows", items.Bows },
+				{ "Catalysts", items.Catalysts },
+				{ "Chest Pieces", items.ChestPieces },
+				{ "Consumables", items.Consumables },
+				{ "Covenant", items.Covenant },
+				{ "Crossbows", items.Crossbows },
+				{ "Daggers", items.Daggers },
+				{ "Embers", items.Embers },
+				{ "Fist", items.Fist },
+				{ "Flames", items.Flames },
+				{ "Gauntlets", items.Gauntlets },
+				{ "Greatswords", items.Greatswords },
+				{ "Halberds", items.Halberds },
+				{ "Hammers", items.Hammers },
+				{ "Helmets", items.Helmets },
+				{ "Keys", items.Keys },
+				{ "Leggings", items.Leggings },
+				{ "Miracles", items.Miracles },
+				{ "Multiplayer", items.Multiplayer },
+				{ "Ore", items.Ore },
+				{ "Other", items.Other },
+				{ "Projectiles", items.Projectiles },
+				{ "Pyromancies", items.Pyromancies },
+				{ "Rings", items.Rings },
+				{ "Sets", items.Sets },
+				{ "Shields", items.Shields },
+				{ "Sorceries", items.Sorceries },
+				{ "Souls", items.Souls },
+				{ "Spears", items.Spears },
+				{ "Swords", items.Swords },
+				{ "Talismans", items.Talismans },
+				{ "Whips", items.Whips },
+			};
 		}
 
 		public Split ExtractSplit()
@@ -175,31 +187,51 @@ namespace LiveSplit.DarkSouls.Controls
 
 			var itemTypes = GetDropdown(new []
 			{
-				"Ammunition",
-				"Bonfire",
-				"Catalysts",
+				"- Armor -",
 				"Chest Pieces",
-				"Consumables",
-				"Covenant",
-				"Embers",
-				"Gauntlets",
 				"Helmets",
-				"Keys",
+				"Gauntlets",
 				"Leggings",
-				"Melee Weapons",
-				"Miracles",
-				"Multiplayer",
-				"Ore",
-				"Other",
-				"Projectiles",
-				"Pyromancies",
-				"Ranged Weapons",
-				"Rings",
 				"Sets",
-				"Shields",
+				"",
+				"- Magic -",
+				"Catalysts",
+				"Flames",
+				"Miracles",
+				"Pyromancies",
 				"Sorceries",
+				"Talismans",
+				"",
+				"- Miscellaneous -",
+				"Bonfire",
+				"Covenant",
+				"Keys",
+				"Multiplayer",
+				"Other",
 				"Souls",
-				"Talismans"
+				"",
+				"- Other Equipment -",
+				"Ammunition",
+				"Consumables",
+				"Projectiles",
+				"Rings",
+				"Shields",
+				"",
+				"- Smithing -",
+				"Embers",
+				"Ore",
+				"",
+				"- Weapons -",
+				"Bows",
+				"Crossbows",
+				"Daggers",
+				"Fist",
+				"Greatswords",
+				"Halberds",
+				"Hammers",
+				"Spears",
+				"Swords",
+				"Whips"
 			}, DefaultControlWidth);
 
 			itemTypes.SelectedIndexChanged += (sender, args) =>
@@ -208,7 +240,7 @@ namespace LiveSplit.DarkSouls.Controls
 
 				var items = itemList.Items;
 				items.Clear();
-				items.AddRange(itemLists[itemTypes.SelectedIndex]);
+				items.AddRange(itemMap[itemTypes.Text]);
 			};
 
 			return new Control[]
