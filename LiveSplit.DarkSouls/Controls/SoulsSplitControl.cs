@@ -15,14 +15,16 @@ namespace LiveSplit.DarkSouls.Controls
 {
 	public partial class SoulsSplitControl : UserControl
 	{
-		private const int DefaultControlWidth = 89;
-
 		private SplitLists lists;
 		private Dictionary<string, Func<Control[]>> functionMap;
 		private Dictionary<string, string[]> itemMap;
+		private SoulsSplitCollectionControl parent;
 
-		public SoulsSplitControl()
+		public SoulsSplitControl(SoulsSplitCollectionControl parent, int index)
 		{
+			this.parent = parent;
+
+			Index = index;
 			InitializeComponent();
 
 			lists = JsonConvert.DeserializeObject<SplitLists>(Resources.Splits);
@@ -77,6 +79,9 @@ namespace LiveSplit.DarkSouls.Controls
 			};
 		}
 
+		// Indices can be updated if earlier splits are removed.
+		public int Index { get; set; }
+
 		public Split ExtractSplit()
 		{
 			SplitTypes type = (SplitTypes)splitTypeComboBox.SelectedIndex;
@@ -127,6 +132,11 @@ namespace LiveSplit.DarkSouls.Controls
 
 				panelControls.Add(control);
 			}
+		}
+
+		private void deleteButton_Click(object sender, EventArgs e)
+		{
+			parent.RemoveSplit(Index);
 		}
 
 		private Control[] GetBonfireControls()

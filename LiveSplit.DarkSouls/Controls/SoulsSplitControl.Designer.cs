@@ -49,6 +49,7 @@
 			this.deleteButton.Size = new System.Drawing.Size(22, 23);
 			this.deleteButton.TabIndex = 5;
 			this.deleteButton.UseVisualStyleBackColor = true;
+			this.deleteButton.Click += new System.EventHandler(this.deleteButton_Click);
 			// 
 			// splitTypeComboBox
 			// 

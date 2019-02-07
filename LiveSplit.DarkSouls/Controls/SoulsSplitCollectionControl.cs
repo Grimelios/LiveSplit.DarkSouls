@@ -12,6 +12,8 @@ namespace LiveSplit.DarkSouls.Controls
 {
 	public partial class SoulsSplitCollectionControl : UserControl
 	{
+		private int splitHeight = -1;
+
 		public SoulsSplitCollectionControl()
 		{
 			InitializeComponent();
@@ -21,13 +23,14 @@ namespace LiveSplit.DarkSouls.Controls
 		{
 			var controls = splitsPanel.Controls;
 
-			SoulsSplitControl control = new SoulsSplitControl();
+			SoulsSplitControl control = new SoulsSplitControl(this, controls.Count);
 
-			if (controls.Count > 0)
+			if (splitHeight == -1)
 			{
-				control.Location = new Point(0, control.Bounds.Height * controls.Count);
+				splitHeight = control.Bounds.Height;
 			}
 
+			control.Location = new Point(0, splitHeight * controls.Count);
 			controls.Add(control);
 			UpdateSplitCount();
 		}
@@ -43,6 +46,25 @@ namespace LiveSplit.DarkSouls.Controls
 			int count = splitsPanel.Controls.Count;
 
 			splitCountLabel.Text = count + " split" + (count != 1 ? "s" : "");
+		}
+
+		public void RemoveSplit(int index)
+		{
+			// This function is only called from split controls, which means the index is guaranteed to be valid.
+			var controls = splitsPanel.Controls;
+			controls.RemoveAt(index);
+
+			for (int i = index; i < controls.Count; i++)
+			{
+				SoulsSplitControl control = (SoulsSplitControl)controls[i];
+				Point point = control.Location;
+
+				point.Y -= splitHeight;
+				control.Location = point;
+				control.Index--;
+			}
+
+			UpdateSplitCount();
 		}
 	}
 }
