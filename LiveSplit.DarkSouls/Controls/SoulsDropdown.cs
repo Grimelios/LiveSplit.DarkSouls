@@ -15,8 +15,6 @@ namespace LiveSplit.DarkSouls.Controls
 		public SoulsDropdown()
 		{
 			DropDownStyle = ComboBoxStyle.DropDownList;
-			FlatStyle = FlatStyle.Flat;
-			BackColor = SystemColors.ControlLight;
 			DrawMode = DrawMode.OwnerDrawFixed;
 		}
 
@@ -51,7 +49,18 @@ namespace LiveSplit.DarkSouls.Controls
 
 				e.DrawBackground();
 
-				if (value[0] == '-')
+				bool isCategoryLine = value[0] == '-';
+
+				if ((e.State & DrawItemState.Selected) > 0)
+				{
+					// Category lines (starting with a dash) aren't filled with a visible color in order to emphasize
+					// that they're not selectable.
+					Color highlightColor = isCategoryLine ? Color.White : Color.LimeGreen;
+
+					g.FillRectangle(new SolidBrush(highlightColor), bounds);
+				}
+
+				if (isCategoryLine)
 				{
 					textColor = SystemColors.ButtonShadow;
 					value = value.Substring(2, value.Length - 4);

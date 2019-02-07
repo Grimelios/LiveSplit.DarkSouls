@@ -56,7 +56,7 @@
 			// splitCountLabel
 			// 
 			this.splitCountLabel.AutoSize = true;
-			this.splitCountLabel.Location = new System.Drawing.Point(176, 25);
+			this.splitCountLabel.Location = new System.Drawing.Point(170, 26);
 			this.splitCountLabel.Name = "splitCountLabel";
 			this.splitCountLabel.Size = new System.Drawing.Size(39, 13);
 			this.splitCountLabel.TabIndex = 7;
@@ -73,10 +73,10 @@
 			// clearSplitsButton
 			// 
 			this.clearSplitsButton.Image = global::LiveSplit.DarkSouls.Resources.Delete;
-			this.clearSplitsButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.clearSplitsButton.Location = new System.Drawing.Point(85, 19);
+			this.clearSplitsButton.ImageAlign = System.Drawing.ContentAlignment.BottomLeft;
+			this.clearSplitsButton.Location = new System.Drawing.Point(83, 20);
 			this.clearSplitsButton.Name = "clearSplitsButton";
-			this.clearSplitsButton.Size = new System.Drawing.Size(85, 24);
+			this.clearSplitsButton.Size = new System.Drawing.Size(81, 24);
 			this.clearSplitsButton.TabIndex = 5;
 			this.clearSplitsButton.Text = "Clear Splits";
 			this.clearSplitsButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -86,10 +86,10 @@
 			// addSplitButton
 			// 
 			this.addSplitButton.Image = global::LiveSplit.DarkSouls.Resources.Add;
-			this.addSplitButton.ImageAlign = System.Drawing.ContentAlignment.TopLeft;
+			this.addSplitButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.addSplitButton.Location = new System.Drawing.Point(7, 20);
 			this.addSplitButton.Name = "addSplitButton";
-			this.addSplitButton.Size = new System.Drawing.Size(72, 23);
+			this.addSplitButton.Size = new System.Drawing.Size(70, 24);
 			this.addSplitButton.TabIndex = 4;
 			this.addSplitButton.Text = "Add Split";
 			this.addSplitButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;

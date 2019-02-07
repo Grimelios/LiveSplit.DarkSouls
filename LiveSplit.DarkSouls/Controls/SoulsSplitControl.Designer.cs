@@ -42,10 +42,8 @@
 			// 
 			// splitTypeComboBox
 			// 
-			this.splitTypeComboBox.BackColor = System.Drawing.SystemColors.ControlLight;
 			this.splitTypeComboBox.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
 			this.splitTypeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.splitTypeComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.splitTypeComboBox.FormattingEnabled = true;
 			this.splitTypeComboBox.Items.AddRange(new object[] {
             "Bonfire",
@@ -67,7 +65,7 @@
 			this.deleteButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
 			this.deleteButton.Location = new System.Drawing.Point(415, 4);
 			this.deleteButton.Name = "deleteButton";
-			this.deleteButton.Size = new System.Drawing.Size(23, 23);
+			this.deleteButton.Size = new System.Drawing.Size(22, 23);
 			this.deleteButton.TabIndex = 3;
 			this.deleteButton.UseVisualStyleBackColor = true;
 			this.deleteButton.Click += new System.EventHandler(this.deleteButton_Click);
@@ -80,7 +78,7 @@
 			this.Controls.Add(this.splitTypeComboBox);
 			this.Controls.Add(this.splitDetailsPanel);
 			this.Name = "SoulsSplitControl";
-			this.Size = new System.Drawing.Size(464, 27);
+			this.Size = new System.Drawing.Size(438, 27);
 			this.ResumeLayout(false);
 
 		}

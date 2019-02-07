@@ -115,6 +115,7 @@
       <DependentUpon>SoulsForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="app.config" />
+    <None Include="packages.config" />
     <None Include="Resources\Splits.json" />
   </ItemGroup>
   <ItemGroup>
@@ -127,9 +128,6 @@
     <EmbeddedResource Include="Controls\SoulsSplitControl.resx">
       <DependentUpon>SoulsSplitControl.cs</DependentUpon>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\Add.png" />
