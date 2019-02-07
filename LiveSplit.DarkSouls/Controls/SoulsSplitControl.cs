@@ -236,7 +236,8 @@ namespace LiveSplit.DarkSouls.Controls
 				Enabled = false,
 				Width = ItemCountWidth,
 
-				// By default, the textbox is one pixel shorter than the adjecent dropdown.
+				// This height results in the text box exactly lining up with the adjacent item list dropdown.
+				AutoSize = false,
 				Height = 21,
 				MaxLength = 3
 			};

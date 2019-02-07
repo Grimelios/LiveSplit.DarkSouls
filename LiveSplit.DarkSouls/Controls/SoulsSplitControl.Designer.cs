@@ -65,7 +65,7 @@
 			this.deleteButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
 			this.deleteButton.Location = new System.Drawing.Point(415, 4);
 			this.deleteButton.Name = "deleteButton";
-			this.deleteButton.Size = new System.Drawing.Size(22, 23);
+			this.deleteButton.Size = new System.Drawing.Size(22, 22);
 			this.deleteButton.TabIndex = 3;
 			this.deleteButton.UseVisualStyleBackColor = true;
 			this.deleteButton.Click += new System.EventHandler(this.deleteButton_Click);
