@@ -96,16 +96,6 @@ namespace LiveSplit.DarkSouls
 	{
 	}
 
-	public enum SplitTypes
-	{
-		Bonfire,
-		Boss,
-		Covenant,
-		Item,
-		Npc,
-		Zone
-	}
-
 	public enum Zones
 	{
 		AnorLondo,

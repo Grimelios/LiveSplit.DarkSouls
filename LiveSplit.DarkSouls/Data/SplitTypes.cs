@@ -6,9 +6,14 @@ using System.Threading.Tasks;
 
 namespace LiveSplit.DarkSouls.Data
 {
-	public class Bonfire
+	public enum SplitTypes
 	{
-		public string Name { get; set; }
-		public string Description { get; set; }
+		Bonfire,
+		Boss,
+		Covenant,
+		Ending,
+		Item,
+		Npc,
+		Zone
 	}
 }

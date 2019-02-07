@@ -8,9 +8,9 @@ namespace LiveSplit.DarkSouls.Data
 {
 	public class SplitLists
 	{
-		public Bonfire[] Bonfires { get; set; }
 		public ItemLists Items { get; set; }
 
+		public string[] Bonfires { get; set; }
 		public string[] Bosses { get; set; }
 		public string[] Covenants { get; set; }
 		public string[] Npcs { get; set; }

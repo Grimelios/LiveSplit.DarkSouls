@@ -77,11 +77,11 @@
     <Compile Include="Controls\SoulsSplitControl.Designer.cs">
       <DependentUpon>SoulsSplitControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Data\Bonfire.cs" />
     <Compile Include="Data\Flags.cs" />
     <Compile Include="Data\ItemLists.cs" />
     <Compile Include="Data\Split.cs" />
     <Compile Include="Data\SplitCollection.cs" />
+    <Compile Include="Data\SplitTypes.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Memory\Kernel.cs" />

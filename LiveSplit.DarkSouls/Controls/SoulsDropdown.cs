@@ -25,7 +25,6 @@ namespace LiveSplit.DarkSouls.Controls
 		protected override void OnDrawItem(DrawItemEventArgs e)
 		{
 			const int SeparatorPadding = 2;
-			const int TextVerticalOffset = 1;
 
 			string value;
 
@@ -34,11 +33,12 @@ namespace LiveSplit.DarkSouls.Controls
 			Rectangle bounds = e.Bounds;
 
 			int offsetX = -1;
-			int offsetY = 0;
+			int offsetY = 1;
 
 			if (e.Index == -1)
 			{
 				value = Prompt;
+				textColor = SystemColors.ButtonShadow;
 			}
 			else
 			{
@@ -61,10 +61,6 @@ namespace LiveSplit.DarkSouls.Controls
 
 					g.DrawLine(SystemPens.ButtonShadow, bounds.Left + SeparatorPadding, bottom,
 						bounds.Right - SeparatorPadding - 1, bottom);
-				}
-				else
-				{
-					offsetY = TextVerticalOffset;
 				}
 			}
 

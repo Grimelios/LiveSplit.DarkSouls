@@ -62,6 +62,7 @@
             "Bonfire",
             "Boss",
             "Covenant",
+            "Ending",
             "Item",
             "Npc",
             "Zone",

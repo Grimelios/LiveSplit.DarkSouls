@@ -19,7 +19,6 @@ namespace LiveSplit.DarkSouls.Controls
 
 		private SplitLists lists;
 		private Dictionary<string, Func<Control[]>> functionMap;
-
 		private Dictionary<string, string[]> itemMap;
 
 		public SoulsSplitControl()
@@ -29,8 +28,10 @@ namespace LiveSplit.DarkSouls.Controls
 			lists = JsonConvert.DeserializeObject<SplitLists>(Resources.Splits);
 			functionMap = new Dictionary<string, Func<Control[]>>()
 			{
+				{ "Bonfire", GetBonfireControls },
 				{ "Boss", GetBossControls },
 				{ "Covenant", GetCovenantControls },
+				{ "Ending", GetEndingControls },
 				{ "Item", GetItemControls }
 			};
 
@@ -129,26 +130,43 @@ namespace LiveSplit.DarkSouls.Controls
 
 		private Control[] GetBonfireControls()
 		{
-			return null;
+			const int BonfireListWidth = 169;
+			const int BonfireCriteriaWidth = 67;
+
+			var bonfireCriteria = GetDropdown(new []
+			{
+				"On light",
+				"On rest"
+			}, "Criteria", BonfireCriteriaWidth, false);
+
+			var bonfireList = GetDropdown(lists.Bonfires, "Bonfire", BonfireListWidth);
+			bonfireList.SelectedIndexChanged += (sender, args) =>
+			{
+				bonfireCriteria.Enabled = true;
+			};
+
+			return new Control[]
+			{
+				bonfireList,
+				bonfireCriteria
+			};
 		}
 
 		private Control[] GetBossControls()
 		{
 			const int BossListWidth = 131;
-			const int BossCriteriaWidth = 120;
+			const int BossCriteriaWidth = 122;
 
-			var bossCriteria = GetDropdown(new[]
+			var bossCriteria = GetDropdown(new []
 			{
-				"On final hit",
 				"On victory message",
 				"On warp"
-			}, BossCriteriaWidth, false);
+			}, "Criteria", BossCriteriaWidth, false);
 
-			var bossList = GetDropdown(lists.Bosses, BossListWidth);
+			var bossList = GetDropdown(lists.Bosses, "Bosses", BossListWidth);
 			bossList.SelectedIndexChanged += (sender, args) =>
 			{
 				bossCriteria.Enabled = true;
-				bossCriteria.SelectedIndex = 2;
 			};
 
 			return new Control[]
@@ -161,19 +179,18 @@ namespace LiveSplit.DarkSouls.Controls
 		private Control[] GetCovenantControls()
 		{
 			const int CovenantListWidth = 137;
-			const int CovenantCriteriaWidth = 92;
+			const int CovenantCriteriaWidth = 93;
 
 			var covenantCriteria = GetDropdown(new []
 			{
 				"On discovery",
 				"On join"
-			}, CovenantCriteriaWidth, false);
+			}, "Criteria", CovenantCriteriaWidth, false);
 
-			var covenantList = GetDropdown(lists.Covenants, CovenantListWidth);
+			var covenantList = GetDropdown(lists.Covenants, "Covenants", CovenantListWidth);
 			covenantList.SelectedIndexChanged += (sender, args) =>
 			{
 				covenantCriteria.Enabled = true;
-				covenantCriteria.SelectedIndex = 0;
 			};
 
 			return new Control[]
@@ -181,6 +198,19 @@ namespace LiveSplit.DarkSouls.Controls
 				covenantList,
 				covenantCriteria
 			};
+		}
+
+		private Control[] GetEndingControls()
+		{
+			const int EndingListWidth = 88;
+
+			var endingList = GetDropdown(new[]
+			{
+				"Dark Lord",
+				"Link the Fire"
+			}, "Ending", EndingListWidth);
+
+			return new Control[] { endingList };
 		}
 
 		private Control[] GetItemControls()
@@ -209,7 +239,7 @@ namespace LiveSplit.DarkSouls.Controls
 				}
 			};
 
-			var itemList = GetDropdown(null, ItemListWidth, false);
+			var itemList = GetDropdown(null, "Items", ItemListWidth, false);
 			itemList.SelectedIndexChanged += (sender, args) =>
 			{
 				itemCount.Enabled = true;
@@ -265,7 +295,7 @@ namespace LiveSplit.DarkSouls.Controls
 				"Spears",
 				"Swords",
 				"Whips"
-			}, ItemTypeWidth);
+			}, "Item Types", ItemTypeWidth);
 
 			itemTypes.SelectedIndexChanged += (sender, args) =>
 			{
@@ -289,12 +319,13 @@ namespace LiveSplit.DarkSouls.Controls
 			return null;
 		}
 
-		private SoulsDropdown GetDropdown(string[] items, int width, bool enabled = true)
+		private SoulsDropdown GetDropdown(string[] items, string prompt, int width, bool enabled = true)
 		{
 			SoulsDropdown box = new SoulsDropdown
 			{
 				Enabled = enabled,
-				Width = width
+				Width = width,
+				Prompt = prompt
 			};
 
 			if (items != null)

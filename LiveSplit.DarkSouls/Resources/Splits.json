@@ -1,181 +1,49 @@
 ﻿{
 	"Bonfires": [
-		{
-			"Name": "Anor Londo - Entrance",
-			"Description": ""
-		},
-		{
-			"Name": "Anor Londo - Interior",
-			"Description": ""
-		},
-		{
-			"Name": "Anor Londo - Princess",
-			"Description": ""
-		},
-		{
-			"Name": "Anor Londo - Tomb",
-			"Description": ""
-		},
-		{
-			"Name": "Ash Lake - Entrance",
-			"Description": ""
-		},
-		{
-			"Name": "Ash Lake - Dragon",
-			"Description": ""
-		},
-		{
-			"Name": "Blighttown - Bridge",
-			"Description": ""
-		},
-		{
-			"Name": "Blighttown - Swamp",
-			"Description": ""
-		},
-		{
-			"Name": "Catacombs - Entrance",
-			"Description": ""
-		},
-		{
-			"Name": "Catacombs - Illusion",
-			"Description": ""
-		},
-		{
-			"Name": "Chasm of the Abyss",
-			"Description": ""
-		},
-		{
-			"Name": "Crystal Caves",
-			"Description": ""
-		},
-		{
-			"Name": "Darkroot Basin",
-			"Description": ""
-		},
-		{
-			"Name": "Darkroot Garden",
-			"Description": ""
-		},
-		{
-			"Name": "Daughter of Chaos",
-			"Description": ""
-		},
-		{
-			"Name": "Demon Ruins - Centipede",
-			"Description": ""
-		},
-		{
-			"Name": "Demon Ruins - Entrance",
-			"Description": ""
-		},
-		{
-			"Name": "Demon Ruins - Staircase",
-			"Description": ""
-		},
-		{
-			"Name": "Duke's Archives - Balcony",
-			"Description": ""
-		},
-		{
-			"Name": "Duke's Archives - Entrance",
-			"Description": ""
-		},
-		{
-			"Name": "Duke's Archives - Prison",
-			"Description": ""
-		},
-		{
-			"Name": "Firelink Altar",
-			"Description": ""
-		},
-		{
-			"Name": "Firelink Shrine",
-			"Description": ""
-		},
-		{
-			"Name": "Great Hollow",
-			"Description": ""
-		},
-		{
-			"Name": "Kiln of the First Flame",
-			"Description": ""
-		},
-		{
-			"Name": "Lost Izalith - Bed of Chaos",
-			"Description": ""
-		},
-		{
-			"Name": "Lost Izalith - Centipede",
-			"Description": ""
-		},
-		{
-			"Name": "Lost Izalith - Lava Field",
-			"Description": ""
-		},
-		{
-			"Name": "Oolacile Sanctuary",
-			"Description": ""
-		},
-		{
-			"Name": "Oolacile Township - Artorias",
-			"Description": ""
-		},
-		{
-			"Name": "Oolacile Township - Dungeon",
-			"Description": ""
-		},
-		{
-			"Name": "Painted World",
-			"Description": ""
-		},
-		{
-			"Name": "Sanctuary Garden",
-			"Description": ""
-		},
-		{
-			"Name": "Sen's Fortress",
-			"Description": ""
-		},
-		{
-			"Name": "The Abyss",
-			"Description": ""
-		},
-		{
-			"Name": "The Depths",
-			"Description": ""
-		},
-		{
-			"Name": "Tomb of the Giants - Beast",
-			"Description": ""
-		},
-		{
-			"Name": "Tomb of the Giants - Nito",
-			"Description": ""
-		},
-		{
-			"Name": "Tomb of the Giants - Patches",
-			"Description": ""
-		},
-		{
-			"Name": "Undead Asylum - Courtyard",
-			"Description": ""
-		},
-		{
-			"Name": "Undead Asylum - Escape",
-			"Description": ""
-		},
-		{
-			"Name": "Undead Burg - Entrance",
-			"Description": ""
-		},
-		{
-			"Name": "Undead Burg - Bridge",
-			"Description": ""
-		},
-		{
-			"Name": "Undead Parish",
-			"Description": ""
-		}
+			"Anor Londo - Entrance",
+			"Anor Londo - Interior",
+			"Anor Londo - Princess",
+			"Anor Londo - Tomb",
+			"Ash Lake - Entrance",
+			"Ash Lake - Dragon",
+			"Blighttown - Bridge",
+			"Blighttown - Swamp",
+			"Catacombs - Entrance",
+			"Catacombs - Illusion",
+			"Chasm of the Abyss",
+			"Crystal Caves",
+			"Darkroot Basin",
+			"Darkroot Garden",
+			"Daughter of Chaos",
+			"Demon Ruins - Centipede",
+			"Demon Ruins - Entrance",
+			"Demon Ruins - Staircase",
+			"Duke's Archives - Balcony",
+			"Duke's Archives - Entrance",
+			"Duke's Archives - Prison",
+			"Firelink Altar",
+			"Firelink Shrine",
+			"Great Hollow",
+			"Kiln of the First Flame",
+			"Lost Izalith - Bed of Chaos",
+			"Lost Izalith - Centipede",
+			"Lost Izalith - Lava Field",
+			"Oolacile Sanctuary",
+			"Oolacile Township - Artorias",
+			"Oolacile Township - Dungeon",
+			"Painted World",
+			"Sanctuary Garden",
+			"Sen's Fortress",
+			"The Abyss",
+			"The Depths",
+			"Tomb of the Giants - Beast",
+			"Tomb of the Giants - Nito",
+			"Tomb of the Giants - Patches",
+			"Undead Asylum - Courtyard",
+			"Undead Asylum - Escape",
+			"Undead Burg - Entrance",
+			"Undead Burg - Sunlight",
+			"Undead Parish"
 	],
 
 	"Bosses": [
