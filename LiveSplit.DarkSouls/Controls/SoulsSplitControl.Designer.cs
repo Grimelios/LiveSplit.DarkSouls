@@ -29,8 +29,8 @@
 		private void InitializeComponent()
 		{
 			this.splitDetailsPanel = new System.Windows.Forms.Panel();
-			this.deleteButton = new System.Windows.Forms.Button();
 			this.splitTypeComboBox = new LiveSplit.DarkSouls.Controls.SoulsDropdown();
+			this.deleteButton = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// splitDetailsPanel
@@ -39,17 +39,6 @@
 			this.splitDetailsPanel.Name = "splitDetailsPanel";
 			this.splitDetailsPanel.Size = new System.Drawing.Size(327, 21);
 			this.splitDetailsPanel.TabIndex = 1;
-			// 
-			// deleteButton
-			// 
-			this.deleteButton.Image = global::LiveSplit.DarkSouls.Resources.Delete;
-			this.deleteButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
-			this.deleteButton.Location = new System.Drawing.Point(415, 3);
-			this.deleteButton.Name = "deleteButton";
-			this.deleteButton.Size = new System.Drawing.Size(22, 23);
-			this.deleteButton.TabIndex = 5;
-			this.deleteButton.UseVisualStyleBackColor = true;
-			this.deleteButton.Click += new System.EventHandler(this.deleteButton_Click);
 			// 
 			// splitTypeComboBox
 			// 
@@ -71,6 +60,17 @@
 			this.splitTypeComboBox.Size = new System.Drawing.Size(76, 21);
 			this.splitTypeComboBox.TabIndex = 2;
 			this.splitTypeComboBox.SelectedIndexChanged += new System.EventHandler(this.splitTypeComboBox_SelectedIndexChanged);
+			// 
+			// deleteButton
+			// 
+			this.deleteButton.Image = global::LiveSplit.DarkSouls.Resources.Delete;
+			this.deleteButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
+			this.deleteButton.Location = new System.Drawing.Point(415, 4);
+			this.deleteButton.Name = "deleteButton";
+			this.deleteButton.Size = new System.Drawing.Size(23, 23);
+			this.deleteButton.TabIndex = 3;
+			this.deleteButton.UseVisualStyleBackColor = true;
+			this.deleteButton.Click += new System.EventHandler(this.deleteButton_Click);
 			// 
 			// SoulsSplitControl
 			// 

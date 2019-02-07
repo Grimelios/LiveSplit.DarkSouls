@@ -83,16 +83,6 @@ namespace LiveSplit.DarkSouls {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Down {
-            get {
-                object obj = ResourceManager.GetObject("Down", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap Question {
             get {
                 object obj = ResourceManager.GetObject("Question", resourceCulture);
@@ -103,50 +93,29 @@ namespace LiveSplit.DarkSouls {
         /// <summary>
         ///   Looks up a localized string similar to {
         ///	&quot;Bonfires&quot;: [
-        ///		{
-        ///			&quot;Name&quot;: &quot;Anor Londo - Entrance&quot;,
-        ///			&quot;Description&quot;: &quot;&quot;
-        ///		},
-        ///		{
-        ///			&quot;Name&quot;: &quot;Anor Londo - Interior&quot;,
-        ///			&quot;Description&quot;: &quot;&quot;
-        ///		},
-        ///		{
-        ///			&quot;Name&quot;: &quot;Anor Londo - Princess&quot;,
-        ///			&quot;Description&quot;: &quot;&quot;
-        ///		},
-        ///		{
-        ///			&quot;Name&quot;: &quot;Anor Londo - Tomb&quot;,
-        ///			&quot;Description&quot;: &quot;&quot;
-        ///		},
-        ///		{
-        ///			&quot;Name&quot;: &quot;Ash Lake - Entrance&quot;,
-        ///			&quot;Description&quot;: &quot;&quot;
-        ///		},
-        ///		{
-        ///			&quot;Name&quot;: &quot;Ash Lake - Dragon&quot;,
-        ///			&quot;Description&quot;: &quot;&quot;
-        ///		},
-        ///		{
-        ///			&quot;Name&quot;: &quot;Blighttown - Bridge&quot;,
-        ///			&quot;Description&quot;: &quot;&quot;
-        ///		},
-        ///		{
-        ///			&quot;Name&quot;: [rest of string was truncated]&quot;;.
+        ///			&quot;Anor Londo - Entrance&quot;,
+        ///			&quot;Anor Londo - Interior&quot;,
+        ///			&quot;Anor Londo - Princess&quot;,
+        ///			&quot;Anor Londo - Tomb&quot;,
+        ///			&quot;Ash Lake - Entrance&quot;,
+        ///			&quot;Ash Lake - Dragon&quot;,
+        ///			&quot;Blighttown - Bridge&quot;,
+        ///			&quot;Blighttown - Swamp&quot;,
+        ///			&quot;Catacombs - Entrance&quot;,
+        ///			&quot;Catacombs - Illusion&quot;,
+        ///			&quot;Chasm of the Abyss&quot;,
+        ///			&quot;Crystal Caves&quot;,
+        ///			&quot;Darkroot Basin&quot;,
+        ///			&quot;Darkroot Garden&quot;,
+        ///			&quot;Daughter of Chaos&quot;,
+        ///			&quot;Demon Ruins - Centipede&quot;,
+        ///			&quot;Demon Ruins - Entrance&quot;,
+        ///			&quot;Demon Ruins - Staircase&quot;,
+        ///			&quot;Duke&apos;s  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Splits {
             get {
                 return ResourceManager.GetString("Splits", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Up {
-            get {
-                object obj = ResourceManager.GetObject("Up", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
             }
         }
     }

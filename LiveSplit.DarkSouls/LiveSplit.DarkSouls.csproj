@@ -134,9 +134,7 @@
   <ItemGroup>
     <Content Include="Resources\Add.png" />
     <Content Include="Resources\Delete.png" />
-    <Content Include="Resources\Down.png" />
     <Content Include="Resources\Question.png" />
-    <Content Include="Resources\Up.png" />
     <Content Include="Updates.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
