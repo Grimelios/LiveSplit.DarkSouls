@@ -42,12 +42,11 @@
 			// 
 			// deleteButton
 			// 
-			this.deleteButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.deleteButton.Image = global::LiveSplit.DarkSouls.Resources.Delete;
-			this.deleteButton.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
+			this.deleteButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
 			this.deleteButton.Location = new System.Drawing.Point(415, 3);
 			this.deleteButton.Name = "deleteButton";
-			this.deleteButton.Size = new System.Drawing.Size(24, 23);
+			this.deleteButton.Size = new System.Drawing.Size(22, 23);
 			this.deleteButton.TabIndex = 5;
 			this.deleteButton.UseVisualStyleBackColor = true;
 			// 
@@ -64,9 +63,7 @@
             "Covenant",
             "Ending",
             "Item",
-            "Npc",
-            "Zone",
-            "VeryLongStringMeantToTestEllipses"});
+            "Zone"});
 			this.splitTypeComboBox.Location = new System.Drawing.Point(4, 4);
 			this.splitTypeComboBox.Name = "splitTypeComboBox";
 			this.splitTypeComboBox.Prompt = null;

@@ -938,14 +938,6 @@
 		]
 	}, 
 
-	"Npcs": [
-		"- Friendly -",
-		"",
-		"- Invaders -",
-		"",
-		"- Merchants -"
-	],
-
 	"Zones": [
 		"Anor Londo",
 		"Ash Lake",

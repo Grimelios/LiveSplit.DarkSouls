@@ -32,7 +32,8 @@ namespace LiveSplit.DarkSouls.Controls
 				{ "Boss", GetBossControls },
 				{ "Covenant", GetCovenantControls },
 				{ "Ending", GetEndingControls },
-				{ "Item", GetItemControls }
+				{ "Item", GetItemControls },
+				{ "Zone", GetZoneControls }
 			};
 
 			var items = lists.Items;
@@ -179,11 +180,11 @@ namespace LiveSplit.DarkSouls.Controls
 		private Control[] GetCovenantControls()
 		{
 			const int CovenantListWidth = 137;
-			const int CovenantCriteriaWidth = 93;
+			const int CovenantCriteriaWidth = 87;
 
 			var covenantCriteria = GetDropdown(new []
 			{
-				"On discovery",
+				"On discover",
 				"On join"
 			}, "Criteria", CovenantCriteriaWidth, false);
 
@@ -314,9 +315,13 @@ namespace LiveSplit.DarkSouls.Controls
 			};
 		}
 
-		private Control[] GetNpcControls()
+		private Control[] GetZoneControls()
 		{
-			return null;
+			const int ZoneListWidth = 152;
+
+			var zoneList = GetDropdown(lists.Zones, "Zones", ZoneListWidth);
+
+			return new Control[] { zoneList };
 		}
 
 		private SoulsDropdown GetDropdown(string[] items, string prompt, int width, bool enabled = true)

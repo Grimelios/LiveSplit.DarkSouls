@@ -13,6 +13,6 @@ namespace LiveSplit.DarkSouls.Data
 		public string[] Bonfires { get; set; }
 		public string[] Bosses { get; set; }
 		public string[] Covenants { get; set; }
-		public string[] Npcs { get; set; }
+		public string[] Zones { get; set; }
 	}
 }
