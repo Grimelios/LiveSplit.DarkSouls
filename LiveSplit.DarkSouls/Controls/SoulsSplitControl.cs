@@ -65,7 +65,6 @@ namespace LiveSplit.DarkSouls.Controls
 				{ "Projectiles", items.Projectiles },
 				{ "Pyromancies", items.Pyromancies },
 				{ "Rings", items.Rings },
-				{ "Sets", items.Sets },
 				{ "Shields", items.Shields },
 				{ "Sorceries", items.Sorceries },
 				{ "Souls", items.Souls },
@@ -83,13 +82,18 @@ namespace LiveSplit.DarkSouls.Controls
 			var controls = splitDetailsPanel.Controls;
 
 			int[] data = new int[controls.Count];
+			int dropdownCount = controls.Count - (type == SplitTypes.Item ? 1 : 0);
 
-			for (int i = 0; i < controls.Count; i++)
+			for (int i = 0; i < dropdownCount; i++)
 			{
-				Control control = controls[i];
-				ComboBox comboBox = control as ComboBox;
-
-				data[i] = comboBox?.SelectedIndex ?? int.Parse(((TextBox)control).Text);
+				data[i] = ((ComboBox)controls[i]).SelectedIndex;
+			}
+			
+			// Item splits have a numeric textbox (representing item count). All other split types use exclusively
+			// dropdowns.
+			if (type == SplitTypes.Item)
+			{
+				data[2] = int.Parse(((TextBox)controls[2]).Text);
 			}
 
 			return new Split(type, null);
@@ -130,14 +134,17 @@ namespace LiveSplit.DarkSouls.Controls
 
 		private Control[] GetBossControls()
 		{
+			const int BossListWidth = 131;
+			const int BossCriteriaWidth = 120;
+
 			var bossCriteria = GetDropdown(new[]
 			{
 				"On final hit",
 				"On victory message",
 				"On warp"
-			}, DefaultControlWidth, false);
+			}, BossCriteriaWidth, false);
 
-			var bossList = GetDropdown(lists.Bosses, DefaultControlWidth);
+			var bossList = GetDropdown(lists.Bosses, BossListWidth);
 			bossList.SelectedIndexChanged += (sender, args) =>
 			{
 				bossCriteria.Enabled = true;
@@ -153,13 +160,16 @@ namespace LiveSplit.DarkSouls.Controls
 
 		private Control[] GetCovenantControls()
 		{
+			const int CovenantListWidth = 137;
+			const int CovenantCriteriaWidth = 92;
+
 			var covenantCriteria = GetDropdown(new []
 			{
 				"On discovery",
 				"On join"
-			}, DefaultControlWidth, false);
+			}, CovenantCriteriaWidth, false);
 
-			var covenantList = GetDropdown(lists.Covenants, DefaultControlWidth);
+			var covenantList = GetDropdown(lists.Covenants, CovenantListWidth);
 			covenantList.SelectedIndexChanged += (sender, args) =>
 			{
 				covenantCriteria.Enabled = true;
@@ -175,9 +185,30 @@ namespace LiveSplit.DarkSouls.Controls
 
 		private Control[] GetItemControls()
 		{
-			const int ItemListWidth = 182;
+			const int ItemTypeWidth = 96;
+			const int ItemListWidth = 183;
+			const int ItemCountWidth = 40;
 
-			var itemCount = GetItemTextbox();
+			var itemCount = new TextBox
+			{
+				Text = "1",
+				Enabled = false,
+				Width = ItemCountWidth,
+
+				// By default, the textbox is one pixel shorter than the adjecent dropdown.
+				Height = 21,
+				MaxLength = 3
+			};
+
+			// See https://stackoverflow.com/q/463299/7281613.
+			itemCount.KeyPress += (sender, args) =>
+			{
+				if (!char.IsDigit(args.KeyChar))
+				{
+					args.Handled = true;
+				}
+			};
+
 			var itemList = GetDropdown(null, ItemListWidth, false);
 			itemList.SelectedIndexChanged += (sender, args) =>
 			{
@@ -192,7 +223,6 @@ namespace LiveSplit.DarkSouls.Controls
 				"Helmets",
 				"Gauntlets",
 				"Leggings",
-				"Sets",
 				"",
 				"- Magic -",
 				"Catalysts",
@@ -210,7 +240,10 @@ namespace LiveSplit.DarkSouls.Controls
 				"Other",
 				"Souls",
 				"",
-				"- Other Equipment -",
+
+				// Ideally, this category would read "Other Equipment", but it's shortened to better fit into the 
+				// LiveSplit window.
+				"- Equipment -",
 				"Ammunition",
 				"Consumables",
 				"Projectiles",
@@ -232,7 +265,7 @@ namespace LiveSplit.DarkSouls.Controls
 				"Spears",
 				"Swords",
 				"Whips"
-			}, DefaultControlWidth);
+			}, ItemTypeWidth);
 
 			itemTypes.SelectedIndexChanged += (sender, args) =>
 			{
@@ -270,28 +303,6 @@ namespace LiveSplit.DarkSouls.Controls
 			}
 
 			return box;
-		}
-
-		private TextBox GetItemTextbox()
-		{
-			TextBox textbox = new TextBox
-			{
-				Text = "1",
-				Enabled = false,
-				Width = DefaultControlWidth,
-				MaxLength = 3
-			};
-
-			// See https://stackoverflow.com/q/463299/7281613.
-			textbox.KeyPress += (sender, args) =>
-			{
-				if (!char.IsDigit(args.KeyChar))
-				{
-					args.Handled = true;
-				}
-			};
-
-			return textbox;
 		}
 	}
 }

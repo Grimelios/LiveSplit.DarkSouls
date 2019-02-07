@@ -35,7 +35,6 @@ namespace LiveSplit.DarkSouls.Data
 		public string[] Projectiles { get; set; }
 		public string[] Pyromancies { get; set; }
 		public string[] Rings { get; set; }
-		public string[] Sets { get; set; }
 		public string[] Shields { get; set; }
 		public string[] Sorceries { get; set; }
 		public string[] Souls { get; set; }

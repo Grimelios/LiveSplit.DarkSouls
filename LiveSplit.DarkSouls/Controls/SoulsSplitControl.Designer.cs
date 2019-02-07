@@ -35,9 +35,9 @@
 			// 
 			// splitDetailsPanel
 			// 
-			this.splitDetailsPanel.Location = new System.Drawing.Point(86, 4);
+			this.splitDetailsPanel.Location = new System.Drawing.Point(84, 4);
 			this.splitDetailsPanel.Name = "splitDetailsPanel";
-			this.splitDetailsPanel.Size = new System.Drawing.Size(325, 21);
+			this.splitDetailsPanel.Size = new System.Drawing.Size(327, 21);
 			this.splitDetailsPanel.TabIndex = 1;
 			// 
 			// deleteButton
@@ -54,6 +54,7 @@
 			// splitTypeComboBox
 			// 
 			this.splitTypeComboBox.BackColor = System.Drawing.SystemColors.ControlLight;
+			this.splitTypeComboBox.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
 			this.splitTypeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.splitTypeComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.splitTypeComboBox.FormattingEnabled = true;
@@ -67,7 +68,8 @@
             "VeryLongStringMeantToTestEllipses"});
 			this.splitTypeComboBox.Location = new System.Drawing.Point(4, 4);
 			this.splitTypeComboBox.Name = "splitTypeComboBox";
-			this.splitTypeComboBox.Size = new System.Drawing.Size(78, 21);
+			this.splitTypeComboBox.Prompt = null;
+			this.splitTypeComboBox.Size = new System.Drawing.Size(76, 21);
 			this.splitTypeComboBox.TabIndex = 2;
 			this.splitTypeComboBox.SelectedIndexChanged += new System.EventHandler(this.splitTypeComboBox_SelectedIndexChanged);
 			// 

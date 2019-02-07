@@ -98,9 +98,9 @@
 			// 
 			// splitDetailsLabel
 			// 
-			this.splitDetailsLabel.Location = new System.Drawing.Point(93, 52);
+			this.splitDetailsLabel.Location = new System.Drawing.Point(91, 52);
 			this.splitDetailsLabel.Name = "splitDetailsLabel";
-			this.splitDetailsLabel.Size = new System.Drawing.Size(325, 13);
+			this.splitDetailsLabel.Size = new System.Drawing.Size(327, 13);
 			this.splitDetailsLabel.TabIndex = 2;
 			this.splitDetailsLabel.Text = "Details";
 			// 
@@ -108,7 +108,7 @@
 			// 
 			this.splitTypeLabel.Location = new System.Drawing.Point(11, 52);
 			this.splitTypeLabel.Name = "splitTypeLabel";
-			this.splitTypeLabel.Size = new System.Drawing.Size(78, 13);
+			this.splitTypeLabel.Size = new System.Drawing.Size(76, 13);
 			this.splitTypeLabel.TabIndex = 0;
 			this.splitTypeLabel.Text = "Type";
 			// 
