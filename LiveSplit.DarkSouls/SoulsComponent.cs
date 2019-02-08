@@ -23,12 +23,14 @@ namespace LiveSplit.DarkSouls
 		private SplitCollection splitCollection;
 		private SoulsMemory memory;
 		private SoulsMasterControl masterControl;
+		private RunData run;
 		
 		public SoulsComponent()
 		{
 			splitCollection = new SplitCollection();
 			memory = new SoulsMemory();
 			masterControl = new SoulsMasterControl();
+			run = new RunData();
 		}
 
 		public string ComponentName => DisplayName;
@@ -135,7 +137,46 @@ namespace LiveSplit.DarkSouls
 				state.OnReset += (sender, value) => { splitCollection.OnReset(); };
 			}
 
-			Refresh();
+			var phase = state.CurrentPhase;
+
+			if (phase == TimerPhase.NotRunning || phase == TimerPhase.Ended)
+			{
+				return;
+			}
+
+			if (masterControl.UseGameTime)
+			{
+				int gameTime = memory.GetGameTimeInMilliseconds();
+				int runTime = run.MaxGameTime;
+				int previousTime = run.PreviousGameTime;
+
+				// This condition is only possible during a run when game time isn't increasing (game time resets to
+				// zero on the main menu).
+				bool pause = gameTime == 0 && previousTime > 0;
+				bool unpause = previousTime == 0 && gameTime > 0;
+
+				if (pause && phase == TimerPhase.Running)
+				{
+					timer.Pause();
+					state.IsGameTimePaused = true;
+				}
+				else if (unpause && phase == TimerPhase.Paused)
+				{
+					timer.UndoAllPauses();
+					state.IsGameTimePaused = false;
+				}
+
+				int max = Math.Max(gameTime, runTime);
+
+				state.SetGameTime(TimeSpan.FromMilliseconds(max));
+				run.PreviousGameTime = gameTime;
+				run.MaxGameTime = max;
+			}
+
+			if (phase == TimerPhase.Running)
+			{
+				Refresh();
+			}
 		}
 
 		public void Refresh()

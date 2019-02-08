@@ -6,11 +6,11 @@ namespace LiveSplit.DarkSouls
 {
 	public class SoulsTester
 	{
-		private const int Tick = 1;
+		private const int Tick = 30;
 		
 		public static void Main(string[] args)
 		{
-			bool formTesting = true;
+			bool formTesting = false;
 
 			if (formTesting)
 			{

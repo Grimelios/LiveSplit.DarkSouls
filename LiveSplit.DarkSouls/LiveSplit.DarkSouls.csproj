@@ -80,6 +80,7 @@
     </Compile>
     <Compile Include="Data\Flags.cs" />
     <Compile Include="Data\ItemLists.cs" />
+    <Compile Include="Data\RunData.cs" />
     <Compile Include="Data\Split.cs" />
     <Compile Include="Data\SplitCollection.cs" />
     <Compile Include="Data\SplitTypes.cs" />
