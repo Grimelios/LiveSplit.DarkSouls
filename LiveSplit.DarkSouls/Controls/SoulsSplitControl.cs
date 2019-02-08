@@ -16,7 +16,7 @@ namespace LiveSplit.DarkSouls.Controls
 	public partial class SoulsSplitControl : UserControl
 	{
 		private SplitLists lists;
-		private Dictionary<string, Func<Control[]>> functionMap;
+		private Dictionary<SplitTypes, Func<Control[]>> functionMap;
 		private Dictionary<string, string[]> itemMap;
 		private SoulsSplitCollectionControl parent;
 
@@ -25,17 +25,18 @@ namespace LiveSplit.DarkSouls.Controls
 			this.parent = parent;
 
 			Index = index;
+
 			InitializeComponent();
 
 			lists = JsonConvert.DeserializeObject<SplitLists>(Resources.Splits);
-			functionMap = new Dictionary<string, Func<Control[]>>()
+			functionMap = new Dictionary<SplitTypes, Func<Control[]>>()
 			{
-				{ "Bonfire", GetBonfireControls },
-				{ "Boss", GetBossControls },
-				{ "Covenant", GetCovenantControls },
-				{ "Ending", GetEndingControls },
-				{ "Item", GetItemControls },
-				{ "Zone", GetZoneControls }
+				{ SplitTypes.Bonfire, GetBonfireControls },
+				{ SplitTypes.Boss, GetBossControls },
+				{ SplitTypes.Covenant, GetCovenantControls },
+				{ SplitTypes.Ending, GetEndingControls },
+				{ SplitTypes.Item, GetItemControls },
+				{ SplitTypes.Zone, GetZoneControls }
 			};
 
 			var items = lists.Items;
@@ -84,40 +85,72 @@ namespace LiveSplit.DarkSouls.Controls
 
 		public Split ExtractSplit()
 		{
-			SplitTypes type = (SplitTypes)splitTypeComboBox.SelectedIndex;
-
+			var index = splitTypeComboBox.SelectedIndex;
+			var type = index != -1 ? (SplitTypes)index : SplitTypes.Unassigned;
 			var controls = splitDetailsPanel.Controls;
 
-			int[] data = new int[controls.Count];
-			int dropdownCount = controls.Count - (type == SplitTypes.Item ? 1 : 0);
+			int[] data = null;
 
-			for (int i = 0; i < dropdownCount; i++)
+			if (controls.Count > 0)
 			{
-				data[i] = ((ComboBox)controls[i]).SelectedIndex;
-			}
-			
-			// Item splits have a numeric textbox (representing item count). All other split types use exclusively
-			// dropdowns.
-			if (type == SplitTypes.Item)
-			{
-				data[2] = int.Parse(((TextBox)controls[2]).Text);
+				data = new int[controls.Count];
+
+				int dropdownCount = controls.Count - (type == SplitTypes.Item ? 1 : 0);
+
+				for (int i = 0; i < dropdownCount; i++)
+				{
+					data[i] = ((ComboBox)controls[i]).SelectedIndex;
+				}
+
+				// Item splits have a numeric textbox (representing item count). All other split types use exclusively
+				// dropdowns.
+				if (type == SplitTypes.Item)
+				{
+					data[2] = int.Parse(((TextBox)controls[2]).Text);
+				}
 			}
 
-			return new Split(type, null);
+			return new Split(type, data);
 		}
 
 		public void Refresh(Split split)
 		{
-		}
+			SplitTypes type = split.Type;
 
-		private void splitTypeComboBox_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			if (!functionMap.ContainsKey(splitTypeComboBox.Text))
+			if (type == SplitTypes.Unassigned)
 			{
 				return;
 			}
 
-			Control[] controls = functionMap[splitTypeComboBox.Text]();
+			splitTypeComboBox.SelectedIndex = (int)type;
+			OnSplitTypeChange(type);
+
+			var controls = splitDetailsPanel.Controls;
+
+			// If a valid split type was selected, the data array is guaranteed to exist (although it might still have
+			// -1 values).
+			int[] data = split.Data;
+			int dropdownCount = controls.Count - (type == SplitTypes.Item ? 1 : 0);
+
+			for (int i = 0; i < dropdownCount; i++)
+			{
+				((ComboBox)controls[i]).SelectedIndex = data[i];
+			}
+
+			if (type == SplitTypes.Item)
+			{
+				((TextBox)controls[2]).Text = data[2].ToString();
+			}
+		}
+
+		private void splitTypeComboBox_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			OnSplitTypeChange((SplitTypes)splitTypeComboBox.SelectedIndex);
+		}
+
+		private void OnSplitTypeChange(SplitTypes splitType)
+		{
+			Control[] controls = functionMap[splitType]();
 			ControlCollection panelControls = splitDetailsPanel.Controls;
 			panelControls.Clear();
 

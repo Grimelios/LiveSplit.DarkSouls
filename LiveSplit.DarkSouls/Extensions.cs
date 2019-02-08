@@ -9,10 +9,10 @@ namespace LiveSplit.DarkSouls
 {
 	public static class Extensions
 	{
-		public static XmlElement CreateElement(this XmlDocument document, string tag, string value)
+		public static XmlElement CreateElementWithInnerText(this XmlDocument document, string tag, string value)
 		{
 			XmlElement element = document.CreateElement(tag);
-			element.InnerText = value;
+			element.InnerText = value ?? "";
 
 			return element;
 		}

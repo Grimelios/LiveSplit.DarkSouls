@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using LiveSplit.DarkSouls.Data;
 
 namespace LiveSplit.DarkSouls.Controls
 {
@@ -21,18 +22,7 @@ namespace LiveSplit.DarkSouls.Controls
 
 		private void addSplitButton_Click(object sender, EventArgs e)
 		{
-			var controls = splitsPanel.Controls;
-
-			SoulsSplitControl control = new SoulsSplitControl(this, controls.Count);
-
-			if (splitHeight == -1)
-			{
-				splitHeight = control.Bounds.Height;
-			}
-
-			control.Location = new Point(0, splitHeight * controls.Count);
-			controls.Add(control);
-			UpdateSplitCount();
+			AddSplit();
 		}
 
 		private void clearSplitsButton_Click(object sender, EventArgs e)
@@ -46,6 +36,28 @@ namespace LiveSplit.DarkSouls.Controls
 			int count = splitsPanel.Controls.Count;
 
 			splitCountLabel.Text = count + " split" + (count != 1 ? "s" : "");
+		}
+
+		public void AddSplit(Split split = null)
+		{
+			var controls = splitsPanel.Controls;
+
+			SoulsSplitControl control = new SoulsSplitControl(this, controls.Count);
+
+			if (split != null)
+			{
+				control.Refresh(split);
+			}
+
+			if (splitHeight == -1)
+			{
+				splitHeight = control.Bounds.Height;
+			}
+
+			control.Location = new Point(0, splitHeight * controls.Count);
+			controls.Add(control);
+
+			UpdateSplitCount();
 		}
 
 		public void RemoveSplit(int index)
@@ -65,6 +77,25 @@ namespace LiveSplit.DarkSouls.Controls
 			}
 
 			UpdateSplitCount();
+		}
+
+		public Split[] ExtractSplits()
+		{
+			var controls = splitsPanel.Controls;
+
+			if (controls.Count == 0)
+			{
+				return null;
+			}
+
+			Split[] splits = new Split[controls.Count];
+
+			for (int i = 0; i < controls.Count; i++)
+			{
+				splits[i] = ((SoulsSplitControl)controls[i]).ExtractSplit();
+			}
+
+			return splits;
 		}
 	}
 }

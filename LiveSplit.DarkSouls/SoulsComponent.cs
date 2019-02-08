@@ -22,14 +22,12 @@ namespace LiveSplit.DarkSouls
 		private TimerModel timer;
 		private SplitCollection splitCollection;
 		private SoulsMemory memory;
-		private SoulsSettings settings;
 		private SoulsMasterControl masterControl;
 		
 		public SoulsComponent()
 		{
 			splitCollection = new SplitCollection();
 			memory = new SoulsMemory();
-			settings = new SoulsSettings(splitCollection);
 			masterControl = new SoulsMasterControl();
 		}
 
@@ -61,14 +59,67 @@ namespace LiveSplit.DarkSouls
 
 		public XmlNode GetSettings(XmlDocument document)
 		{
-			return settings.Save(document);
+			XmlElement root = document.CreateElement("Settings");
+			XmlElement igtElement = document.CreateElementWithInnerText("UseGameTime", masterControl.UseGameTime.ToString());
+			XmlElement splitsElement = document.CreateElement("Splits");
+
+			var splits = masterControl.CollectionControl.ExtractSplits();
+			splitCollection.Splits = splits;
+
+			// Splits can be null if the user hasn't added any splits through the LiveSplit UI.
+			if (splits != null)
+			{
+				foreach (var split in splits)
+				{
+					var data = split.Data;
+					var dataString = data != null ? string.Join("|", data) : "";
+
+					XmlElement splitElement = document.CreateElement("Split");
+					splitElement.AppendChild(document.CreateElementWithInnerText("Type", split.Type.ToString()));
+					splitElement.AppendChild(document.CreateElementWithInnerText("Data", dataString));
+					splitsElement.AppendChild(splitElement);
+				}
+			}
+
+			root.AppendChild(igtElement);
+			root.AppendChild(splitsElement);
+
+			return root;
 		}
 
 		public void SetSettings(XmlNode settings)
 		{
-			this.settings.Load(settings);
+			bool useGameTime = bool.Parse(settings["UseGameTime"].InnerText);
 
-			masterControl.Refresh(splitCollection.Splits, this.settings);
+			XmlNodeList splitNodes = settings["Splits"].GetElementsByTagName("Split");
+			Split[] splits = new Split[splitNodes.Count];
+
+			for (int i = 0; i < splitNodes.Count; i++)
+			{
+				var splitNode = splitNodes[i];
+				var type = (SplitTypes)Enum.Parse(typeof(SplitTypes), splitNode["Type"].InnerText);
+
+				string rawData = splitNode["Data"].InnerText;
+
+				int[] data = null;
+
+				if (rawData.Length > 0)
+				{
+					string[] dataTokens = splitNode["Data"].InnerText.Split('|');
+
+					data = new int[dataTokens.Length];
+
+					for (int j = 0; j < dataTokens.Length; j++)
+					{
+						data[j] = int.Parse(dataTokens[j]);
+					}
+				}
+
+				splits[i] = new Split(type, data);
+			}
+
+			splitCollection.Splits = splits;
+			masterControl.Refresh(splits, useGameTime);
 		}
 
 		public void Update(IInvalidator invalidator, LiveSplitState state, float width, float height, LayoutMode mode)
@@ -102,10 +153,6 @@ namespace LiveSplit.DarkSouls
 			{
 				Console.WriteLine("Process unhooked.");
 			}
-
-			memory.GetBossesKilled();
-
-			//Console.WriteLine("Game time: " + string.Join(", ", memory.GetBossesKilled()));
 		}
 
 		public void Dispose()

@@ -13,7 +13,10 @@ namespace LiveSplit.DarkSouls.Data
 		Covenant,
 		Ending,
 		Item,
-		Npc,
-		Zone
+		Zone,
+
+		// This value allows splits to be created and always exist for a split line, even if no type/data has been
+		// selected.
+		Unassigned
 	}
 }

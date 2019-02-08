@@ -8,6 +8,10 @@ namespace LiveSplit.DarkSouls.Data
 {
 	public class Split
 	{
+		public Split() : this(SplitTypes.Unassigned, null)
+		{
+		}
+
 		public Split(SplitTypes type, int[] data)
 		{
 			Type = type;

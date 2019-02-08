@@ -103,7 +103,6 @@
     <Compile Include="SoulsForm.Designer.cs">
       <DependentUpon>SoulsForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="SoulsSettings.cs" />
     <Compile Include="SoulsTester.cs" />
     <Compile Include="Data\SplitLists.cs" />
   </ItemGroup>
