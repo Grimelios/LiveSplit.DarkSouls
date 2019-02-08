@@ -175,12 +175,15 @@ namespace LiveSplit.DarkSouls.Controls
 		private Control[] GetBonfireControls()
 		{
 			const int BonfireListWidth = 169;
-			const int BonfireCriteriaWidth = 67;
+			const int BonfireCriteriaWidth = 119;
 
 			var bonfireCriteria = GetDropdown(new []
 			{
 				"On light",
-				"On rest"
+				"On rest",
+				"On kindle (first)",
+				"On kindle (second)",
+				"On kindle (third)"
 			}, "Criteria", BonfireCriteriaWidth, false);
 
 			var bonfireList = GetDropdown(lists.Bonfires, "Bonfire", BonfireListWidth);

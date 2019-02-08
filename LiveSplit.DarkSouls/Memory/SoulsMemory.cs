@@ -16,6 +16,8 @@ namespace LiveSplit.DarkSouls.Memory
 		private Process process;
 		private IntPtr handle;
 
+		private Dictionary<int, int> bonfireMap = new Dictionary<int, int>();
+
 		public bool ProcessHooked { get; private set; }
 
 		public bool Hook()
@@ -47,66 +49,94 @@ namespace LiveSplit.DarkSouls.Memory
 			return MemoryTools.ReadInt(handle, IntPtr.Add(pointer, 0x68));
 		}
 
+		public BonfireStates GetBonfireState(BonfireFlags bonfire)
+		{
+			/*
+			1001960
+			1011961
+			1011962
+			1011964
+			1021960
+			1101960
+			1201961
+			1211950
+			1211961
+			1211962
+			1211963
+			1211964
+			1301960
+			1301961
+			1311950
+			1311960
+			1311961
+			1321960
+			1321961
+			1321962
+			1401960
+			1401961
+			1401962
+			1411950
+			1411960
+			1411961
+			1411962
+			1411963
+			1411964
+			1501961
+			1511950
+			1511960
+			1511961
+			1511962
+			1601950
+			1601961
+			1701950
+			1701960
+			1701961
+			1701962
+			1801960
+			1811960
+			1811961
+			*/
+
+			IntPtr pointer = (IntPtr)0x137E204;
+			pointer = (IntPtr)MemoryTools.ReadInt(handle, pointer);
+			pointer = (IntPtr)MemoryTools.ReadInt(handle, IntPtr.Add(pointer, 0xB48));
+			pointer = (IntPtr)MemoryTools.ReadInt(handle, IntPtr.Add(pointer, 0x24));
+			pointer = (IntPtr)MemoryTools.ReadInt(handle, pointer);
+
+			IntPtr bonfirePointer = (IntPtr)MemoryTools.ReadInt(handle, IntPtr.Add(pointer, 8));
+
+			while (bonfirePointer != IntPtr.Zero)
+			{
+				int bonfireId = MemoryTools.ReadInt(handle, IntPtr.Add(bonfirePointer, 4));
+
+				//if (bonfireId == (int)bonfire)
+				{
+					int bonfireState = MemoryTools.ReadInt(handle, IntPtr.Add(bonfirePointer, 8));
+
+					//return (BonfireStates)bonfireState;
+
+					if (!bonfireMap.TryGetValue(bonfireId, out int existingState))
+					{
+						bonfireMap.Add(bonfireId, bonfireState);
+					}
+					else if (bonfireState != existingState)
+					{
+						bonfireMap[bonfireId] = bonfireState;
+
+						Console.WriteLine($"Bonfire: {bonfireId}|{bonfireState}");
+					}
+				}
+
+				pointer = (IntPtr)MemoryTools.ReadInt(handle, pointer);
+				bonfirePointer = (IntPtr)MemoryTools.ReadInt(handle, IntPtr.Add(pointer, 8));
+			}
+
+			return BonfireStates.Undiscovered;
+		}
+
 		public bool IsBossDefeated(BossFlags boss)
 		{
 			return GetEventFlagState((int)boss);
-		}
-
-		public int[] GetBossesKilled()
-		{
-			int[] totalBossFlags = {
-				2, // Gaping Dragon
-				3, // Gargoyles
-				4, // Priscilla
-				5, // Sif
-				6, // Pinwheel
-				7, // Nito
-				9, // Quelaag
-				10, // Bed of Chaos
-				11, // Iron Golem
-				12, // O&S
-				13, // Four Kings
-				14, // Seath
-				15, // Gwyn
-				16, // Asylum Demon
-				11210000, // Sanctuary Guardian
-				11210001, // Artorias
-				11210002, // Manus
-				11210004, // Kalameet
-				11410410, // Firesage
-				11410900, // Ceaseless Discharge
-				11410901, // Centipede Demon
-				11510900, // Gwyndolin
-				11010901, // Taurus Demon
-				11010902, // Capra Demon
-				11200900, // Moonlight Butterfly
-				11810900 // Stray Demon
-			};
-
-			int bossesKilled = 0;
-			bool[] bossValues = new bool[totalBossFlags.Length];
-
-			for (int i = 0; i < totalBossFlags.Length; i++)
-			{
-				bossValues[i] = GetEventFlagState(totalBossFlags[i]);
-
-				if (bossValues[i])
-				{
-					bossesKilled++;
-				}
-			}
-
-			string result = "Bosses: [";
-
-			for (int i = 0; i < bossValues.Length; i++)
-			{
-				result += bossValues[i] ? "1" : "0";		
-				result += i < bossValues.Length - 1 ? "," : "]";
-			}
-
-			Console.WriteLine(result);
-
-			return new [] { bossesKilled, totalBossFlags.Length };
 		}
 
 		private bool GetEventFlagState(int id)

@@ -194,6 +194,8 @@ namespace LiveSplit.DarkSouls
 			{
 				Console.WriteLine("Process unhooked.");
 			}
+
+			memory.GetBonfireState(BonfireFlags.DaughterOfChaos);
 		}
 
 		public void Dispose()
