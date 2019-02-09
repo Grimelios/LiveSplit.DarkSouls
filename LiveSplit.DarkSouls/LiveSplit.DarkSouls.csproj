@@ -79,11 +79,10 @@
     </Compile>
     <Compile Include="Data\Flags.cs" />
     <Compile Include="Data\ItemLists.cs" />
-    <Compile Include="Data\RunData.cs" />
+    <Compile Include="Data\RunState.cs" />
     <Compile Include="Data\Split.cs" />
     <Compile Include="Data\SplitCollection.cs" />
     <Compile Include="Data\SplitTypes.cs" />
-    <Compile Include="Enums.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Memory\Kernel.cs" />
     <Compile Include="Memory\MemoryTools.cs" />

@@ -23,14 +23,21 @@ namespace LiveSplit.DarkSouls
 		private SplitCollection splitCollection;
 		private SoulsMemory memory;
 		private SoulsMasterControl masterControl;
-		private RunData run;
+		private Dictionary<SplitTypes, Func<int[], bool>> splitFunctions;
+		private RunState run;
 		
 		public SoulsComponent()
 		{
 			splitCollection = new SplitCollection();
 			memory = new SoulsMemory();
 			masterControl = new SoulsMasterControl();
-			run = new RunData();
+			run = new RunState();
+
+			splitFunctions = new Dictionary<SplitTypes, Func<int[], bool>>
+			{
+				{ SplitTypes.Bonfire, ProcessBonfire },
+				{ SplitTypes.Boss, ProcessBoss }
+			};
 		}
 
 		public string ComponentName => DisplayName;
@@ -131,7 +138,7 @@ namespace LiveSplit.DarkSouls
 				timer = new TimerModel();
 				timer.CurrentState = state;
 
-				state.OnSplit += (sender, args) => { splitCollection.OnSplit(); };
+				state.OnSplit += (sender, args) => { OnSplit(); };
 				state.OnUndoSplit += (sender, args) => { splitCollection.OnUndoSplit(); };
 				state.OnSkipSplit += (sender, args) => { splitCollection.OnSkipSplit(); };
 				state.OnReset += (sender, value) => { splitCollection.OnReset(); };
@@ -148,7 +155,7 @@ namespace LiveSplit.DarkSouls
 			{
 				int gameTime = memory.GetGameTimeInMilliseconds();
 				int runTime = run.MaxGameTime;
-				int previousTime = run.PreviousGameTime;
+				int previousTime = run.GameTime;
 
 				// This condition is only possible during a run when game time isn't increasing (game time resets to
 				// zero on the main menu).
@@ -169,7 +176,7 @@ namespace LiveSplit.DarkSouls
 				int max = Math.Max(gameTime, runTime);
 
 				state.SetGameTime(TimeSpan.FromMilliseconds(max));
-				run.PreviousGameTime = gameTime;
+				run.GameTime = gameTime;
 				run.MaxGameTime = max;
 			}
 
@@ -196,6 +203,103 @@ namespace LiveSplit.DarkSouls
 			}
 
 			memory.GetBonfireState(BonfireFlags.DaughterOfChaos);
+
+			return;
+
+			Split split = splitCollection.CurrentSplit;
+
+			if (splitFunctions[split.Type](split.Data))
+			{
+				// Timer is null when testing the program from the testing class.
+				timer?.Split();
+			}
+		}
+
+		private void OnSplit()
+		{
+			splitCollection.OnSplit();
+
+			Split split = splitCollection.CurrentSplit;
+
+			int[] data = split.Data;
+
+			switch (split.Type)
+			{
+				case SplitTypes.Bonfire:
+					run.BonfireFlag = GetEnumValue<BonfireFlags>(data[0]);
+					run.BonfireState = memory.GetBonfireState(run.BonfireFlag);
+
+					int bonfireCriteria = data[1];
+
+					if (bonfireCriteria != 1)
+					{
+						run.TargetBonfireState = GetEnumValue<BonfireStates>(bonfireCriteria);
+					}
+
+					break;
+
+				case SplitTypes.Boss:
+					run.BossFlag = GetEnumValue<BossFlags>(data[0]);
+					run.BossDefeated = memory.IsBossDefeated(run.BossFlag);
+
+					break;
+
+				case SplitTypes.Covenant:
+					break;
+
+				case SplitTypes.Ending:
+					break;
+
+				case SplitTypes.Item:
+					break;
+
+				case SplitTypes.Zone:
+					break;
+			}
+		}
+
+		private T GetEnumValue<T>(int index)
+		{
+			return (T)Enum.GetValues(typeof(T)).GetValue(index);
+		}
+
+		private bool ProcessBonfire(int[] data)
+		{
+			bool onRest = data[1] == 1;
+
+			if (onRest)
+			{
+			}
+
+			BonfireStates previousState = run.BonfireState;
+			BonfireStates state = memory.GetBonfireState(run.BonfireFlag);
+
+			run.BonfireState = state;
+
+			return state != previousState && state == run.TargetBonfireState;
+		}
+
+		private bool ProcessBoss(int[] data)
+		{
+			bool previouslyDefeated = run.BossDefeated;
+			bool onVictory = data[1] == 0;
+			bool defeated = memory.IsBossDefeated(run.BossFlag);
+
+			run.BossDefeated = defeated;
+
+			if (onVictory)
+			{
+				if (defeated && !previouslyDefeated)
+				{
+					return true;
+				}
+			}
+			// The alternative to splitting on victory is splitting on the first warp after victory.
+			else if (defeated)
+			{
+			}
+
+			return false;
 		}
 
 		public void Dispose()

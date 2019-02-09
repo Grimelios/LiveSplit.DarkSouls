@@ -53,6 +53,21 @@ namespace LiveSplit.DarkSouls.Data
 		UndeadParish = 1011964
 	}
 
+	public enum BonfireStates
+	{
+		// Enum values are intentionally listed to match the bonfire criteria dropdown (Inactive takes the place of
+		// "On rest").
+		Lit = 10,
+
+		// "Inactive" means that the bonfire's fire keeper is not present.
+		Inactive,
+		KindledOnce = 20,
+		KindledTwice = 40,
+		KindledThrice = 30,
+		Undiscovered,
+		Unlit = 0
+	}
+
 	public enum BossFlags
 	{
 		Artorias = 11210001,
