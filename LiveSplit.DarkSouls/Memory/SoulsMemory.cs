@@ -15,9 +15,7 @@ namespace LiveSplit.DarkSouls.Memory
 	{
 		private Process process;
 		private IntPtr handle;
-
-		private Dictionary<int, int> bonfireMap = new Dictionary<int, int>();
-
+		
 		public bool ProcessHooked { get; private set; }
 
 		public bool Hook()
@@ -51,52 +49,6 @@ namespace LiveSplit.DarkSouls.Memory
 
 		public BonfireStates GetBonfireState(BonfireFlags bonfire)
 		{
-			/*
-			1001960
-			1011961
-			1011962
-			1011964
-			1021960
-			1101960
-			1201961
-			1211950
-			1211961
-			1211962
-			1211963
-			1211964
-			1301960
-			1301961
-			1311950
-			1311960
-			1311961
-			1321960
-			1321961
-			1321962
-			1401960
-			1401961
-			1401962
-			1411950
-			1411960
-			1411961
-			1411962
-			1411963
-			1411964
-			1501961
-			1511950
-			1511960
-			1511961
-			1511962
-			1601950
-			1601961
-			1701950
-			1701960
-			1701961
-			1701962
-			1801960
-			1811960
-			1811961
-			*/
-
 			IntPtr pointer = (IntPtr)0x137E204;
 			pointer = (IntPtr)MemoryTools.ReadInt(handle, pointer);
 			pointer = (IntPtr)MemoryTools.ReadInt(handle, IntPtr.Add(pointer, 0xB48));
@@ -109,22 +61,11 @@ namespace LiveSplit.DarkSouls.Memory
 			{
 				int bonfireId = MemoryTools.ReadInt(handle, IntPtr.Add(bonfirePointer, 4));
 
-				//if (bonfireId == (int)bonfire)
+				if (bonfireId == (int)bonfire)
 				{
 					int bonfireState = MemoryTools.ReadInt(handle, IntPtr.Add(bonfirePointer, 8));
 
-					//return (BonfireStates)bonfireState;
-
-					if (!bonfireMap.TryGetValue(bonfireId, out int existingState))
-					{
-						bonfireMap.Add(bonfireId, bonfireState);
-					}
-					else if (bonfireState != existingState)
-					{
-						bonfireMap[bonfireId] = bonfireState;
-
-						Console.WriteLine($"Bonfire: {bonfireId}|{bonfireState}");
-					}
+					return (BonfireStates)bonfireState;
 				}
 
 				pointer = (IntPtr)MemoryTools.ReadInt(handle, pointer);

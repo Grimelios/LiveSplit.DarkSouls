@@ -10,7 +10,7 @@ namespace LiveSplit.DarkSouls
 		
 		public static void Main(string[] args)
 		{
-			bool formTesting = false;
+			bool formTesting = true;
 
 			if (formTesting)
 			{
