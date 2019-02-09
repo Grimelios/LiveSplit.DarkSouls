@@ -13,12 +13,12 @@ namespace LiveSplit.DarkSouls.Controls
 {
 	public partial class SoulsSplitCollectionControl : UserControl
 	{
-		private int splitHeight = -1;
-
 		public SoulsSplitCollectionControl()
 		{
 			InitializeComponent();
 		}
+
+		public int SplitCount => splitsPanel.Controls.Count;
 
 		private void addSplitButton_Click(object sender, EventArgs e)
 		{
@@ -49,12 +49,9 @@ namespace LiveSplit.DarkSouls.Controls
 				control.Refresh(split);
 			}
 
-			if (splitHeight == -1)
-			{
-				splitHeight = control.Bounds.Height;
-			}
+			int y = controls.Count == 0 ? 0 : controls[controls.Count - 1].Bottom;
 
-			control.Location = new Point(0, splitHeight * controls.Count);
+			control.Location = new Point(0, y);
 			controls.Add(control);
 
 			UpdateSplitCount();
@@ -64,6 +61,8 @@ namespace LiveSplit.DarkSouls.Controls
 		{
 			// This function is only called from split controls, which means the index is guaranteed to be valid.
 			var controls = splitsPanel.Controls;
+			int height = controls[index].Height;
+
 			controls.RemoveAt(index);
 
 			for (int i = index; i < controls.Count; i++)
@@ -71,12 +70,25 @@ namespace LiveSplit.DarkSouls.Controls
 				SoulsSplitControl control = (SoulsSplitControl)controls[i];
 				Point point = control.Location;
 
-				point.Y -= splitHeight;
+				point.Y -= height;
 				control.Location = point;
 				control.Index--;
 			}
 
 			UpdateSplitCount();
+		}
+
+		public void ShiftSplits(int fromIndex)
+		{
+			var controls = splitsPanel.Controls;
+
+			for (int i = fromIndex; i < controls.Count; i++)
+			{
+				Control control = controls[i];
+				Point point = control.Location;
+				point.Y = controls[i - 1].Bottom;
+				control.Location = point;
+			}
 		}
 
 		public Split[] ExtractSplits()

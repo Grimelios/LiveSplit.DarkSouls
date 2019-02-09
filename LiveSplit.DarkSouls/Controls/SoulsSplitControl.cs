@@ -15,10 +15,16 @@ namespace LiveSplit.DarkSouls.Controls
 {
 	public partial class SoulsSplitControl : UserControl
 	{
+		private const int ControlSpacing = 4;
+		private const int ItemSplitCorrection = 2;
+
 		private SplitLists lists;
 		private Dictionary<SplitTypes, Func<Control[]>> functionMap;
 		private Dictionary<string, string[]> itemMap;
 		private SoulsSplitCollectionControl parent;
+
+		// Tracking this value is required to properly shrink item splits that swap to a different type.
+		private SplitTypes previousSplitType;
 
 		public SoulsSplitControl(SoulsSplitCollectionControl parent, int index)
 		{
@@ -160,11 +166,52 @@ namespace LiveSplit.DarkSouls.Controls
 
 				if (i > 0)
 				{
-					control.Location = new Point(controls[i - 1].Bounds.Right + 4, 0);
+					control.Location = new Point(controls[i - 1].Bounds.Right + ControlSpacing, 0);
 				}
 
 				panelControls.Add(control);
 			}
+
+			// Item splits require two lines.
+			if (splitType == SplitTypes.Item)
+			{
+				Height = Height * 2 - ItemSplitCorrection;
+				splitDetailsPanel.Height = splitDetailsPanel.Height * 2 + ControlSpacing;
+
+				Control[] secondaryControls = GetItemSecondaryControls();
+
+				int y = controls[0].Bounds.Bottom + ControlSpacing;
+
+				for (int i = 0; i < secondaryControls.Length; i++)
+				{
+					Control control = secondaryControls[i];
+					Point point = new Point(0, y);
+
+					if (i > 0)
+					{
+						point.X = secondaryControls[i - 1].Bounds.Right + ControlSpacing;
+					}
+
+					control.Location = point;
+					panelControls.Add(control);
+
+					LinkItemLines(controls, secondaryControls);
+				}
+
+				// Changing an existing split to an item split can cause later splits to be shifted down.
+				if (Index < parent.SplitCount - 1)
+				{
+					parent.ShiftSplits(Index + 1);
+				}
+			}
+			else if (previousSplitType == SplitTypes.Item)
+			{
+				Height = (Height + ItemSplitCorrection) / 2;
+				splitDetailsPanel.Height = (splitDetailsPanel.Height - ControlSpacing) / 2;
+				parent.ShiftSplits(Index + 1);
+			}
+
+			previousSplitType = splitType;
 		}
 
 		private void deleteButton_Click(object sender, EventArgs e)
@@ -382,6 +429,47 @@ namespace LiveSplit.DarkSouls.Controls
 				itemList,
 				itemCount
 			};
+		}
+
+		private Control[] GetItemSecondaryControls()
+		{
+			const int ItemModificationWidth = 96;
+			const int ItemReinforcementWidth = 98;
+			const int ItemCriteriaWidth = 97;
+
+			var itemModifications = GetDropdown(new []
+			{
+				"Chaos",
+				"Crystal",
+				"Divine",
+				"Enchanted",
+				"Fire",
+				"Lightning",
+				"Magic",
+				"None",
+				"Occult",
+				"Raw",
+			}, "Modifications", ItemModificationWidth, false);
+
+			string[] reinforcements = Enumerable.Range(1, 15).Select(r => "+" + r).ToArray();
+
+			var itemReinforcements = GetDropdown(reinforcements, "Reinforcement", ItemReinforcementWidth, false);
+			var itemCriteria = GetDropdown(new []
+			{
+				"On acquisition",
+				"On warp"
+			}, "Criteria", ItemCriteriaWidth);
+
+			return new Control[]
+			{
+				itemModifications,
+				itemReinforcements,
+				itemCriteria
+			};
+		}
+
+		private void LinkItemLines(Control[] line1, Control[] line2)
+		{
 		}
 
 		private Control[] GetZoneControls()
