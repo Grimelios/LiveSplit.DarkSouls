@@ -202,10 +202,6 @@ namespace LiveSplit.DarkSouls
 				Console.WriteLine("Process unhooked.");
 			}
 
-			memory.GetBonfireState(BonfireFlags.DaughterOfChaos);
-
-			return;
-
 			Split split = splitCollection.CurrentSplit;
 
 			if (splitFunctions[split.Type](split.Data))
@@ -247,7 +243,7 @@ namespace LiveSplit.DarkSouls
 				case SplitTypes.Covenant:
 					break;
 
-				case SplitTypes.Ending:
+				case SplitTypes.Events:
 					break;
 
 				case SplitTypes.Item:

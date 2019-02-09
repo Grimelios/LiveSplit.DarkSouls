@@ -49,7 +49,7 @@
             "Bonfire",
             "Boss",
             "Covenant",
-            "Ending",
+            "Events",
             "Item",
             "Zone"});
 			this.splitTypeComboBox.Location = new System.Drawing.Point(4, 4);

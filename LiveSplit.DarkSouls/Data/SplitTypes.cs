@@ -11,7 +11,7 @@ namespace LiveSplit.DarkSouls.Data
 		Bonfire,
 		Boss,
 		Covenant,
-		Ending,
+		Events,
 		Item,
 		Zone,
 

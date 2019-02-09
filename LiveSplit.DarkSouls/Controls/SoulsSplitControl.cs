@@ -34,7 +34,7 @@ namespace LiveSplit.DarkSouls.Controls
 				{ SplitTypes.Bonfire, GetBonfireControls },
 				{ SplitTypes.Boss, GetBossControls },
 				{ SplitTypes.Covenant, GetCovenantControls },
-				{ SplitTypes.Ending, GetEndingControls },
+				{ SplitTypes.Events, GetEventControls },
 				{ SplitTypes.Item, GetItemControls },
 				{ SplitTypes.Zone, GetZoneControls }
 			};
@@ -225,13 +225,14 @@ namespace LiveSplit.DarkSouls.Controls
 
 		private Control[] GetCovenantControls()
 		{
-			const int CovenantListWidth = 137;
+			const int CovenantListWidth = 139;
 			const int CovenantCriteriaWidth = 87;
 
 			var covenantCriteria = GetDropdown(new []
 			{
 				"On discover",
-				"On join"
+				"On join",
+				"On warp"
 			}, "Criteria", CovenantCriteriaWidth, false);
 
 			var covenantList = GetDropdown(lists.Covenants, "Covenants", CovenantListWidth);
@@ -247,17 +248,38 @@ namespace LiveSplit.DarkSouls.Controls
 			};
 		}
 
-		private Control[] GetEndingControls()
+		private Control[] GetEventControls()
 		{
-			const int EndingListWidth = 88;
+			const int EventListWidth = 88;
+			const int EventCriteriaWidth = 80;
 
-			var endingList = GetDropdown(new[]
+			var eventCriteria = GetDropdown(new []
 			{
+				"On ring",
+				"On warp"
+			}, "Criteria", EventCriteriaWidth, false);
+
+			var eventList = GetDropdown(new []
+			{
+				"- Bells -",
+				"First Bell",
+				"Second Bell",
+				"",
+				"- Endings -",
 				"Dark Lord",
 				"Link the Fire"
-			}, "Ending", EndingListWidth);
+			}, "Ending", EventListWidth);
+			
+			eventList.SelectedIndexChanged += (sender, args) =>
+			{
+				eventCriteria.Enabled = eventList.SelectedIndex <= 2;
+			};
 
-			return new Control[] { endingList };
+			return new Control[]
+			{
+				eventList,
+				eventCriteria
+			};
 		}
 
 		private Control[] GetItemControls()
