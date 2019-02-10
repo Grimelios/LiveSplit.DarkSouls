@@ -13,6 +13,11 @@ namespace LiveSplit.DarkSouls.Data
 		public Split[] Splits { get; set; }
 		public Split CurrentSplit { get; private set; }
 
+		public void OnStart()
+		{
+			CurrentSplit = Splits?[0];
+		}
+
 		public void OnSplit()
 		{
 			if (Splits.Length == 0)

@@ -101,4 +101,37 @@ namespace LiveSplit.DarkSouls.Data
 	public enum CovenantFlags
 	{
 	}
+
+	public static class Flags
+	{
+		public static readonly int[] BossFlags =
+		{
+			11210001, // Artorias
+			16, // Asylum Demon
+			10, // Bed of Chaos
+			11010902, // Capra Demon
+			11410900, // Ceaseless Discharge
+			11410901, // Centipede Demon
+			11410410, // Firesage
+			13, // Four Kings
+			2, // Gaping Dragon
+			3, // Gargoyles
+			15, // Gwyn
+			11510900, // Gwyndolin
+			11, // Iron Golem
+			11210004, // Kalemeet
+			11210002, // Manus
+			11200900, // Moonlight Butterfly
+			7, // Nito
+			12, // Ornstein and Smough
+			6, // Pinwheel
+			4, // Priscilla
+			9, // Quelaag
+			11210000, // Sanctuary Guardian
+			14, // Seath
+			5, // Sif
+			11810900, // Stray Demon
+			11010901 // Taurus Demons
+		};
+	}
 }

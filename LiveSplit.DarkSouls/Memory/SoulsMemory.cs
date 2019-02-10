@@ -75,9 +75,9 @@ namespace LiveSplit.DarkSouls.Memory
 			return BonfireStates.Undiscovered;
 		}
 
-		public bool IsBossDefeated(BossFlags boss)
+		public bool IsBossDefeated(int boss)
 		{
-			return GetEventFlagState((int)boss);
+			return GetEventFlagState(boss);
 		}
 
 		private bool GetEventFlagState(int id)

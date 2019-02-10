@@ -37,7 +37,7 @@
 			// 
 			this.splitDetailsPanel.Location = new System.Drawing.Point(84, 4);
 			this.splitDetailsPanel.Name = "splitDetailsPanel";
-			this.splitDetailsPanel.Size = new System.Drawing.Size(327, 21);
+			this.splitDetailsPanel.Size = new System.Drawing.Size(317, 21);
 			this.splitDetailsPanel.TabIndex = 1;
 			// 
 			// splitTypeComboBox
@@ -51,6 +51,7 @@
             "Covenant",
             "Events",
             "Item",
+            "Manual",
             "Zone"});
 			this.splitTypeComboBox.Location = new System.Drawing.Point(4, 4);
 			this.splitTypeComboBox.Name = "splitTypeComboBox";
@@ -63,7 +64,7 @@
 			// 
 			this.deleteButton.Image = global::LiveSplit.DarkSouls.Resources.Delete;
 			this.deleteButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
-			this.deleteButton.Location = new System.Drawing.Point(415, 4);
+			this.deleteButton.Location = new System.Drawing.Point(405, 4);
 			this.deleteButton.Name = "deleteButton";
 			this.deleteButton.Size = new System.Drawing.Size(22, 22);
 			this.deleteButton.TabIndex = 3;
@@ -78,7 +79,7 @@
 			this.Controls.Add(this.splitTypeComboBox);
 			this.Controls.Add(this.splitDetailsPanel);
 			this.Name = "SoulsSplitControl";
-			this.Size = new System.Drawing.Size(438, 27);
+			this.Size = new System.Drawing.Size(427, 27);
 			this.ResumeLayout(false);
 
 		}

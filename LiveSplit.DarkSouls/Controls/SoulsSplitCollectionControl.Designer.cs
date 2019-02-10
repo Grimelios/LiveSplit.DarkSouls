@@ -28,35 +28,18 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.splitCollectionBox = new System.Windows.Forms.GroupBox();
 			this.splitCountLabel = new System.Windows.Forms.Label();
 			this.splitsPanel = new System.Windows.Forms.Panel();
 			this.clearSplitsButton = new System.Windows.Forms.Button();
 			this.addSplitButton = new System.Windows.Forms.Button();
 			this.splitDetailsLabel = new LiveSplit.DarkSouls.Controls.SoulsLabel();
 			this.splitTypeLabel = new LiveSplit.DarkSouls.Controls.SoulsLabel();
-			this.splitCollectionBox.SuspendLayout();
 			this.SuspendLayout();
-			// 
-			// splitCollectionBox
-			// 
-			this.splitCollectionBox.Controls.Add(this.splitCountLabel);
-			this.splitCollectionBox.Controls.Add(this.splitsPanel);
-			this.splitCollectionBox.Controls.Add(this.clearSplitsButton);
-			this.splitCollectionBox.Controls.Add(this.addSplitButton);
-			this.splitCollectionBox.Controls.Add(this.splitDetailsLabel);
-			this.splitCollectionBox.Controls.Add(this.splitTypeLabel);
-			this.splitCollectionBox.Location = new System.Drawing.Point(4, 4);
-			this.splitCollectionBox.Name = "splitCollectionBox";
-			this.splitCollectionBox.Size = new System.Drawing.Size(456, 482);
-			this.splitCollectionBox.TabIndex = 0;
-			this.splitCollectionBox.TabStop = false;
-			this.splitCollectionBox.Text = "Splits";
 			// 
 			// splitCountLabel
 			// 
 			this.splitCountLabel.AutoSize = true;
-			this.splitCountLabel.Location = new System.Drawing.Point(170, 26);
+			this.splitCountLabel.Location = new System.Drawing.Point(170, 13);
 			this.splitCountLabel.Name = "splitCountLabel";
 			this.splitCountLabel.Size = new System.Drawing.Size(39, 13);
 			this.splitCountLabel.TabIndex = 7;
@@ -64,10 +47,13 @@
 			// 
 			// splitsPanel
 			// 
+			this.splitsPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
 			this.splitsPanel.AutoScroll = true;
-			this.splitsPanel.Location = new System.Drawing.Point(7, 69);
+			this.splitsPanel.BackColor = System.Drawing.SystemColors.Control;
+			this.splitsPanel.Location = new System.Drawing.Point(4, 56);
 			this.splitsPanel.Name = "splitsPanel";
-			this.splitsPanel.Size = new System.Drawing.Size(443, 407);
+			this.splitsPanel.Size = new System.Drawing.Size(450, 400);
 			this.splitsPanel.TabIndex = 6;
 			// 
 			// clearSplitsButton
@@ -75,7 +61,7 @@
 			this.clearSplitsButton.Enabled = false;
 			this.clearSplitsButton.Image = global::LiveSplit.DarkSouls.Resources.Delete;
 			this.clearSplitsButton.ImageAlign = System.Drawing.ContentAlignment.BottomLeft;
-			this.clearSplitsButton.Location = new System.Drawing.Point(83, 20);
+			this.clearSplitsButton.Location = new System.Drawing.Point(83, 7);
 			this.clearSplitsButton.Name = "clearSplitsButton";
 			this.clearSplitsButton.Size = new System.Drawing.Size(81, 24);
 			this.clearSplitsButton.TabIndex = 5;
@@ -88,7 +74,7 @@
 			// 
 			this.addSplitButton.Image = global::LiveSplit.DarkSouls.Resources.Add;
 			this.addSplitButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.addSplitButton.Location = new System.Drawing.Point(7, 20);
+			this.addSplitButton.Location = new System.Drawing.Point(7, 7);
 			this.addSplitButton.Name = "addSplitButton";
 			this.addSplitButton.Size = new System.Drawing.Size(70, 24);
 			this.addSplitButton.TabIndex = 4;
@@ -99,15 +85,15 @@
 			// 
 			// splitDetailsLabel
 			// 
-			this.splitDetailsLabel.Location = new System.Drawing.Point(91, 52);
+			this.splitDetailsLabel.Location = new System.Drawing.Point(88, 39);
 			this.splitDetailsLabel.Name = "splitDetailsLabel";
-			this.splitDetailsLabel.Size = new System.Drawing.Size(327, 13);
+			this.splitDetailsLabel.Size = new System.Drawing.Size(317, 13);
 			this.splitDetailsLabel.TabIndex = 2;
 			this.splitDetailsLabel.Text = "Details";
 			// 
 			// splitTypeLabel
 			// 
-			this.splitTypeLabel.Location = new System.Drawing.Point(11, 52);
+			this.splitTypeLabel.Location = new System.Drawing.Point(8, 39);
 			this.splitTypeLabel.Name = "splitTypeLabel";
 			this.splitTypeLabel.Size = new System.Drawing.Size(76, 13);
 			this.splitTypeLabel.TabIndex = 0;
@@ -117,18 +103,20 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.Controls.Add(this.splitCollectionBox);
+			this.Controls.Add(this.splitsPanel);
+			this.Controls.Add(this.splitDetailsLabel);
+			this.Controls.Add(this.splitTypeLabel);
+			this.Controls.Add(this.splitCountLabel);
+			this.Controls.Add(this.clearSplitsButton);
+			this.Controls.Add(this.addSplitButton);
 			this.Name = "SoulsSplitCollectionControl";
-			this.Size = new System.Drawing.Size(461, 486);
-			this.splitCollectionBox.ResumeLayout(false);
-			this.splitCollectionBox.PerformLayout();
+			this.Size = new System.Drawing.Size(456, 465);
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 
 		#endregion
-
-		private System.Windows.Forms.GroupBox splitCollectionBox;
 		private SoulsLabel splitTypeLabel;
 		private SoulsLabel splitDetailsLabel;
 		private System.Windows.Forms.Button addSplitButton;

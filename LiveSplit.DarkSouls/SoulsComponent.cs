@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.Remoting.Channels;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -138,7 +139,17 @@ namespace LiveSplit.DarkSouls
 				timer = new TimerModel();
 				timer.CurrentState = state;
 
-				state.OnSplit += (sender, args) => { OnSplit(); };
+				state.OnStart += (sender, args) =>
+				{
+					splitCollection.OnStart();
+					UpdateRunState();
+				};
+
+				state.OnSplit += (sender, args) =>
+				{
+					splitCollection.OnSplit();
+					UpdateRunState();
+				};
 				state.OnUndoSplit += (sender, args) => { splitCollection.OnUndoSplit(); };
 				state.OnSkipSplit += (sender, args) => { splitCollection.OnSkipSplit(); };
 				state.OnReset += (sender, value) => { splitCollection.OnReset(); };
@@ -211,10 +222,8 @@ namespace LiveSplit.DarkSouls
 			}
 		}
 
-		private void OnSplit()
+		private void UpdateRunState()
 		{
-			splitCollection.OnSplit();
-
 			Split split = splitCollection.CurrentSplit;
 
 			int[] data = split.Data;
@@ -222,20 +231,20 @@ namespace LiveSplit.DarkSouls
 			switch (split.Type)
 			{
 				case SplitTypes.Bonfire:
-					run.BonfireFlag = GetEnumValue<BonfireFlags>(data[0]);
+					//run.BonfireFlag = GetEnumValue<BonfireFlags>(data[0]);
 					run.BonfireState = memory.GetBonfireState(run.BonfireFlag);
 
 					int bonfireCriteria = data[1];
 
 					if (bonfireCriteria != 1)
 					{
-						run.TargetBonfireState = GetEnumValue<BonfireStates>(bonfireCriteria);
+						//run.TargetBonfireState = GetEnumValue<BonfireStates>(bonfireCriteria);
 					}
 
 					break;
 
 				case SplitTypes.Boss:
-					run.BossFlag = GetEnumValue<BossFlags>(data[0]);
+					run.BossFlag = Flags.BossFlags[data[0]];
 					run.BossDefeated = memory.IsBossDefeated(run.BossFlag);
 
 					break;
@@ -252,11 +261,6 @@ namespace LiveSplit.DarkSouls
 				case SplitTypes.Zone:
 					break;
 			}
-		}
-
-		private T GetEnumValue<T>(int index)
-		{
-			return (T)Enum.GetValues(typeof(T)).GetValue(index);
 		}
 
 		private bool ProcessBonfire(int[] data)

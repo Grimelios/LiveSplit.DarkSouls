@@ -13,9 +13,9 @@ namespace LiveSplit.DarkSouls.Data
 		public BonfireFlags BonfireFlag { get; set; }
 		public BonfireStates BonfireState { get; set; }
 		public BonfireStates TargetBonfireState { get; set; }
-		public BossFlags BossFlag { get; set; }
 
 		public int GameTime { get; set; }
 		public int MaxGameTime { get; set; }
+		public int BossFlag { get; set; }
 	}
 }

@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{4B6EC3BB-5C5D-4682-8714-8A6B7C455E52}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>LiveSplit.DarkSouls</RootNamespace>
     <AssemblyName>LiveSplit.DarkSouls</AssemblyName>
@@ -84,6 +84,7 @@
     <Compile Include="Data\Split.cs" />
     <Compile Include="Data\SplitCollection.cs" />
     <Compile Include="Data\SplitTypes.cs" />
+    <Compile Include="Enums.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Memory\Kernel.cs" />
     <Compile Include="Memory\MemoryTools.cs" />

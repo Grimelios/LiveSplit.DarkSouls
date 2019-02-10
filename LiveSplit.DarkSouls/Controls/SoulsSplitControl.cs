@@ -101,18 +101,20 @@ namespace LiveSplit.DarkSouls.Controls
 			{
 				data = new int[controls.Count];
 
-				int dropdownCount = controls.Count - (type == SplitTypes.Item ? 1 : 0);
-
-				for (int i = 0; i < dropdownCount; i++)
+				for (int i = 0; i < controls.Count; i++)
 				{
+					// Item splits have a numeric textbox (representing item count). All other split types use
+					// exclusively dropdowns.
+					if (type == SplitTypes.Item && i == 2)
+					{
+						string text = ((TextBox)controls[2]).Text;
+
+						data[2] = text.Length > 0 ? int.Parse(text) : -1;
+
+						continue;
+					}
+
 					data[i] = ((ComboBox)controls[i]).SelectedIndex;
-				}
-
-				// Item splits have a numeric textbox (representing item count). All other split types use exclusively
-				// dropdowns.
-				if (type == SplitTypes.Item)
-				{
-					data[2] = int.Parse(((TextBox)controls[2]).Text);
 				}
 			}
 
@@ -129,23 +131,25 @@ namespace LiveSplit.DarkSouls.Controls
 			}
 
 			splitTypeComboBox.SelectedIndex = (int)type;
-			OnSplitTypeChange(type);
 
 			var controls = splitDetailsPanel.Controls;
 
 			// If a valid split type was selected, the data array is guaranteed to exist (although it might still have
 			// -1 values).
 			int[] data = split.Data;
-			int dropdownCount = controls.Count - (type == SplitTypes.Item ? 1 : 0);
 
-			for (int i = 0; i < dropdownCount; i++)
+			for (int i = 0; i < controls.Count; i++)
 			{
+				if (type == SplitTypes.Item && i == 2)
+				{
+					int value = data[2];
+
+					((TextBox)controls[2]).Text = value != -1 ? data[2].ToString() : "";
+
+					continue;
+				}
+
 				((ComboBox)controls[i]).SelectedIndex = data[i];
-			}
-
-			if (type == SplitTypes.Item)
-			{
-				((TextBox)controls[2]).Text = data[2].ToString();
 			}
 		}
 
@@ -156,20 +160,23 @@ namespace LiveSplit.DarkSouls.Controls
 
 		private void OnSplitTypeChange(SplitTypes splitType)
 		{
-			Control[] controls = functionMap[splitType]();
+			Control[] controls = splitType != SplitTypes.Manual ? functionMap[splitType]() : null;
 			ControlCollection panelControls = splitDetailsPanel.Controls;
 			panelControls.Clear();
 
-			for (int i = 0; i < controls.Length; i++)
+			if (controls != null)
 			{
-				Control control = controls[i];
-
-				if (i > 0)
+				for (int i = 0; i < controls.Length; i++)
 				{
-					control.Location = new Point(controls[i - 1].Bounds.Right + ControlSpacing, 0);
-				}
+					Control control = controls[i];
 
-				panelControls.Add(control);
+					if (i > 0)
+					{
+						control.Location = new Point(controls[i - 1].Bounds.Right + ControlSpacing, 0);
+					}
+
+					panelControls.Add(control);
+				}
 			}
 
 			// Item splits require two lines.
@@ -331,13 +338,12 @@ namespace LiveSplit.DarkSouls.Controls
 
 		private Control[] GetItemControls()
 		{
-			const int ItemTypeWidth = 96;
-			const int ItemListWidth = 183;
-			const int ItemCountWidth = 40;
+			const int ItemTypeWidth = 95;
+			const int ItemListWidth = 184;
+			const int ItemCountWidth = 30;
 
 			var itemCount = new TextBox
 			{
-				Text = "1",
 				Enabled = false,
 				Width = ItemCountWidth,
 
