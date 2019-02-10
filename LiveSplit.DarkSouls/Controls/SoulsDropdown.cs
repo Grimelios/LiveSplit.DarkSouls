@@ -84,6 +84,13 @@ namespace LiveSplit.DarkSouls.Controls
 				return;
 			}
 
+			if (SelectedIndex == -1)
+			{
+				previousIndex = -1;
+
+				return;
+			}
+
 			string value = Items[SelectedIndex].ToString();
 
 			if (value.Length == 0 || value[0] == '-')
@@ -96,6 +103,16 @@ namespace LiveSplit.DarkSouls.Controls
 			previousIndex = SelectedIndex;
 
 			base.OnSelectedIndexChanged(e);
+		}
+
+		public void RefreshPrompt(string prompt, bool enabled = false)
+		{
+			Prompt = prompt;
+			Enabled = enabled;
+			SelectedIndex = -1;
+
+			// Clearing items also invalidates the control.
+			Items.Clear();
 		}
 	}
 }

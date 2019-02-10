@@ -84,6 +84,7 @@
     <Compile Include="Data\Split.cs" />
     <Compile Include="Data\SplitCollection.cs" />
     <Compile Include="Data\SplitTypes.cs" />
+    <Compile Include="Data\UpgradeData.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Memory\Kernel.cs" />

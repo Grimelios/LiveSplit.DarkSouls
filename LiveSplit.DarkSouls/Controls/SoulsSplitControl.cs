@@ -23,6 +23,12 @@ namespace LiveSplit.DarkSouls.Controls
 		private Dictionary<string, string[]> itemMap;
 		private SoulsSplitCollectionControl parent;
 
+		// Equipment lists need to track upgrade data per item in order to properly update secondary item lines. This
+		// array is updated whenever item type changes.
+		private UpgradeData[] upgrades;
+
+		private bool isArmorTypeSelected;
+
 		// Tracking this value is required to properly shrink item splits that swap to a different type.
 		private SplitTypes previousSplitType;
 
@@ -369,6 +375,7 @@ namespace LiveSplit.DarkSouls.Controls
 				itemCount.Text = "1";
 			};
 
+			// Additional callbacks are added when item lines are linked.
 			var itemTypes = GetDropdown(new []
 			{
 				"- Armor -",
@@ -420,15 +427,6 @@ namespace LiveSplit.DarkSouls.Controls
 				"Whips"
 			}, "Item Types", ItemTypeWidth);
 
-			itemTypes.SelectedIndexChanged += (sender, args) =>
-			{
-				itemList.Enabled = true;
-
-				var items = itemList.Items;
-				items.Clear();
-				items.AddRange(itemMap[itemTypes.Text]);
-			};
-
 			return new Control[]
 			{
 				itemTypes,
@@ -440,26 +438,12 @@ namespace LiveSplit.DarkSouls.Controls
 		private Control[] GetItemSecondaryControls()
 		{
 			const int ItemModificationWidth = 96;
-			const int ItemReinforcementWidth = 98;
+			const int ItemReinforcementWidth = 104;
 			const int ItemCriteriaWidth = 97;
 
-			var itemModifications = GetDropdown(new []
-			{
-				"Chaos",
-				"Crystal",
-				"Divine",
-				"Enchanted",
-				"Fire",
-				"Lightning",
-				"Magic",
-				"None",
-				"Occult",
-				"Raw",
-			}, "Modifications", ItemModificationWidth, false);
-
-			string[] reinforcements = Enumerable.Range(1, 15).Select(r => "+" + r).ToArray();
-
-			var itemReinforcements = GetDropdown(reinforcements, "Reinforcement", ItemReinforcementWidth, false);
+			// Mods and reinforcements are updated based on item type.
+			var itemModifications = GetDropdown(null, "Modifications", ItemModificationWidth, false);
+			var itemReinforcements = GetDropdown(null, "Reinforcement", ItemReinforcementWidth, false);
 			var itemCriteria = GetDropdown(new []
 			{
 				"On acquisition",
@@ -476,6 +460,101 @@ namespace LiveSplit.DarkSouls.Controls
 
 		private void LinkItemLines(Control[] line1, Control[] line2)
 		{
+			SoulsDropdown itemTypes = (SoulsDropdown)line1[0];
+			SoulsDropdown itemList = (SoulsDropdown)line1[1];
+			SoulsDropdown mods = (SoulsDropdown)line2[0];
+			SoulsDropdown reinforcements = (SoulsDropdown)line2[1];
+
+			itemTypes.SelectedIndexChanged += (sender, args) =>
+			{
+				itemList.Enabled = true;
+
+				var rawList = itemMap[itemTypes.Text];
+				var items = itemList.Items;
+				items.Clear();
+
+				int typeIndex = itemTypes.SelectedIndex;
+
+				bool isArmorType = typeIndex >= 1 && typeIndex <= 4;
+				bool isWeaponType = typeIndex >= 34;
+
+				if (isArmorType || isWeaponType)
+				{
+					upgrades = new UpgradeData[rawList.Length];
+
+					for (int i = 0; i < rawList.Length; i++)
+					{
+						string value = rawList[i];
+
+						if (value.Length == 0 || value[0] == '-')
+						{
+							items.Add(value);
+
+							continue;
+						}
+
+						string[] tokens = value.Split('|');
+						string name = tokens[0];
+						string reinforcementString = tokens[1];
+
+						int maxReinforcement = reinforcementString[0] == '+'
+							? int.Parse(reinforcementString.Substring(1))
+							: 0;
+
+						ModificationTypes availableMods = isArmorType ? ModificationTypes.None : ModificationTypes.Standard;
+
+						items.Add(name);
+						upgrades[i] = new UpgradeData(maxReinforcement, availableMods);
+					}
+
+					mods.RefreshPrompt(isArmorType ? "N/A" : "Modifications");
+					reinforcements.RefreshPrompt("Reinforcement");
+				}
+				else
+				{
+					items.AddRange(rawList);
+					mods.RefreshPrompt("N/A");
+					reinforcements.RefreshPrompt("N/A");
+					upgrades = null;
+				}
+
+				isArmorTypeSelected = isArmorType;
+			};
+
+			itemList.SelectedIndexChanged += (sender, args) =>
+			{
+				// This means the current item type is not equipment.
+				if (upgrades == null)
+				{
+					return;
+				}
+
+				UpgradeData data = upgrades[itemList.SelectedIndex];
+
+				ModificationTypes availableMods = data.AvailableMods;
+
+				if (availableMods != ModificationTypes.None)
+				{
+					mods.RefreshPrompt("Modifications", true);
+					//mods.Items.AddRange();
+				}
+				else if (!isArmorTypeSelected)
+				{
+					mods.RefreshPrompt("Unmodifiable");
+				}
+
+				int maxReinforcement = data.MaxReinforcement;
+
+				if (maxReinforcement > 0)
+				{
+					reinforcements.RefreshPrompt("Reinforcements", true);
+					reinforcements.Items.AddRange(Enumerable.Range(1, maxReinforcement).Select(r => "+" + r).ToArray());
+				}
+				else
+				{
+					reinforcements.RefreshPrompt("Unreinforceable");
+				}
+			};
 		}
 
 		private Control[] GetZoneControls()
