@@ -36,6 +36,7 @@ namespace LiveSplit.DarkSouls.Controls
 			int count = splitsPanel.Controls.Count;
 
 			splitCountLabel.Text = count + " split" + (count != 1 ? "s" : "");
+			clearSplitsButton.Enabled = count > 0;
 		}
 
 		public void AddSplit(Split split = null)

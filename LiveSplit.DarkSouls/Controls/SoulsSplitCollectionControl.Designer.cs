@@ -72,6 +72,7 @@
 			// 
 			// clearSplitsButton
 			// 
+			this.clearSplitsButton.Enabled = false;
 			this.clearSplitsButton.Image = global::LiveSplit.DarkSouls.Resources.Delete;
 			this.clearSplitsButton.ImageAlign = System.Drawing.ContentAlignment.BottomLeft;
 			this.clearSplitsButton.Location = new System.Drawing.Point(83, 20);
