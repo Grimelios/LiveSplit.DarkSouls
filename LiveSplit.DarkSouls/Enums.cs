@@ -9,6 +9,7 @@ namespace LiveSplit.DarkSouls
 	public enum ModificationTypes
 	{
 		None,
+		Restricted,
 		Special,
 		Standard
 	}

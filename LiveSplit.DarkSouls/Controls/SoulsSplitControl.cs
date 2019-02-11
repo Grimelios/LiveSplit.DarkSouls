@@ -21,11 +21,12 @@ namespace LiveSplit.DarkSouls.Controls
 		private SplitLists lists;
 		private Dictionary<SplitTypes, Func<Control[]>> functionMap;
 		private Dictionary<string, string[]> itemMap;
+		private Dictionary<string, int> modReinforcementMap;
 		private SoulsSplitCollectionControl parent;
 
 		// Equipment lists need to track upgrade data per item in order to properly update secondary item lines. This
-		// array is updated whenever item type changes.
-		private UpgradeData[] upgrades;
+		// array is updated whenever equipment type changes.
+		private int[] upgrades;
 
 		private bool isArmorTypeSelected;
 
@@ -49,6 +50,20 @@ namespace LiveSplit.DarkSouls.Controls
 				{ SplitTypes.Events, GetEventControls },
 				{ SplitTypes.Item, GetItemControls },
 				{ SplitTypes.Zone, GetZoneControls }
+			};
+
+			modReinforcementMap = new Dictionary<string, int>
+			{
+				{ "Basic", 15 },
+				{ "Chaos", 5 },
+				{ "Crystal", 5 },
+				{ "Divine", 10 },
+				{ "Enchanted", 5 },
+				{ "Fire", 10 },
+				{ "Lightning", 5 },
+				{ "Magic", 10 },
+				{ "Occult", 5 },
+				{ "Raw", 5 }
 			};
 
 			var items = lists.Items;
@@ -460,6 +475,12 @@ namespace LiveSplit.DarkSouls.Controls
 
 		private void LinkItemLines(Control[] line1, Control[] line2)
 		{
+			const string ModString = "Modifications";
+			const string UnmodString = "Unmodifiable";
+			const string ReinforceString = "Reinforcement";
+			const string UnreinforceString = "Unreinforceable";
+			const string NaString = "N/A";
+
 			SoulsDropdown itemTypes = (SoulsDropdown)line1[0];
 			SoulsDropdown itemList = (SoulsDropdown)line1[1];
 			SoulsDropdown mods = (SoulsDropdown)line2[0];
@@ -476,11 +497,12 @@ namespace LiveSplit.DarkSouls.Controls
 				int typeIndex = itemTypes.SelectedIndex;
 
 				bool isArmorType = typeIndex >= 1 && typeIndex <= 4;
+				bool isShield = typeIndex == 27;
 				bool isWeaponType = typeIndex >= 34;
 
-				if (isArmorType || isWeaponType)
+				if (isArmorType || isShield || isWeaponType)
 				{
-					upgrades = new UpgradeData[rawList.Length];
+					upgrades = new int[rawList.Length];
 
 					for (int i = 0; i < rawList.Length; i++)
 					{
@@ -495,26 +517,38 @@ namespace LiveSplit.DarkSouls.Controls
 
 						string[] tokens = value.Split('|');
 						string name = tokens[0];
-						string reinforcementString = tokens[1];
 
-						int maxReinforcement = reinforcementString[0] == '+'
-							? int.Parse(reinforcementString.Substring(1))
-							: 0;
+						// Armor and weapons store upgrade data differently. Since armor can't be modified, the maximum
+						// reinforcement value is stored. For weapons, the modification category is stored, which in
+						// turn informs reinforcement.
+						int upgradeValue;
 
-						ModificationTypes availableMods = isArmorType ? ModificationTypes.None : ModificationTypes.Standard;
+						if (isArmorType)
+						{
+							string reinforcementString = tokens[1];
+
+							upgradeValue = reinforcementString[0] == '+'
+								? int.Parse(reinforcementString.Substring(1))
+								: 0;
+						}
+						// Weapons and shields follow the same logic in toggling mods and reinforcement.
+						else
+						{
+							upgradeValue = (int)Enum.Parse(typeof(ModificationTypes), tokens[1]);
+						}
 
 						items.Add(name);
-						upgrades[i] = new UpgradeData(maxReinforcement, availableMods);
+						upgrades[i] = upgradeValue;
 					}
 
-					mods.RefreshPrompt(isArmorType ? "N/A" : "Modifications");
-					reinforcements.RefreshPrompt("Reinforcement");
+					mods.RefreshPrompt(isArmorType ? NaString : ModString);
+					reinforcements.RefreshPrompt(ReinforceString);
 				}
 				else
 				{
 					items.AddRange(rawList);
-					mods.RefreshPrompt("N/A");
-					reinforcements.RefreshPrompt("N/A");
+					mods.RefreshPrompt(NaString);
+					reinforcements.RefreshPrompt(NaString);
 					upgrades = null;
 				}
 
@@ -529,32 +563,80 @@ namespace LiveSplit.DarkSouls.Controls
 					return;
 				}
 
-				UpgradeData data = upgrades[itemList.SelectedIndex];
+				int data = upgrades[itemList.SelectedIndex];
 
-				ModificationTypes availableMods = data.AvailableMods;
-
-				if (availableMods != ModificationTypes.None)
+				// Armor can be reinforced, but never modified.
+				if (isArmorTypeSelected)
 				{
-					mods.RefreshPrompt("Modifications", true);
-					//mods.Items.AddRange();
-				}
-				else if (!isArmorTypeSelected)
-				{
-					mods.RefreshPrompt("Unmodifiable");
-				}
-
-				int maxReinforcement = data.MaxReinforcement;
-
-				if (maxReinforcement > 0)
-				{
-					reinforcements.RefreshPrompt("Reinforcements", true);
-					reinforcements.Items.AddRange(Enumerable.Range(1, maxReinforcement).Select(r => "+" + r).ToArray());
+					if (data > 0)
+					{
+						reinforcements.RefreshPrompt(ReinforceString, true);
+						reinforcements.Items.AddRange(GetReinforcementList(data));
+					}
+					else
+					{
+						reinforcements.RefreshPrompt(UnreinforceString);
+					}
 				}
 				else
 				{
-					reinforcements.RefreshPrompt("Unreinforceable");
+					ModificationTypes modType = (ModificationTypes)data;
+
+					switch (modType)
+					{
+						case ModificationTypes.None:
+							mods.RefreshPrompt(UnmodString);
+							reinforcements.RefreshPrompt(UnreinforceString);
+
+							break;
+
+						// "Special" in this context means that the weapon is unique. It can be reinforced up to +5,
+						// but can't be modified.
+						case ModificationTypes.Special:
+							mods.RefreshPrompt(UnmodString);
+							reinforcements.RefreshPrompt(ReinforceString, true);
+							reinforcements.Items.AddRange(GetReinforcementList(5));
+
+							break;
+
+						// For standard weapons, the maximum reinforcement is based on mod type.
+						default:
+							// Crossbows and shields use a restricted set of mods. Max reinforcement values are the
+							// same for each type.
+							var availableMods = modType == ModificationTypes.Standard
+								? modReinforcementMap.Keys.ToArray()
+								: new []
+								{
+									"Basic",
+									"Crystal",
+									"Lightning",
+									"Magic",
+									"Divine",
+									"Fire"
+								};
+
+							mods.RefreshPrompt(ModString, true);
+							mods.Items.AddRange(availableMods);
+							reinforcements.RefreshPrompt(ReinforceString);
+
+							break;
+					}
 				}
 			};
+
+			mods.SelectedIndexChanged += (sender, args) =>
+			{
+				// This function can only be called for standard (i.e. modifiable) weapons.
+				int max = modReinforcementMap[mods.Text];
+
+				reinforcements.RefreshPrompt(ReinforceString, true);
+				reinforcements.Items.AddRange(GetReinforcementList(max));
+			};
+		}
+
+		private string[] GetReinforcementList(int max)
+		{
+			return Enumerable.Range(0, max + 1).Select(r => "+" + r).ToArray(); ;
 		}
 
 		private Control[] GetZoneControls()
