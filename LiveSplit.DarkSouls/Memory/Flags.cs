@@ -6,6 +6,14 @@ using System.Threading.Tasks;
 
 namespace LiveSplit.DarkSouls.Memory
 {
+	public enum AnimationFlags
+	{
+		// These three flags correspond to all possible sitting styles the player can take when resting at a bonfire.
+		BonfireSit1 = 7700,
+		BonfireSit2 = 7710,
+		BonfireSit3 = 7720
+	}
+
 	public enum BonfireFlags
 	{
 		AnorLondoEntrance = 1511960,
@@ -55,12 +63,9 @@ namespace LiveSplit.DarkSouls.Memory
 
 	public enum BonfireStates
 	{
-		// Enum values are intentionally listed to match the bonfire criteria dropdown (Inactive takes the place of
-		// "On rest").
-		Lit = 10,
-
 		// "Inactive" means that the bonfire's fire keeper is not present.
 		Inactive,
+		Lit = 10,
 		KindledOnce = 20,
 		KindledTwice = 40,
 		KindledThrice = 30,
@@ -104,7 +109,62 @@ namespace LiveSplit.DarkSouls.Memory
 
 	public static class Flags
 	{
-		public static readonly int[] BossFlags =
+		public static readonly int[] OrderedBonfires =
+		{
+			(int)BonfireFlags.AnorLondoEntrance,
+			(int)BonfireFlags.AnorLondoInterior,
+			(int)BonfireFlags.AnorLondoPrincess,
+			(int)BonfireFlags.AnorLondoTomb,
+			(int)BonfireFlags.AshLakeEntrance,
+			(int)BonfireFlags.AshLakeDragon,
+			(int)BonfireFlags.BlighttownBridge,
+			(int)BonfireFlags.BlighttownSwamp,
+			(int)BonfireFlags.CatacombsEntrance,
+			(int)BonfireFlags.CatacombsIllusion,
+			(int)BonfireFlags.ChasmOfTheAbyss,
+			(int)BonfireFlags.CrystalCaves,
+			(int)BonfireFlags.DarkrootBasin,
+			(int)BonfireFlags.DarkrootGarden,
+			(int)BonfireFlags.DaughterOfChaos,
+			(int)BonfireFlags.DemonRuinsCentral,
+			(int)BonfireFlags.DemonRuinsFiresage,
+			(int)BonfireFlags.DemonRuinsEntrance,
+			(int)BonfireFlags.DukesArchivesBalcony,
+			(int)BonfireFlags.DukesArchivesEntrance,
+			(int)BonfireFlags.DukesArchivesPrison,
+			(int)BonfireFlags.FirelinkAltar,
+			(int)BonfireFlags.FirelinkShrine,
+			(int)BonfireFlags.GreatHollow,
+			(int)BonfireFlags.LostIzalithBedOfChaos,
+			(int)BonfireFlags.LostIzalithIllusion,
+			(int)BonfireFlags.LostIzalithLavaField,
+			(int)BonfireFlags.OolacileSanctuary,
+			(int)BonfireFlags.OolacileTownshipDungeon,
+			(int)BonfireFlags.OolacileTownshipEntrance,
+			(int)BonfireFlags.PaintedWorld,
+			(int)BonfireFlags.SanctuaryGarden,
+			(int)BonfireFlags.SensFortress,
+			(int)BonfireFlags.TheAbyss,
+			(int)BonfireFlags.TheDepths,
+			(int)BonfireFlags.TombOfTheGiantsAlcove,
+			(int)BonfireFlags.TombOfTheGiantsNito,
+			(int)BonfireFlags.TombOfTheGiantsPatches,
+			(int)BonfireFlags.UndeadAsylumCourtyard,
+			(int)BonfireFlags.UndeadAsylumInterior,
+			(int)BonfireFlags.UndeadBurgEntrance,
+			(int)BonfireFlags.UndeadBurgSunlight,
+			(int)BonfireFlags.UndeadParish
+		};
+
+		public static readonly int[] OrderedBonfireStates =
+		{
+			(int)BonfireStates.Lit,
+			(int)BonfireStates.KindledOnce,
+			(int)BonfireStates.KindledTwice,
+			(int)BonfireStates.KindledThrice
+		};
+
+		public static readonly int[] OrderedBosses =
 		{
 			11210001, // Artorias
 			16, // Asylum Demon

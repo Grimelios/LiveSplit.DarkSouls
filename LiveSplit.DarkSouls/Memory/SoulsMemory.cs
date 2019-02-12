@@ -50,6 +50,12 @@ namespace LiveSplit.DarkSouls.Memory
 			return MemoryTools.ReadInt(handle, IntPtr.Add(pointer, 0x68));
 		}
 
+		public int GetForcedAnimation()
+		{
+			return MemoryTools.ReadInt(handle, pointers.Character + 0xFC);
+		}
+
+		// Note that the last bonfire value doesn't always correspond to a valid bonfire ID.
 		public int GetLastBonfire()
 		{
 			// For whatever reason, bonfire IDs retrieved in this way need to be corrected by a thousand to match the

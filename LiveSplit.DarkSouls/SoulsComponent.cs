@@ -13,6 +13,7 @@ using LiveSplit.DarkSouls.Memory;
 using LiveSplit.Model;
 using LiveSplit.UI;
 using LiveSplit.UI.Components;
+using Enum = System.Enum;
 
 namespace LiveSplit.DarkSouls
 {
@@ -26,8 +27,6 @@ namespace LiveSplit.DarkSouls
 		private SoulsMasterControl masterControl;
 		private Dictionary<SplitTypes, Func<int[], bool>> splitFunctions;
 		private RunState run;
-
-		private int lastBonfire;
 
 		public SoulsComponent()
 		{
@@ -164,6 +163,11 @@ namespace LiveSplit.DarkSouls
 				return;
 			}
 
+			if (phase == TimerPhase.Running)
+			{
+				Refresh();
+			}
+
 			if (masterControl.UseGameTime)
 			{
 				int gameTime = memory.GetGameTimeInMilliseconds();
@@ -192,11 +196,6 @@ namespace LiveSplit.DarkSouls
 				run.GameTime = gameTime;
 				run.MaxGameTime = max;
 			}
-
-			if (phase == TimerPhase.Running)
-			{
-				Refresh();
-			}
 		}
 
 		public void Refresh()
@@ -219,17 +218,6 @@ namespace LiveSplit.DarkSouls
 			{
 				return;
 			}
-
-			int bonfire = memory.GetLastBonfire();
-
-			if (bonfire != lastBonfire)
-			{
-				lastBonfire = bonfire;
-
-				Console.WriteLine("Last bonfire: " + (BonfireFlags)lastBonfire);
-			}
-
-			return;
 
 			Split split = splitCollection.CurrentSplit;
 
@@ -262,8 +250,8 @@ namespace LiveSplit.DarkSouls
 					break;
 
 				case SplitTypes.Boss:
-					run.BossFlag = Flags.BossFlags[data[0]];
-					run.BossDefeated = memory.IsBossDefeated(run.BossFlag);
+					run.BossFlag = Flags.OrderedBosses[data[0]];
+					run.IsBossDefeated = memory.IsBossDefeated(run.BossFlag);
 
 					break;
 
@@ -285,8 +273,31 @@ namespace LiveSplit.DarkSouls
 		{
 			bool onRest = data[1] == 1;
 
+			int target = Flags.OrderedBonfires[data[0]];
+
 			if (onRest)
 			{
+				int[] restValues =
+				{
+					(int)AnimationFlags.BonfireSit1,
+					(int)AnimationFlags.BonfireSit2,
+					(int)AnimationFlags.BonfireSit3
+				};
+
+				int animation = memory.GetForcedAnimation();
+
+				// This confirms that the player is resting at a bonfire, but not which bonfire.
+				if (restValues.Contains(animation))
+				{
+					int bonfire = memory.GetLastBonfire();
+
+					if (Enum.IsDefined(typeof(BonfireFlags), bonfire))
+					{
+						return bonfire == target;
+					}
+				}
+
+				return false;
 			}
 
 			BonfireStates previousState = run.BonfireState;
@@ -299,11 +310,11 @@ namespace LiveSplit.DarkSouls
 
 		private bool ProcessBoss(int[] data)
 		{
-			bool previouslyDefeated = run.BossDefeated;
+			bool previouslyDefeated = run.IsBossDefeated;
 			bool onVictory = data[1] == 0;
 			bool defeated = memory.IsBossDefeated(run.BossFlag);
 
-			run.BossDefeated = defeated;
+			run.IsBossDefeated = defeated;
 
 			if (onVictory)
 			{

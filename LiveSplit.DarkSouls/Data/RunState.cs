@@ -9,7 +9,7 @@ namespace LiveSplit.DarkSouls.Data
 {
 	public class RunState
 	{
-		public bool BossDefeated { get; set; }
+		public bool IsBossDefeated { get; set; }
 
 		public BonfireFlags BonfireFlag { get; set; }
 		public BonfireStates BonfireState { get; set; }
