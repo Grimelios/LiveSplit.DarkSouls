@@ -34,7 +34,7 @@
 			// 
 			// splitCollection
 			// 
-			this.CollectionControl.Location = new System.Drawing.Point(6, 37);
+			this.CollectionControl.Location = new System.Drawing.Point(1, 37);
 			this.CollectionControl.Name = "CollectionControl";
 			this.CollectionControl.Size = new System.Drawing.Size(461, 520);
 			this.CollectionControl.TabIndex = 0;

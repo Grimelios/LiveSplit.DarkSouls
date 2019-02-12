@@ -83,6 +83,16 @@ namespace LiveSplit.DarkSouls {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Drag {
+            get {
+                object obj = ResourceManager.GetObject("Drag", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Question {
             get {
                 object obj = ResourceManager.GetObject("Question", resourceCulture);
@@ -103,15 +113,14 @@ namespace LiveSplit.DarkSouls {
         ///			&quot;Blighttown - Swamp&quot;,
         ///			&quot;Catacombs - Entrance&quot;,
         ///			&quot;Catacombs - Illusion&quot;,
-        ///			&quot;Chasm of the Abyss&quot;,
-        ///			&quot;Crystal Caves&quot;,
+        ///			&quot;Chasm of the Abyss (Manus)&quot;,
+        ///			&quot;Crystal Caves (Seath)&quot;,
         ///			&quot;Darkroot Basin&quot;,
         ///			&quot;Darkroot Garden&quot;,
         ///			&quot;Daughter of Chaos&quot;,
-        ///			&quot;Demon Ruins - Centipede&quot;,
-        ///			&quot;Demon Ruins - Entrance&quot;,
-        ///			&quot;Demon Ruins - Staircase&quot;,
-        ///			&quot;Duke&apos;s  [rest of string was truncated]&quot;;.
+        ///			&quot;Demon Ruins - Central&quot;,
+        ///			&quot;Demon Ruins - Firesage&quot;,
+        ///			&quot;Demon Ruins - Entrance&quot;, [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Splits {
             get {

@@ -360,8 +360,8 @@ namespace LiveSplit.DarkSouls.Controls
 		private Control[] GetItemControls()
 		{
 			const int ItemTypeWidth = 95;
-			const int ItemListWidth = 184;
-			const int ItemCountWidth = 30;
+			const int ItemListWidth = 185;
+			const int ItemCountWidth = 32;
 
 			var itemCount = new TextBox
 			{
