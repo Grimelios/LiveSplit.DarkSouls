@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LiveSplit.DarkSouls.Data;
+using IntPtr = System.IntPtr;
 
 namespace LiveSplit.DarkSouls.Memory
 {
@@ -15,6 +16,7 @@ namespace LiveSplit.DarkSouls.Memory
 	{
 		private Process process;
 		private IntPtr handle;
+		private SoulsPointers pointers;
 		
 		public bool ProcessHooked { get; private set; }
 
@@ -34,6 +36,7 @@ namespace LiveSplit.DarkSouls.Memory
 			{
 				process = processes[0];
 				handle = process.Handle;
+				pointers = new SoulsPointers(handle);
 				ProcessHooked = true;
 			}
 
@@ -42,9 +45,16 @@ namespace LiveSplit.DarkSouls.Memory
 
 		public int GetGameTimeInMilliseconds()
 		{
-			IntPtr pointer = (IntPtr)MemoryTools.ReadInt(handle, Pointers.GameTime);
+			IntPtr pointer = (IntPtr)MemoryTools.ReadInt(handle, pointers.GameTime);
 
 			return MemoryTools.ReadInt(handle, IntPtr.Add(pointer, 0x68));
+		}
+
+		public int GetLastBonfire()
+		{
+			// For whatever reason, bonfire IDs retrieved in this way need to be corrected by a thousand to match the
+			// bonfire flags array.
+			return MemoryTools.ReadInt(handle, pointers.WorldState + 0xB04) - 1000;
 		}
 
 		public BonfireStates GetBonfireState(BonfireFlags bonfire)

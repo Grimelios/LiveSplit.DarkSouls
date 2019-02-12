@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{4B6EC3BB-5C5D-4682-8714-8A6B7C455E52}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>LiveSplit.DarkSouls</RootNamespace>
     <AssemblyName>LiveSplit.DarkSouls</AssemblyName>
@@ -31,8 +31,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>
-    </StartupObject>
+    <StartupObject>LiveSplit.DarkSouls.SoulsTester</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="LiveSplit.Core">
@@ -78,7 +77,7 @@
     <Compile Include="Controls\SoulsSplitControl.Designer.cs">
       <DependentUpon>SoulsSplitControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Data\Flags.cs" />
+    <Compile Include="Memory\Flags.cs" />
     <Compile Include="Data\ItemLists.cs" />
     <Compile Include="Data\RunState.cs" />
     <Compile Include="Data\Split.cs" />
@@ -88,7 +87,7 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="Memory\Kernel.cs" />
     <Compile Include="Memory\MemoryTools.cs" />
-    <Compile Include="Memory\Pointers.cs" />
+    <Compile Include="Memory\SoulsPointers.cs" />
     <Compile Include="Memory\SoulsMemory.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>

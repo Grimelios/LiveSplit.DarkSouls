@@ -26,7 +26,9 @@ namespace LiveSplit.DarkSouls
 		private SoulsMasterControl masterControl;
 		private Dictionary<SplitTypes, Func<int[], bool>> splitFunctions;
 		private RunState run;
-		
+
+		private int lastBonfire;
+
 		public SoulsComponent()
 		{
 			splitCollection = new SplitCollection();
@@ -212,6 +214,22 @@ namespace LiveSplit.DarkSouls
 			{
 				Console.WriteLine("Process unhooked.");
 			}
+
+			if (!memory.ProcessHooked)
+			{
+				return;
+			}
+
+			int bonfire = memory.GetLastBonfire();
+
+			if (bonfire != lastBonfire)
+			{
+				lastBonfire = bonfire;
+
+				Console.WriteLine("Last bonfire: " + (BonfireFlags)lastBonfire);
+			}
+
+			return;
 
 			Split split = splitCollection.CurrentSplit;
 

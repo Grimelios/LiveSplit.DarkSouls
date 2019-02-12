@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LiveSplit.DarkSouls.Data
+namespace LiveSplit.DarkSouls.Memory
 {
 	public enum BonfireFlags
 	{
@@ -47,7 +47,7 @@ namespace LiveSplit.DarkSouls.Data
 		TombOfTheGiantsNito = 1311950,
 		TombOfTheGiantsPatches = 1311961,
 		UndeadAsylumCourtyard = 1811960,
-		UndeadAsylumInterior = 1811960,
+		UndeadAsylumInterior = 1811961,
 		UndeadBurgEntrance = 1011962,
 		UndeadBurgSunlight = 1011961,
 		UndeadParish = 1011964
