@@ -28,6 +28,8 @@ namespace LiveSplit.DarkSouls
 		private Dictionary<SplitTypes, Func<int[], bool>> splitFunctions;
 		private RunState run;
 
+		private int testValue;
+
 		public SoulsComponent()
 		{
 			splitCollection = new SplitCollection();

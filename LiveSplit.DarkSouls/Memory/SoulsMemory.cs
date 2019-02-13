@@ -50,6 +50,13 @@ namespace LiveSplit.DarkSouls.Memory
 			return MemoryTools.ReadInt(handle, IntPtr.Add(pointer, 0x68));
 		}
 
+		public byte GetActiveAnimation()
+		{
+			IntPtr pointer = pointers.Character + 0xFC + 0xB60;
+
+			return MemoryTools.ReadByte(handle, pointer);
+		}
+
 		public int GetForcedAnimation()
 		{
 			return MemoryTools.ReadInt(handle, pointers.Character + 0xFC);
