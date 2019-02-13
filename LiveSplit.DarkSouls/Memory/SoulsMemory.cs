@@ -52,14 +52,29 @@ namespace LiveSplit.DarkSouls.Memory
 
 		public byte GetActiveAnimation()
 		{
-			IntPtr pointer = pointers.Character + 0xFC + 0xB60;
-
-			return MemoryTools.ReadByte(handle, pointer);
+			return MemoryTools.ReadByte(handle, pointers.Character + 0xC5C);
 		}
 
 		public int GetForcedAnimation()
 		{
 			return MemoryTools.ReadInt(handle, pointers.Character + 0xFC);
+		}
+
+		public int GetClearCount()
+		{
+			IntPtr pointer = (IntPtr)MemoryTools.ReadInt(handle, pointers.ClearCount);
+
+			if (pointer == IntPtr.Zero)
+			{
+				return -1;
+			}
+
+			return MemoryTools.ReadInt(handle, pointer + 0x3C);
+		}
+
+		public float GetPlayerX()
+		{
+			return MemoryTools.ReadFloat(handle, pointers.CharacterPosition + 0x10);
 		}
 
 		// Note that the last bonfire value doesn't always correspond to a valid bonfire ID.

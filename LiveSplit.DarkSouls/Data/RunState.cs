@@ -18,5 +18,6 @@ namespace LiveSplit.DarkSouls.Data
 		public int GameTime { get; set; }
 		public int MaxGameTime { get; set; }
 		public int BossFlag { get; set; }
+		public int Data { get; set; }
 	}
 }

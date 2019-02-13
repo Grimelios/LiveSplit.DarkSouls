@@ -15,10 +15,15 @@ namespace LiveSplit.DarkSouls.Memory
 			character = (IntPtr)MemoryTools.ReadInt(handle, character);
 			Character = character;
 
+			CharacterMap = (IntPtr)MemoryTools.ReadInt(handle, character + 0x28);
+			CharacterPosition = (IntPtr)MemoryTools.ReadInt(handle, CharacterMap + 0x1C);
 			WorldState = (IntPtr)MemoryTools.ReadInt(handle, (IntPtr)0x13784A0);
 		}
 
+		public IntPtr ClearCount => (IntPtr)0x1378700;
 		public IntPtr Character { get; }
+		public IntPtr CharacterMap { get; }
+		public IntPtr CharacterPosition { get; }
 		public IntPtr GameTime => (IntPtr)0x1378700;
 		public IntPtr WorldState { get; }
 	}

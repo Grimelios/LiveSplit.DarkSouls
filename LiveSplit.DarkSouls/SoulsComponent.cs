@@ -28,8 +28,6 @@ namespace LiveSplit.DarkSouls
 		private Dictionary<SplitTypes, Func<int[], bool>> splitFunctions;
 		private RunState run;
 
-		private int testValue;
-
 		public SoulsComponent()
 		{
 			splitCollection = new SplitCollection();
@@ -40,7 +38,8 @@ namespace LiveSplit.DarkSouls
 			splitFunctions = new Dictionary<SplitTypes, Func<int[], bool>>
 			{
 				{ SplitTypes.Bonfire, ProcessBonfire },
-				{ SplitTypes.Boss, ProcessBoss }
+				{ SplitTypes.Boss, ProcessBoss },
+				{ SplitTypes.Events, ProcessEvent }
 			};
 		}
 
@@ -261,6 +260,15 @@ namespace LiveSplit.DarkSouls
 					break;
 
 				case SplitTypes.Events:
+					switch ((WorldEvents)data[0])
+					{
+						case WorldEvents.Bell1: break;
+						case WorldEvents.Bell2: break;
+
+						default: run.Data = memory.GetClearCount();
+							break;
+					}
+
 					break;
 
 				case SplitTypes.Item:
@@ -328,6 +336,22 @@ namespace LiveSplit.DarkSouls
 			// The alternative to splitting on victory is splitting on the first warp after victory.
 			else if (defeated)
 			{
+			}
+
+			return false;
+		}
+
+		private bool ProcessEvent(int[] data)
+		{
+			int clearCount = run.Data;
+
+			if (memory.GetClearCount() > clearCount)
+			{
+				// The player's X coordinate increases as you approach the exit (the exit is at roughly 421).
+				bool isDarkLord = memory.GetPlayerX() > 415;
+				bool isDarkLordTarget = data[0] == 5;
+
+				return isDarkLord == isDarkLordTarget;
 			}
 
 			return false;
