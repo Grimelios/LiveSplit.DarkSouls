@@ -28,7 +28,7 @@ namespace LiveSplit.DarkSouls.Controls
 		// array is updated whenever equipment type changes.
 		private int[] upgrades;
 
-		private bool isArmorTypeSelected;
+		private bool modsApplicable;
 
 		// Tracking this value is required to properly shrink item splits that swap to a different type.
 		private SplitTypes previousSplitType;
@@ -499,8 +499,11 @@ namespace LiveSplit.DarkSouls.Controls
 				bool isArmorType = typeIndex >= 1 && typeIndex <= 4;
 				bool isShield = typeIndex == 27;
 				bool isWeaponType = typeIndex >= 34;
+				bool isFlame = typeIndex == 8;
 
-				if (isArmorType || isShield || isWeaponType)
+				modsApplicable = isWeaponType || isShield;
+
+				if (isArmorType || isShield || isWeaponType || isFlame)
 				{
 					upgrades = new int[rawList.Length];
 
@@ -523,7 +526,7 @@ namespace LiveSplit.DarkSouls.Controls
 						// turn informs reinforcement.
 						int upgradeValue;
 
-						if (isArmorType)
+						if (!modsApplicable)
 						{
 							string reinforcementString = tokens[1];
 
@@ -541,7 +544,7 @@ namespace LiveSplit.DarkSouls.Controls
 						upgrades[i] = upgradeValue;
 					}
 
-					mods.RefreshPrompt(isArmorType ? NaString : ModString);
+					mods.RefreshPrompt(modsApplicable ? ModString : NaString);
 					reinforcements.RefreshPrompt(ReinforceString);
 				}
 				else
@@ -551,8 +554,6 @@ namespace LiveSplit.DarkSouls.Controls
 					reinforcements.RefreshPrompt(NaString);
 					upgrades = null;
 				}
-
-				isArmorTypeSelected = isArmorType;
 			};
 
 			itemList.SelectedIndexChanged += (sender, args) =>
@@ -565,8 +566,8 @@ namespace LiveSplit.DarkSouls.Controls
 
 				int data = upgrades[itemList.SelectedIndex];
 
-				// Armor can be reinforced, but never modified.
-				if (isArmorTypeSelected)
+				// Armor and flames can be reinforced, but never modified.
+				if (!modsApplicable)
 				{
 					if (data > 0)
 					{
