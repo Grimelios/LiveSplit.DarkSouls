@@ -17,7 +17,7 @@ namespace LiveSplit.DarkSouls.Memory
 		private Process process;
 		private IntPtr handle;
 		private SoulsPointers pointers;
-		
+
 		public bool ProcessHooked { get; private set; }
 
 		public bool Hook()
@@ -126,7 +126,7 @@ namespace LiveSplit.DarkSouls.Memory
 
 				return (flags & mask) != 0;
 			}
-			
+
 			return false;
 		}
 

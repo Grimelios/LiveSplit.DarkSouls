@@ -1,48 +1,48 @@
 ﻿{
 	"Bonfires": [
-			"Anor Londo - Entrance",
-			"Anor Londo - Interior",
-			"Anor Londo - Princess",
-			"Anor Londo - Tomb",
-			"Ash Lake - Entrance",
-			"Ash Lake - Dragon",
-			"Blighttown - Bridge",
-			"Blighttown - Swamp",
-			"Catacombs - Entrance",
-			"Catacombs - Illusion",
-			"Chasm of the Abyss (Manus)",
-			"Crystal Caves (Seath)",
-			"Darkroot Basin",
-			"Darkroot Garden",
-			"Daughter of Chaos",
-			"Demon Ruins - Central",
-			"Demon Ruins - Firesage",
-			"Demon Ruins - Entrance",
-			"Duke's Archives - Balcony",
-			"Duke's Archives - Entrance",
-			"Duke's Archives - Prison",
-			"Firelink Altar",
-			"Firelink Shrine",
-			"Great Hollow",
-			"Lost Izalith - Bed of Chaos",
-			"Lost Izalith - Illusion",
-			"Lost Izalith - Lava Field",
-			"Oolacile Sanctuary",
-			"Oolacile Township - Dungeon",
-			"Oolacile Township - Entrance",
-			"Painted World",
-			"Sanctuary Garden",
-			"Sen's Fortress",
-			"The Abyss",
-			"The Depths",
-			"Tomb of the Giants - Alcove",
-			"Tomb of the Giants - Nito",
-			"Tomb of the Giants - Patches",
-			"Undead Asylum - Courtyard",
-			"Undead Asylum - Interior",
-			"Undead Burg - Entrance",
-			"Undead Burg - Sunlight",
-			"Undead Parish"
+		"Anor Londo - Entrance",
+		"Anor Londo - Interior",
+		"Anor Londo - Princess",
+		"Anor Londo - Tomb",
+		"Ash Lake - Entrance",
+		"Ash Lake - Dragon",
+		"Blighttown - Bridge",
+		"Blighttown - Swamp",
+		"Catacombs - Entrance",
+		"Catacombs - Illusion",
+		"Chasm of the Abyss (Manus)",
+		"Crystal Caves (Seath)",
+		"Darkroot Basin",
+		"Darkroot Garden",
+		"Daughter of Chaos",
+		"Demon Ruins - Central",
+		"Demon Ruins - Firesage",
+		"Demon Ruins - Entrance",
+		"Duke's Archives - Balcony",
+		"Duke's Archives - Entrance",
+		"Duke's Archives - Prison",
+		"Firelink Altar",
+		"Firelink Shrine",
+		"Great Hollow",
+		"Lost Izalith - Bed of Chaos",
+		"Lost Izalith - Illusion",
+		"Lost Izalith - Lava Field",
+		"Oolacile Sanctuary",
+		"Oolacile Township - Dungeon",
+		"Oolacile Township - Entrance",
+		"Painted World",
+		"Sanctuary Garden",
+		"Sen's Fortress",
+		"The Abyss",
+		"The Depths",
+		"Tomb of the Giants - Alcove",
+		"Tomb of the Giants - Nito",
+		"Tomb of the Giants - Patches",
+		"Undead Asylum - Courtyard",
+		"Undead Asylum - Interior",
+		"Undead Burg - Entrance",
+		"Undead Burg - Sunlight",
+		"Undead Parish"
 	],
 
 	"Bosses": [
@@ -144,7 +144,7 @@
 			"- Greatbows -",
 			"Dragonslayer Greatbow|Special",
 			"Gough's Greatbow|Special"
-		], 
+		],
 
 		"Catalysts": [
 			"Beatrice's Catalyst",
@@ -279,7 +279,7 @@
 			"Ghost Blade|Special",
 			"Parrying Dagger|Standard",
 			"Priscilla's Dagger|Special"
-		], 
+		],
 
 		"Embers": [
 			"Chaos Flame Ember",
@@ -299,7 +299,7 @@
 			"Claws|Standard",
 			"Dark Hand|None",
 			"Dragon Bone Fist|Special"
-		], 
+		],
 
 		"Flames": [
 			"Ascended Pyromancy Flame|+5",
@@ -396,7 +396,7 @@
 			"Dragon Greatsword|Special",
 			"Greatsword|Standard",
 			"Zweihander|Standard"
-		], 
+		],
 
 		"Halberds": [
 			"Black Knight Halberd|Special",
@@ -511,7 +511,7 @@
 			"Sack|+10",
 			"Sunlight Maggot|None",
 			"Symbol of Avarice|None"
-		], 
+		],
 
 		"Keys": [
 			"Annex Key",
@@ -716,7 +716,7 @@
 			"Power Within",
 			"Toxic Mist",
 			"Undead Rapport"
-		], 
+		],
 
 		"Rings": [
 			"Bellowing Dragoncrest Ring",
@@ -941,13 +941,13 @@
 			"Thorolund Talisman",
 			"Velka's Talisman"
 		],
-		
+
 		"Whips": [
 			"Guardian Tail|Standard",
 			"Notched Whip|Standard",
 			"Whip|Standard"
 		]
-	}, 
+	},
 
 	"Zones": [
 		"Anor Londo",
@@ -982,5 +982,5 @@
 		"Undead Burg",
 		"Undead Parish",
 		"Valley of Drakes"
-	] 
+	]
 }

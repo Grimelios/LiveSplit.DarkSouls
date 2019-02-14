@@ -18,11 +18,16 @@ namespace LiveSplit.DarkSouls.Controls
 		private const int ControlSpacing = 4;
 		private const int ItemSplitCorrection = 2;
 
+		// This value can be static since only one split can be dragged at one time.
+		private static int dragAnchor;
+
 		private SplitLists lists;
 		private Dictionary<SplitTypes, Func<Control[]>> functionMap;
 		private Dictionary<string, string[]> itemMap;
 		private Dictionary<string, int> modReinforcementMap;
 		private SoulsSplitCollectionControl parent;
+
+		private bool dragActive;
 
 		// Equipment lists need to track upgrade data per item in order to properly update secondary item lines. This
 		// array is updated whenever equipment type changes.
@@ -110,6 +115,8 @@ namespace LiveSplit.DarkSouls.Controls
 		// Indices can be updated if earlier splits are removed.
 		public int Index { get; set; }
 
+		public bool SnapActive { get; private set; }
+
 		public Split ExtractSplit()
 		{
 			var index = splitTypeComboBox.SelectedIndex;
@@ -172,6 +179,41 @@ namespace LiveSplit.DarkSouls.Controls
 
 				((ComboBox)controls[i]).SelectedIndex = data[i];
 			}
+		}
+
+		private void deleteButton_Click(object sender, EventArgs e)
+		{
+			parent.RemoveSplit(Index);
+		}
+
+		private void dragImage_MouseDown(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Left)
+			{
+				int globalY = e.Location.Y + Location.Y;
+
+				dragActive = true;
+				dragAnchor = globalY - Location.Y;
+			}
+		}
+
+		private void dragImage_MouseMove(object sender, MouseEventArgs e)
+		{
+			if (dragActive)
+			{
+				Point globalMouse = e.Location.Plus(Location);
+
+				// Splits can only be dragged vertically.
+				Point location = Location;
+				location.Y = globalMouse.Y - dragAnchor;
+				Location = location;
+			}
+		}
+
+		private void dragImage_MouseUp(object sender, MouseEventArgs e)
+		{
+			dragActive = false;
+			SnapActive = true;
 		}
 
 		private void splitTypeComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -240,11 +282,6 @@ namespace LiveSplit.DarkSouls.Controls
 			}
 
 			previousSplitType = splitType;
-		}
-
-		private void deleteButton_Click(object sender, EventArgs e)
-		{
-			parent.RemoveSplit(Index);
 		}
 
 		private Control[] GetBonfireControls()

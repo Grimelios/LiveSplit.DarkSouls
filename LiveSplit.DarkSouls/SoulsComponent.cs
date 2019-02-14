@@ -37,9 +37,9 @@ namespace LiveSplit.DarkSouls
 
 			splitFunctions = new Dictionary<SplitTypes, Func<int[], bool>>
 			{
-				{ SplitTypes.Bonfire, ProcessBonfire },
-				{ SplitTypes.Boss, ProcessBoss },
-				{ SplitTypes.Events, ProcessEvent }
+				{SplitTypes.Bonfire, ProcessBonfire},
+				{SplitTypes.Boss, ProcessBoss},
+				{SplitTypes.Events, ProcessEvent}
 			};
 		}
 
@@ -72,7 +72,8 @@ namespace LiveSplit.DarkSouls
 		public XmlNode GetSettings(XmlDocument document)
 		{
 			XmlElement root = document.CreateElement("Settings");
-			XmlElement igtElement = document.CreateElementWithInnerText("UseGameTime", masterControl.UseGameTime.ToString());
+			XmlElement igtElement =
+				document.CreateElementWithInnerText("UseGameTime", masterControl.UseGameTime.ToString());
 			XmlElement splitsElement = document.CreateElement("Splits");
 
 			var splits = masterControl.CollectionControl.ExtractSplits();
@@ -265,7 +266,8 @@ namespace LiveSplit.DarkSouls
 						case WorldEvents.Bell1: break;
 						case WorldEvents.Bell2: break;
 
-						default: run.Data = memory.GetClearCount();
+						default:
+							run.Data = memory.GetClearCount();
 							break;
 					}
 

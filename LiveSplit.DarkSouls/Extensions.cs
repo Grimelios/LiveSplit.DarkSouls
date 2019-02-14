@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +16,16 @@ namespace LiveSplit.DarkSouls
 			element.InnerText = value ?? "";
 
 			return element;
+		}
+
+		public static Point Plus(this Point point, Point p)
+		{
+			return new Point(point.X + p.X, point.Y + p.Y);
+		}
+
+		public static Point Minus(this Point point, Point p)
+		{
+			return new Point(point.X - p.X, point.Y - p.Y);
 		}
 	}
 }

@@ -11,7 +11,10 @@ namespace LiveSplit.DarkSouls
 	public class SoulsFactory : IComponentFactory
 	{
 		public string ComponentName => SoulsComponent.DisplayName;
-		public string Description => "Configurable autosplitter and IGT tool for Dark Souls: Prepare To Die Edition. Does not work for the remaster.";
+
+		public string Description =>
+			"Configurable autosplitter and IGT tool for Dark Souls: Prepare To Die Edition. Does not work for the remaster.";
+
 		public string UpdateName => ComponentName;
 		public string XMLURL => UpdateURL + "Updates.xml";
 		public string UpdateURL => "https://raw.githubusercontent.com/Grimelios/LiveSplit.DarkSouls/master/";
