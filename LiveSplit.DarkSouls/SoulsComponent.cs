@@ -28,6 +28,8 @@ namespace LiveSplit.DarkSouls
 		private Dictionary<SplitTypes, Func<int[], bool>> splitFunctions;
 		private RunState run;
 
+		private bool preparedForWarp;
+
 		public SoulsComponent()
 		{
 			splitCollection = new SplitCollection();
@@ -228,7 +230,7 @@ namespace LiveSplit.DarkSouls
 
 		public void Refresh()
 		{
-			if (!memory.ProcessHooked)
+			if (!Hook())
 			{
 				return;
 			}
@@ -272,7 +274,7 @@ namespace LiveSplit.DarkSouls
 
 				case SplitTypes.Boss:
 					run.BossFlag = Flags.OrderedBosses[data[0]];
-					run.IsBossDefeated = memory.IsBossDefeated(run.BossFlag);
+					run.IsBossDefeated = memory.CheckFlag(run.BossFlag);
 
 					break;
 
@@ -285,13 +287,22 @@ namespace LiveSplit.DarkSouls
 				case SplitTypes.Events:
 					switch ((WorldEvents)data[0])
 					{
-						case WorldEvents.Bell1: break;
-						case WorldEvents.Bell2: break;
+						case WorldEvents.Bell1:
+							run.Id = (int)BellFlags.FirstBell;
+							run.Flag = memory.CheckFlag(run.Id);
 
-						default:
-							run.Data = memory.GetClearCount();
 							break;
+
+						case WorldEvents.Bell2:
+							run.Id = (int)BellFlags.SecondBell;
+							run.Flag = memory.CheckFlag(run.Id);
+
+							break;
+
+						default: run.Data = memory.GetClearCount(); break;
 					}
+
+					//run.Target = 
 
 					break;
 
@@ -346,7 +357,7 @@ namespace LiveSplit.DarkSouls
 		{
 			bool previouslyDefeated = run.IsBossDefeated;
 			bool onVictory = data[1] == 0;
-			bool defeated = memory.IsBossDefeated(run.BossFlag);
+			bool defeated = memory.CheckFlag(run.BossFlag);
 
 			run.IsBossDefeated = defeated;
 
@@ -389,10 +400,40 @@ namespace LiveSplit.DarkSouls
 
 		private bool ProcessEvent(int[] data)
 		{
-			int clearCount = run.Data;
+			bool isBell = data[0] <= 2;
 
-			if (memory.GetClearCount() > clearCount)
+			return isBell ? ProcessBell(data) : ProcessEnding(data);
+		}
+
+		private bool ProcessBell(int[] data)
+		{
+			bool rung = memory.CheckFlag(run.Id);
+
+			if (rung && !run.Flag)
 			{
+				run.Flag = true;
+
+				bool onRing = data[1] == 0;
+
+				if (onRing)
+				{
+					return true;
+				}
+
+				preparedForWarp = true;
+			}
+
+			return false;
+		}
+
+		private bool ProcessEnding(int[] data)
+		{
+			int clearCount = memory.GetClearCount();
+
+			if (clearCount > run.Data)
+			{
+				run.Data = clearCount;
+
 				// The player's X coordinate increases as you approach the exit (the exit is at roughly 421).
 				bool isDarkLord = memory.GetPlayerX() > 415;
 				bool isDarkLordTarget = data[0] == 5;

@@ -20,5 +20,8 @@ namespace LiveSplit.DarkSouls.Data
 		public int BossFlag { get; set; }
 		public int Data { get; set; }
 		public int Target { get; set; }
+		public int Id { get; set; }
+
+		public bool Flag { get; set; }
 	}
 }

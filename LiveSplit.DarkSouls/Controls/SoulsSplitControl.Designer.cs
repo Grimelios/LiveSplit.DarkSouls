@@ -74,7 +74,7 @@
             "Bonfire",
             "Boss",
             "Covenant",
-            "Events",
+            "Event",
             "Item",
             "Manual",
             "Zone"});
