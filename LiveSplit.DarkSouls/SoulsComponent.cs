@@ -37,9 +37,10 @@ namespace LiveSplit.DarkSouls
 
 			splitFunctions = new Dictionary<SplitTypes, Func<int[], bool>>
 			{
-				{SplitTypes.Bonfire, ProcessBonfire},
-				{SplitTypes.Boss, ProcessBoss},
-				{SplitTypes.Events, ProcessEvent}
+				{ SplitTypes.Bonfire, ProcessBonfire },
+				{ SplitTypes.Boss, ProcessBoss },
+				{ SplitTypes.Covenant, ProcessCovenant },
+				{ SplitTypes.Events, ProcessEvent }
 			};
 		}
 
@@ -137,6 +138,11 @@ namespace LiveSplit.DarkSouls
 
 		public void Update(IInvalidator invalidator, LiveSplitState state, float width, float height, LayoutMode mode)
 		{
+			if (!Hook())
+			{
+				return;
+			}
+
 			if (timer == null)
 			{
 				timer = new TimerModel();
@@ -153,6 +159,7 @@ namespace LiveSplit.DarkSouls
 					splitCollection.OnSplit();
 					UpdateRunState();
 				};
+
 				state.OnUndoSplit += (sender, args) => { splitCollection.OnUndoSplit(); };
 				state.OnSkipSplit += (sender, args) => { splitCollection.OnSkipSplit(); };
 				state.OnReset += (sender, value) => { splitCollection.OnReset(); };
@@ -200,7 +207,7 @@ namespace LiveSplit.DarkSouls
 			}
 		}
 
-		public void Refresh()
+		private bool Hook()
 		{
 			bool previouslyHooked = memory.ProcessHooked;
 
@@ -216,12 +223,24 @@ namespace LiveSplit.DarkSouls
 				Console.WriteLine("Process unhooked.");
 			}
 
+			return memory.ProcessHooked;
+		}
+
+		public void Refresh()
+		{
 			if (!memory.ProcessHooked)
 			{
 				return;
 			}
 
 			Split split = splitCollection.CurrentSplit;
+
+			var type = split.Type;
+
+			if (type == SplitTypes.Manual)
+			{
+				return;
+			}
 
 			if (splitFunctions[split.Type](split.Data))
 			{
@@ -258,6 +277,9 @@ namespace LiveSplit.DarkSouls
 					break;
 
 				case SplitTypes.Covenant:
+					run.Data = (int)memory.GetCovenant();
+					run.Target = Flags.OrderedCovenants[data[0]];
+
 					break;
 
 				case SplitTypes.Events:
@@ -338,6 +360,28 @@ namespace LiveSplit.DarkSouls
 			// The alternative to splitting on victory is splitting on the first warp after victory.
 			else if (defeated)
 			{
+			}
+
+			return false;
+		}
+
+		private bool ProcessCovenant(int[] data)
+		{
+			bool onJoin = data[1] == 1;
+
+			if (onJoin)
+			{
+				int covenant = (int)memory.GetCovenant();
+
+				if (covenant != run.Data)
+				{
+					run.Data = covenant;
+
+					if (covenant == run.Target)
+					{
+						return true;
+					}
+				}
 			}
 
 			return false;

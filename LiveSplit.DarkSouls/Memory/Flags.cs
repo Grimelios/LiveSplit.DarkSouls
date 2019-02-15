@@ -105,6 +105,16 @@ namespace LiveSplit.DarkSouls.Memory
 
 	public enum CovenantFlags
 	{
+		Chaos = 9,
+		Darkmoon = 8,
+		Darkwraith = 4,
+		Dragon = 5,
+		Forest = 7,
+		Gravelord = 6,
+		None = 0,
+		Princess = 2,
+		Sunlight = 3,
+		WayOfWhite = 1
 	}
 
 	public static class Flags
@@ -192,6 +202,21 @@ namespace LiveSplit.DarkSouls.Memory
 			5, // Sif
 			11810900, // Stray Demon
 			11010901 // Taurus Demons
+		};
+
+		public static readonly int[] OrderedCovenants =
+		{
+			// Note that the Darkmoon covenant is actually "Blade of the Darkmoon" and the Dragon covenant is "Path of
+			// the Dragon".
+			(int)CovenantFlags.Darkmoon,
+			(int)CovenantFlags.Chaos,
+			(int)CovenantFlags.Darkwraith,
+			(int)CovenantFlags.Forest,
+			(int)CovenantFlags.Gravelord,
+			(int)CovenantFlags.Dragon,
+			(int)CovenantFlags.Princess,
+			(int)CovenantFlags.Sunlight,
+			(int)CovenantFlags.WayOfWhite
 		};
 	}
 }

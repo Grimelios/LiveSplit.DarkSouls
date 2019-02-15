@@ -77,6 +77,16 @@ namespace LiveSplit.DarkSouls.Memory
 			return MemoryTools.ReadFloat(handle, pointers.CharacterPosition + 0x10);
 		}
 
+		public void GetItem()
+		{
+			// InventoryStart = pointers.CharacterStats + 0x1B8
+		}
+
+		public CovenantFlags GetCovenant()
+		{
+			return (CovenantFlags)MemoryTools.ReadByte(handle, pointers.CharacterStats + 0x10B);
+		}
+
 		// Note that the last bonfire value doesn't always correspond to a valid bonfire ID.
 		public int GetLastBonfire()
 		{
