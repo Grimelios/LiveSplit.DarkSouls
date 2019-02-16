@@ -30,8 +30,24 @@ namespace LiveSplit.DarkSouls.Controls
 
 		private void clearSplitsButton_Click(object sender, EventArgs e)
 		{
-			splitsPanel.Controls.Clear();
-			UpdateSplitCount();
+			var controls = splitsPanel.Controls;
+
+			bool clear = true;
+
+			// It seems annoying to prompt the player to clear splits when there's only one.
+			if (controls.Count > 1)
+			{
+				DialogResult result = MessageBox.Show("Are you sure you want to clear your splits?", "Clear splits?",
+					MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+				clear = result == DialogResult.Yes;
+			}
+
+			if (clear)
+			{
+				splitsPanel.Controls.Clear();
+				UpdateSplitCount();
+			}
 		}
 
 		private void UpdateSplitCount()
