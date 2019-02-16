@@ -73,7 +73,8 @@ namespace LiveSplit.DarkSouls.Controls
 			// replacement index is found).
 			if (CheckShift(0, dragIndex - 1, out int result))
 			{
-				shadowY = splits[result].Top + splitsPanel.Top;
+				SoulsSplitControl resultSplit = (SoulsSplitControl)splits[result];
+				shadowY = resultSplit.Top + splitsPanel.Top;
 
 				for (int i = result; i < dragIndex; i++)
 				{
@@ -86,8 +87,6 @@ namespace LiveSplit.DarkSouls.Controls
 			// involved this part are decreased by one.
 			else if (CheckShift(dragIndex, splits.Count - 1, out result))
 			{
-				shadowY = splits[result].Top + splitsPanel.Top;
-
 				for (int i = dragIndex; i <= result; i++)
 				{
 					SoulsSplitControl split = (SoulsSplitControl)splits[i];
@@ -95,6 +94,7 @@ namespace LiveSplit.DarkSouls.Controls
 					split.Index--;
 				}
 
+				shadowY = splits[result].Bottom + splitsPanel.Top;
 				result++;
 			}
 
@@ -124,7 +124,7 @@ namespace LiveSplit.DarkSouls.Controls
 			// A dragged split is considered to have changed position when its midpoint crosses into another split's
 			// bounds.
 			int halfHeight = draggedSplit.Height / 2;
-			int draggedY = draggedSplit.Location.Y + halfHeight - splitsPanel.Top;
+			int draggedMidpoint = draggedSplit.Top + halfHeight - splitsPanel.Top;
 
 			var splits = splitsPanel.Controls;
 
@@ -132,7 +132,10 @@ namespace LiveSplit.DarkSouls.Controls
 			{
 				SoulsSplitControl split = (SoulsSplitControl)splits[i];
 
-				if (draggedY > split.Top && draggedY <= split.Bottom)
+				int midpoint = split.Top + split.Height / 2;
+				int delta = Math.Abs(draggedMidpoint - midpoint);
+
+				if (delta < halfHeight)
 				{
 					result = i;
 
