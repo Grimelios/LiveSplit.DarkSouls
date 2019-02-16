@@ -16,9 +16,6 @@ namespace LiveSplit.DarkSouls.Controls
 	{
 		private SoulsSplitControl draggedSplit;
 
-		// As a split is dragged, its index is continuously re-computed in order to properly shift surrounding splits.
-		private int dragIndex;
-
 		public SoulsSplitCollectionControl()
 		{
 			InitializeComponent();
@@ -68,76 +65,79 @@ namespace LiveSplit.DarkSouls.Controls
 			correctedY = Math.Max(correctedY, splitsPanel.Top);
 			correctedY = Math.Min(correctedY, splitsPanel.Bottom - draggedSplit.Height);
 
-			int newIndex = RecomputeDragIndex();
+			var splits = splitsPanel.Controls;
+			int dragIndex = draggedSplit.Index;
+			int shadowY = splitShadow.Top;
 
-			if (newIndex != dragIndex)
+			// This checks splits above the dragged split (meaning those splits should be shifted down if a valid
+			// replacement index is found).
+			if (CheckShift(0, dragIndex - 1, out int result))
 			{
-				var splits = splitsPanel.Controls;
+				shadowY = splits[result].Top + splitsPanel.Top;
 
-				// This means that the held split was dragged down, meaning that in-between splits should be shifted
-				// up.
-				if (newIndex > dragIndex)
+				for (int i = result; i < dragIndex; i++)
 				{
-					int shift = splits[dragIndex].Height;
-
-					for (int i = dragIndex; i < newIndex; i++)
-					{
-						SoulsSplitControl split = (SoulsSplitControl)splits[i];
-						Point point = split.Location;
-						point.Y -= shift;
-						split.Location = point;
-					}
-				}
-				else
-				{
+					SoulsSplitControl split = (SoulsSplitControl)splits[i];
+					split.Top += draggedSplit.Height;
+					split.Index++;
 				}
 
-				dragIndex = newIndex;
+				draggedSplit.Index = result;
 			}
 
 			Point location = draggedSplit.Location;
 			location.Y = correctedY;
 			draggedSplit.Location = location;
+
+			splitShadow.Top = shadowY;
 		}
 
-		private int RecomputeDragIndex()
+		// Note that if this function returns true, result is set to the index that the dragged split should replace
+		// (meaning that in-between splits should shift).
+		private bool CheckShift(int start, int end, out int result)
 		{
-			var splits = splitsPanel.Controls;
-
-			// This indicates that exactly one split has been added (the one currently being dragged).
-			if (splits.Count == 0)
+			if (end < start)
 			{
-				return 0;
+				result = -1;
+
+				return false;
 			}
 
 			// A dragged split is considered to have changed position when its midpoint crosses into another split's
 			// bounds.
-			int draggedY = draggedSplit.Location.Y + draggedSplit.Height / 2;
+			int halfHeight = draggedSplit.Height / 2;
+			int draggedY = draggedSplit.Location.Y + halfHeight - splitsPanel.Top;
 
-			if (draggedY > splits[splits.Count - 1].Bottom + 1)
-			{
-				return splits.Count;
-			}
+			var splits = splitsPanel.Controls;
 
-			for (int i = 0; i < splits.Count; i++)
+			for (int i = start; i <= end; i++)
 			{
 				SoulsSplitControl split = (SoulsSplitControl)splits[i];
 
 				if (draggedY >= split.Top && draggedY <= split.Bottom + 1)
 				{
-					return i;
+					result = i;
+
+					return true;
 				}
 			}
 
-			// This situation should never occur.
-			return -1;
+			result = -1;
+
+			return false;
 		}
 
 		public void Drop()
 		{
-			draggedSplit.Location = splitShadow.Location;
-			splitShadow.Visible = false;
 			Controls.Remove(draggedSplit);
+
+			var controls = splitsPanel.Controls;
+			controls.Add(draggedSplit);
+			controls.SetChildIndex(draggedSplit, draggedSplit.Index);
+
+			draggedSplit.Location = splitShadow.Location.Minus(splitsPanel.Location);
+			draggedSplit = null;
+			splitShadow.Visible = false;
 		}
 
 		public void AddSplit(Split split = null)
