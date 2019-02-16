@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 using System.Xml;
 using LiveSplit.DarkSouls.Data;
 using Newtonsoft.Json;
@@ -408,15 +409,37 @@ namespace LiveSplit.DarkSouls.Controls
 				// This height results in the text box exactly lining up with the adjacent item list dropdown.
 				AutoSize = false,
 				Height = 21,
-				MaxLength = 3
+				MaxLength = 3,
+				TextAlign = HorizontalAlignment.Center
 			};
 
 			// See https://stackoverflow.com/q/463299/7281613.
 			itemCount.KeyPress += (sender, args) =>
 			{
-				if (!char.IsDigit(args.KeyChar))
+				if (!char.IsDigit(args.KeyChar) && args.KeyChar != (char)Keys.Back)
 				{
 					args.Handled = true;
+				}
+			};
+
+			itemCount.GotFocus += (sender, args) =>
+			{
+				itemCount.SelectAll();
+			};
+
+			itemCount.Enter += (sender, args) =>
+			{
+				// See https://stackoverflow.com/a/6857301/7281613. This causes all text to be selected after the click
+				// is processed.
+				BeginInvoke((Action)itemCount.SelectAll);
+			};
+
+			itemCount.LostFocus += (sender, args) =>
+			{
+				// This ensures that the textbox always ends up with a valid value.
+				if (itemCount.Text.Length == 0)
+				{
+					itemCount.Text = "1";
 				}
 			};
 
