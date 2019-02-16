@@ -33,6 +33,7 @@ namespace LiveSplit.DarkSouls.Controls
 		// Equipment lists need to track upgrade data per item in order to properly update secondary item lines. This
 		// array is updated whenever equipment type changes.
 		private int[] upgrades;
+		private int index;
 
 		private bool modsApplicable;
 
@@ -114,7 +115,20 @@ namespace LiveSplit.DarkSouls.Controls
 		}
 
 		// Indices can be updated if earlier splits are removed.
-		public int Index { get; set; }
+		//public int Index { get; set; }
+		public int Index
+		{
+			get => index;
+			set
+			{
+				index = value;
+
+				if (splitDetailsPanel != null && splitDetailsPanel.Controls.Count > 0)
+				{
+					((SoulsDropdown)splitDetailsPanel.Controls[0]).RefreshPrompt(index.ToString());
+				}
+			}
+		}
 
 		public Split ExtractSplit()
 		{

@@ -81,7 +81,25 @@ namespace LiveSplit.DarkSouls.Controls
 					split.Top += draggedSplit.Height;
 					split.Index++;
 				}
+			}
+			// Note that since the dragged split is technically removed from the splits panel, some of the indices
+			// involved this part are decreased by one.
+			else if (CheckShift(dragIndex, splits.Count - 1, out result))
+			{
+				shadowY = splits[result].Top + splitsPanel.Top;
 
+				for (int i = dragIndex; i <= result; i++)
+				{
+					SoulsSplitControl split = (SoulsSplitControl)splits[i];
+					split.Top -= draggedSplit.Height;
+					split.Index--;
+				}
+
+				result++;
+			}
+
+			if (result != -1)
+			{
 				draggedSplit.Index = result;
 			}
 
@@ -114,7 +132,7 @@ namespace LiveSplit.DarkSouls.Controls
 			{
 				SoulsSplitControl split = (SoulsSplitControl)splits[i];
 
-				if (draggedY >= split.Top && draggedY <= split.Bottom + 1)
+				if (draggedY > split.Top && draggedY <= split.Bottom)
 				{
 					result = i;
 
