@@ -13,7 +13,6 @@ using LiveSplit.DarkSouls.Memory;
 using LiveSplit.Model;
 using LiveSplit.UI;
 using LiveSplit.UI.Components;
-using Enum = System.Enum;
 
 namespace LiveSplit.DarkSouls
 {
@@ -42,7 +41,8 @@ namespace LiveSplit.DarkSouls
 				{ SplitTypes.Bonfire, ProcessBonfire },
 				{ SplitTypes.Boss, ProcessBoss },
 				{ SplitTypes.Covenant, ProcessCovenant },
-				{ SplitTypes.Events, ProcessEvent }
+				{ SplitTypes.Event, ProcessEvent },
+				{ SplitTypes.Item, ProcessEvent }
 			};
 		}
 
@@ -140,11 +140,6 @@ namespace LiveSplit.DarkSouls
 
 		public void Update(IInvalidator invalidator, LiveSplitState state, float width, float height, LayoutMode mode)
 		{
-			if (!Hook())
-			{
-				return;
-			}
-
 			if (timer == null)
 			{
 				timer = new TimerModel();
@@ -162,21 +157,30 @@ namespace LiveSplit.DarkSouls
 					UpdateRunState();
 				};
 
-				state.OnUndoSplit += (sender, args) => { splitCollection.OnUndoSplit(); };
-				state.OnSkipSplit += (sender, args) => { splitCollection.OnSkipSplit(); };
+				state.OnUndoSplit += (sender, args) =>
+				{
+					splitCollection.OnUndoSplit();
+					UpdateRunState();
+				};
+
+				state.OnSkipSplit += (sender, args) =>
+				{
+					splitCollection.OnSkipSplit();
+					UpdateRunState();
+				};
+
 				state.OnReset += (sender, value) => { splitCollection.OnReset(); };
 			}
 
 			var phase = state.CurrentPhase;
 
-			if (phase == TimerPhase.NotRunning || phase == TimerPhase.Ended)
+			switch (phase)
 			{
-				return;
-			}
+				case TimerPhase.NotRunning:
+				case TimerPhase.Ended:
+					return;
 
-			if (phase == TimerPhase.Running)
-			{
-				Refresh();
+				case TimerPhase.Running: Refresh(); break;
 			}
 
 			if (masterControl.UseGameTime)
@@ -209,72 +213,42 @@ namespace LiveSplit.DarkSouls
 			}
 		}
 
-		private bool Hook()
-		{
-			bool previouslyHooked = memory.ProcessHooked;
-
-			if (memory.Hook())
-			{
-				if (!previouslyHooked)
-				{
-					Console.WriteLine("Process hooked.");
-				}
-			}
-			else if (previouslyHooked)
-			{
-				Console.WriteLine("Process unhooked.");
-			}
-
-			return memory.ProcessHooked;
-		}
-
-		public void Refresh()
-		{
-			if (!Hook())
-			{
-				return;
-			}
-
-			Split split = splitCollection.CurrentSplit;
-
-			var type = split.Type;
-
-			if (type == SplitTypes.Manual)
-			{
-				return;
-			}
-
-			if (splitFunctions[split.Type](split.Data))
-			{
-				// Timer is null when testing the program from the testing class.
-				timer?.Split();
-			}
-		}
-
 		private void UpdateRunState()
 		{
 			Split split = splitCollection.CurrentSplit;
+
+			if (split == null || split.Type == SplitTypes.Manual || !split.IsValid)
+			{
+				return;
+			}
+
+			preparedForWarp = false;
 
 			int[] data = split.Data;
 
 			switch (split.Type)
 			{
 				case SplitTypes.Bonfire:
-					//run.BonfireFlag = GetEnumValue<BonfireFlags>(data[0]);
-					run.BonfireState = memory.GetBonfireState(run.BonfireFlag);
+					bool onRest = data[1] == 1;
 
-					int bonfireCriteria = data[1];
+					int bonfire = Flags.OrderedBonfires[data[0]];
 
-					if (bonfireCriteria != 1)
+					if (onRest)
 					{
-						//run.TargetBonfireState = GetEnumValue<BonfireStates>(bonfireCriteria);
+						run.Target = bonfire;
+					}
+					else
+					{
+						run.Id = bonfire;
+						run.Data = (int)memory.GetBonfireState((BonfireFlags)run.Id);
+						run.Target = Flags.OrderedBonfireStates[data[1]];
 					}
 
 					break;
 
 				case SplitTypes.Boss:
-					run.BossFlag = Flags.OrderedBosses[data[0]];
-					run.IsBossDefeated = memory.CheckFlag(run.BossFlag);
+					run.Id = Flags.OrderedBosses[data[0]];
+					run.Flag = memory.CheckFlag(run.Id);
 
 					break;
 
@@ -284,7 +258,7 @@ namespace LiveSplit.DarkSouls
 
 					break;
 
-				case SplitTypes.Events:
+				case SplitTypes.Event:
 					switch ((WorldEvents)data[0])
 					{
 						case WorldEvents.Bell1:
@@ -302,8 +276,6 @@ namespace LiveSplit.DarkSouls
 						default: run.Data = memory.GetClearCount(); break;
 					}
 
-					//run.Target = 
-
 					break;
 
 				case SplitTypes.Item:
@@ -314,11 +286,51 @@ namespace LiveSplit.DarkSouls
 			}
 		}
 
+		public void Refresh()
+		{
+			if (!Hook())
+			{
+				return;
+			}
+
+			Split split = splitCollection.CurrentSplit;
+
+			// It's possible for the current split to be null if no splits were configured at all.
+			if (split == null || split.Type == SplitTypes.Manual || !split.IsValid)
+			{
+				return;
+			}
+
+			// This condition covers all split types with warping as an option.
+			if (preparedForWarp)
+			{
+				return;
+			}
+
+			if (splitFunctions[split.Type](split.Data))
+			{
+				// Timer is null when testing the program from the testing class.
+				timer?.Split();
+			}
+		}
+
+		private bool Hook()
+		{
+			bool previouslyHooked = memory.ProcessHooked;
+
+			// It's possible for the timer to be running before Dark Souls is launched. In this case, all splits are
+			// treated as manual until the process is hooked, at which point the run state is updated appropriately.
+			if (memory.Hook() && !previouslyHooked && timer.CurrentState.CurrentPhase == TimerPhase.Running)
+			{
+				UpdateRunState();
+			}
+
+			return memory.ProcessHooked;
+		}
+
 		private bool ProcessBonfire(int[] data)
 		{
 			bool onRest = data[1] == 1;
-
-			int target = Flags.OrderedBonfires[data[0]];
 
 			if (onRest)
 			{
@@ -331,46 +343,51 @@ namespace LiveSplit.DarkSouls
 
 				int animation = memory.GetForcedAnimation();
 
-				// This confirms that the player is resting at a bonfire, but not which bonfire.
+				// This confirms that the player is resting at a bonfire (but not which bonfire).
 				if (restValues.Contains(animation))
 				{
 					int bonfire = memory.GetLastBonfire();
 
 					if (Enum.IsDefined(typeof(BonfireFlags), bonfire))
 					{
-						return bonfire == target;
+						return bonfire == run.Target;
 					}
 				}
 
 				return false;
 			}
 
-			BonfireStates previousState = run.BonfireState;
-			BonfireStates state = memory.GetBonfireState(run.BonfireFlag);
+			int state = (int)memory.GetBonfireState((BonfireFlags)run.Id);
 
-			run.BonfireState = state;
+			if (run.Data != state)
+			{
+				run.Data = state;
 
-			return state != previousState && state == run.TargetBonfireState;
+				return state == run.Target;
+			}
+
+			return false;
 		}
 
 		private bool ProcessBoss(int[] data)
 		{
-			bool previouslyDefeated = run.IsBossDefeated;
-			bool onVictory = data[1] == 0;
-			bool defeated = memory.CheckFlag(run.BossFlag);
+			bool isDefeated = memory.CheckFlag(run.Id);
 
-			run.IsBossDefeated = defeated;
-
-			if (onVictory)
+			if (run.Flag != isDefeated)
 			{
-				if (defeated && !previouslyDefeated)
+				run.Flag = isDefeated;
+
+				if (isDefeated)
 				{
-					return true;
+					bool onVictory = data[1] == 0;
+
+					if (onVictory)
+					{
+						return true;
+					}
+
+					preparedForWarp = true;
 				}
-			}
-			// The alternative to splitting on victory is splitting on the first warp after victory.
-			else if (defeated)
-			{
 			}
 
 			return false;
@@ -409,18 +426,21 @@ namespace LiveSplit.DarkSouls
 		{
 			bool rung = memory.CheckFlag(run.Id);
 
-			if (rung && !run.Flag)
+			if (rung != run.Flag)
 			{
 				run.Flag = true;
 
-				bool onRing = data[1] == 0;
-
-				if (onRing)
+				if (rung)
 				{
-					return true;
-				}
+					bool onRing = data[1] == 0;
 
-				preparedForWarp = true;
+					if (onRing)
+					{
+						return true;
+					}
+
+					preparedForWarp = true;
+				}
 			}
 
 			return false;
@@ -430,15 +450,18 @@ namespace LiveSplit.DarkSouls
 		{
 			int clearCount = memory.GetClearCount();
 
-			if (clearCount > run.Data)
+			if (clearCount != run.Data)
 			{
 				run.Data = clearCount;
 
-				// The player's X coordinate increases as you approach the exit (the exit is at roughly 421).
-				bool isDarkLord = memory.GetPlayerX() > 415;
-				bool isDarkLordTarget = data[0] == 5;
+				if (clearCount > run.Data)
+				{
+					// The player's X coordinate increases as you approach the exit (the exit is at roughly 421).
+					bool isDarkLord = memory.GetPlayerX() > 415;
+					bool isDarkLordTarget = data[0] == 5;
 
-				return isDarkLord == isDarkLordTarget;
+					return isDarkLord == isDarkLordTarget;
+				}
 			}
 
 			return false;

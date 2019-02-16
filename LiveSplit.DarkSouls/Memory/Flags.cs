@@ -125,12 +125,6 @@ namespace LiveSplit.DarkSouls.Memory
 
 	public static class Flags
 	{
-		public static readonly int[] OrderedBellFlags =
-		{
-			(int)BellFlags.FirstBell,
-			(int)BellFlags.SecondBell
-		};
-
 		public static readonly int[] OrderedBonfires =
 		{
 			(int)BonfireFlags.AnorLondoEntrance,
@@ -180,7 +174,9 @@ namespace LiveSplit.DarkSouls.Memory
 
 		public static readonly int[] OrderedBonfireStates =
 		{
+			// The placeholder -1 is required to line up with the bonfire state dropdown.
 			(int)BonfireStates.Lit,
+			-1,
 			(int)BonfireStates.KindledOnce,
 			(int)BonfireStates.KindledTwice,
 			(int)BonfireStates.KindledThrice
@@ -218,7 +214,7 @@ namespace LiveSplit.DarkSouls.Memory
 		public static readonly int[] OrderedCovenants =
 		{
 			// Note that the Darkmoon covenant is actually "Blade of the Darkmoon" and the Dragon covenant is "Path of
-			// the Dragon".
+			// the Dragon" (which changes the alphabetical ordering).
 			(int)CovenantFlags.Darkmoon,
 			(int)CovenantFlags.Chaos,
 			(int)CovenantFlags.Darkwraith,

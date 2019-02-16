@@ -52,7 +52,7 @@ namespace LiveSplit.DarkSouls.Controls
 				{ SplitTypes.Bonfire, GetBonfireControls },
 				{ SplitTypes.Boss, GetBossControls },
 				{ SplitTypes.Covenant, GetCovenantControls },
-				{ SplitTypes.Events, GetEventControls },
+				{ SplitTypes.Event, GetEventControls },
 				{ SplitTypes.Item, GetItemControls },
 				{ SplitTypes.Zone, GetZoneControls }
 			};
