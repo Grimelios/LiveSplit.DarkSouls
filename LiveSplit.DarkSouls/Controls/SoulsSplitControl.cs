@@ -116,8 +116,6 @@ namespace LiveSplit.DarkSouls.Controls
 		// Indices can be updated if earlier splits are removed.
 		public int Index { get; set; }
 
-		public bool SnapActive { get; private set; }
-
 		public Split ExtractSplit()
 		{
 			var index = splitTypeComboBox.SelectedIndex;
@@ -195,6 +193,8 @@ namespace LiveSplit.DarkSouls.Controls
 
 				dragActive = true;
 				dragAnchor = globalY - Location.Y;
+
+				parent.BeginDrag(this);
 			}
 		}
 
@@ -202,19 +202,17 @@ namespace LiveSplit.DarkSouls.Controls
 		{
 			if (dragActive)
 			{
-				Point globalMouse = e.Location.Plus(Location);
+				int globalY = e.Location.Y + Location.Y;
 
 				// Splits can only be dragged vertically.
-				Point location = Location;
-				location.Y = globalMouse.Y - dragAnchor;
-				Location = location;
+				parent.UpdateDrag(globalY - dragAnchor);
 			}
 		}
 
 		private void dragImage_MouseUp(object sender, MouseEventArgs e)
 		{
+			parent.Drop();
 			dragActive = false;
-			SnapActive = true;
 		}
 
 		private void splitTypeComboBox_SelectedIndexChanged(object sender, EventArgs e)

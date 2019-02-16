@@ -34,6 +34,7 @@
 			this.addSplitButton = new System.Windows.Forms.Button();
 			this.splitDetailsLabel = new LiveSplit.DarkSouls.Controls.SoulsLabel();
 			this.splitTypeLabel = new LiveSplit.DarkSouls.Controls.SoulsLabel();
+			this.splitShadow = new System.Windows.Forms.Panel();
 			this.SuspendLayout();
 			// 
 			// splitCountLabel
@@ -99,10 +100,20 @@
 			this.splitTypeLabel.TabIndex = 0;
 			this.splitTypeLabel.Text = "Type";
 			// 
+			// splitShadow
+			// 
+			this.splitShadow.BackColor = System.Drawing.Color.PaleGreen;
+			this.splitShadow.Location = new System.Drawing.Point(314, 10);
+			this.splitShadow.Name = "splitShadow";
+			this.splitShadow.Size = new System.Drawing.Size(100, 21);
+			this.splitShadow.TabIndex = 8;
+			this.splitShadow.Visible = false;
+			// 
 			// SoulsSplitCollectionControl
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.Controls.Add(this.splitShadow);
 			this.Controls.Add(this.splitsPanel);
 			this.Controls.Add(this.splitDetailsLabel);
 			this.Controls.Add(this.splitTypeLabel);
@@ -123,5 +134,6 @@
 		private System.Windows.Forms.Button clearSplitsButton;
 		private System.Windows.Forms.Panel splitsPanel;
 		private System.Windows.Forms.Label splitCountLabel;
+		private System.Windows.Forms.Panel splitShadow;
 	}
 }
