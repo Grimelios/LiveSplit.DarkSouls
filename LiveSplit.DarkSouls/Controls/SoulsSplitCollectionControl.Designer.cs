@@ -103,7 +103,7 @@
 			// splitShadow
 			// 
 			this.splitShadow.BackColor = System.Drawing.Color.PaleGreen;
-			this.splitShadow.Location = new System.Drawing.Point(314, 10);
+			this.splitShadow.Location = new System.Drawing.Point(314, 7);
 			this.splitShadow.Name = "splitShadow";
 			this.splitShadow.Size = new System.Drawing.Size(100, 21);
 			this.splitShadow.TabIndex = 8;
@@ -113,6 +113,7 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.BackColor = System.Drawing.SystemColors.Control;
 			this.Controls.Add(this.splitShadow);
 			this.Controls.Add(this.splitsPanel);
 			this.Controls.Add(this.splitDetailsLabel);

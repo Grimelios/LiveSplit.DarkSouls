@@ -194,6 +194,9 @@ namespace LiveSplit.DarkSouls.Controls
 				dragActive = true;
 				dragAnchor = globalY - Location.Y;
 
+				// This color is very slightly darker than the default and helps the dragged split stand out.
+				BackColor = SystemColors.ControlLight;
+
 				parent.BeginDrag(this);
 			}
 		}
@@ -212,6 +215,7 @@ namespace LiveSplit.DarkSouls.Controls
 		private void dragImage_MouseUp(object sender, MouseEventArgs e)
 		{
 			parent.Drop();
+			BackColor = SystemColors.ButtonFace;
 			dragActive = false;
 		}
 
