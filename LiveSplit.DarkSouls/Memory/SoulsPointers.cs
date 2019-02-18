@@ -24,12 +24,10 @@ namespace LiveSplit.DarkSouls.Memory
 			WorldState = (IntPtr)MemoryTools.ReadInt(handle, (IntPtr)0x13784A0);
 		}
 
-		public IntPtr ClearCount => (IntPtr)0x1378700;
 		public IntPtr Character { get; }
 		public IntPtr CharacterStats { get; }
 		public IntPtr CharacterMap { get; }
 		public IntPtr CharacterPosition { get; }
-		public IntPtr GameTime => (IntPtr)0x1378700;
 		public IntPtr WorldState { get; }
 	}
 }

@@ -18,6 +18,21 @@ namespace LiveSplit.DarkSouls.Memory
 		private IntPtr handle;
 		private SoulsPointers pointers;
 
+		// Tracking items is more complex than other split types. For efficiency (given that inventory items are stored
+		// in a list), addresses of split items are tracked as they are detected.
+		private Dictionary<int, IntPtr> itemTracker;
+
+		// When items are picked up in-game, they're appended to a list in memory (in order). When items are dropped,
+		// however, earlier slots in that list can open up. Picking up new items fills those slots first (before
+		// appending). As such, tracking those open slots allows the code to immediately check new items as they're
+		// acquired (rather than having to loop through the full list from the beginning).
+		private List<int> openSlots;
+
+		public SoulsMemory()
+		{
+			itemTracker = new Dictionary<int, IntPtr>();
+		}
+
 		public bool ProcessHooked { get; private set; }
 
 		public bool Hook()
@@ -43,9 +58,37 @@ namespace LiveSplit.DarkSouls.Memory
 			return ProcessHooked;
 		}
 
+		// This function is called once when the timer starts (or when the process is hooked if the timer was already
+		// running).
+		public void RefreshItems(int[] itemIds)
+		{
+			itemTracker.Clear();
+
+			if (itemIds == null)
+			{
+				return;
+			}
+
+			IntPtr keyStart = pointers.CharacterStats + 0x342;
+			IntPtr itemStart = pointers.CharacterStats + 0xA40;
+			IntPtr address = itemStart;
+
+			int size = GetInventorySize();
+
+			for (int i = 0; i < size; i++)
+			{
+				int id = MemoryTools.ReadInt(handle, address);
+
+				if (itemIds.Contains(id))
+				{
+					itemTracker.Add(id, address);
+				}
+			}
+		}
+
 		public int GetGameTimeInMilliseconds()
 		{
-			IntPtr pointer = (IntPtr)MemoryTools.ReadInt(handle, pointers.GameTime);
+			IntPtr pointer = (IntPtr)MemoryTools.ReadInt(handle, (IntPtr)0x1378700);
 
 			return MemoryTools.ReadInt(handle, IntPtr.Add(pointer, 0x68));
 		}
@@ -60,9 +103,24 @@ namespace LiveSplit.DarkSouls.Memory
 			return MemoryTools.ReadInt(handle, pointers.Character + 0xFC);
 		}
 
+		// Every time the player uses an item that requires a yes/no confirmation box, the ID of the item can be
+		// retreived. That ID remains in place until the item's animation is complete.
+		public int GetPromptedItem()
+		{
+			return MemoryTools.ReadInt(handle, pointers.Character + 0x62C);
+		}
+
+		// "Prompted menu" here refers to the small menu near the bottom of the screen (such as yes/no confirmation
+		// boxes). Each box has a unique ID (based on the text displayed).
+		public int GetPromptedMenu()
+		{
+			// The prompted menu ID is stored using a static address.
+			return MemoryTools.ReadInt(handle, (IntPtr)0xEE33E0);
+		}
+
 		public int GetClearCount()
 		{
-			IntPtr pointer = (IntPtr)MemoryTools.ReadInt(handle, pointers.ClearCount);
+			IntPtr pointer = (IntPtr)MemoryTools.ReadInt(handle, (IntPtr)0x1378700);
 
 			if (pointer == IntPtr.Zero)
 			{
@@ -77,9 +135,29 @@ namespace LiveSplit.DarkSouls.Memory
 			return MemoryTools.ReadFloat(handle, pointers.CharacterPosition + 0x10);
 		}
 
-		public void GetItem()
+		public int GetInventorySize()
 		{
-			// InventoryStart = pointers.CharacterStats + 0x1B8
+			// 0x128 = Count
+			// 0x324 = Keys
+			// 0xA40 = Items
+
+			return MemoryTools.ReadInt(handle, pointers.CharacterStats + 0x128);
+		}
+
+		public ItemState GetItemState(int itemId)
+		{
+			// It's assumed that an item ID will only be queried if it was present in the list of saved splits.
+			IntPtr address = itemTracker[itemId];
+
+			// For upgradeable items, mods and reinforcement are represented through the ID directly. The hundreds
+			// digit (third from the right) represents mods, while the ones digit (far right) represents reinforcement.
+			// All such IDs are at least five digits long.
+			int actualId = MemoryTools.ReadInt(handle, address);
+			int mods = (actualId % 1000) / 100;
+			int reinforcement = actualId % 10;
+			int count = MemoryTools.ReadInt(handle, address + 0x4);
+
+			return new ItemState(mods, reinforcement, count);
 		}
 
 		public CovenantFlags GetCovenant()

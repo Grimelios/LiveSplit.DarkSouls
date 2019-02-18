@@ -320,7 +320,7 @@ namespace LiveSplit.DarkSouls
 
 			// It's possible for the timer to be running before Dark Souls is launched. In this case, all splits are
 			// treated as manual until the process is hooked, at which point the run state is updated appropriately.
-			if (memory.Hook() && !previouslyHooked && timer.CurrentState.CurrentPhase == TimerPhase.Running)
+			if (memory.Hook() && !previouslyHooked && timer?.CurrentState.CurrentPhase == TimerPhase.Running)
 			{
 				UpdateRunState();
 			}
@@ -330,9 +330,12 @@ namespace LiveSplit.DarkSouls
 
 		private bool ProcessBonfire(int[] data)
 		{
-			bool onRest = data[1] == 1;
+			int criteria = data[1];
 
-			if (onRest)
+			bool onRest = criteria == 1;
+			bool onWarp = criteria == 5;
+
+			if (onRest || onWarp)
 			{
 				int[] restValues =
 				{
@@ -348,10 +351,19 @@ namespace LiveSplit.DarkSouls
 				{
 					int bonfire = memory.GetLastBonfire();
 
-					if (Enum.IsDefined(typeof(BonfireFlags), bonfire))
+					if (!Enum.IsDefined(typeof(BonfireFlags), bonfire))
 					{
-						return bonfire == run.Target;
+						return false;
 					}
+
+					if (onWarp)
+					{
+						preparedForWarp = true;
+
+						return false;
+					}
+
+					return bonfire == run.Target;
 				}
 
 				return false;
@@ -359,7 +371,9 @@ namespace LiveSplit.DarkSouls
 
 			int state = (int)memory.GetBonfireState((BonfireFlags)run.Id);
 
-			if (run.Data != state)
+			// Increasing bonfires states (unlit, lit, then the different levels of kindling) always increase the state
+			// value.
+			if (run.Data > state)
 			{
 				run.Data = state;
 
@@ -373,21 +387,18 @@ namespace LiveSplit.DarkSouls
 		{
 			bool isDefeated = memory.CheckFlag(run.Id);
 
-			if (run.Flag != isDefeated)
+			if (isDefeated && !run.Flag)
 			{
-				run.Flag = isDefeated;
+				run.Flag = true;
 
-				if (isDefeated)
+				bool onVictory = data[1] == 0;
+
+				if (onVictory)
 				{
-					bool onVictory = data[1] == 0;
-
-					if (onVictory)
-					{
-						return true;
-					}
-
-					preparedForWarp = true;
+					return true;
 				}
+
+				preparedForWarp = true;
 			}
 
 			return false;
@@ -405,10 +416,7 @@ namespace LiveSplit.DarkSouls
 				{
 					run.Data = covenant;
 
-					if (covenant == run.Target)
-					{
-						return true;
-					}
+					return covenant == run.Target;
 				}
 			}
 
@@ -426,21 +434,18 @@ namespace LiveSplit.DarkSouls
 		{
 			bool rung = memory.CheckFlag(run.Id);
 
-			if (rung != run.Flag)
+			if (rung && !run.Flag)
 			{
 				run.Flag = true;
 
-				if (rung)
+				bool onRing = data[1] == 0;
+
+				if (onRing)
 				{
-					bool onRing = data[1] == 0;
-
-					if (onRing)
-					{
-						return true;
-					}
-
-					preparedForWarp = true;
+					return true;
 				}
+
+				preparedForWarp = true;
 			}
 
 			return false;
@@ -450,18 +455,15 @@ namespace LiveSplit.DarkSouls
 		{
 			int clearCount = memory.GetClearCount();
 
-			if (clearCount != run.Data)
+			if (clearCount == run.Data + 1)
 			{
-				run.Data = clearCount;
+				run.Data++;
 
-				if (clearCount > run.Data)
-				{
-					// The player's X coordinate increases as you approach the exit (the exit is at roughly 421).
-					bool isDarkLord = memory.GetPlayerX() > 415;
-					bool isDarkLordTarget = data[0] == 5;
+				// The player's X coordinate increases as you approach the exit (the exit is at roughly 421).
+				bool isDarkLord = memory.GetPlayerX() > 415;
+				bool isDarkLordTarget = data[0] == 5;
 
-					return isDarkLord == isDarkLordTarget;
-				}
+				return isDarkLord == isDarkLordTarget;
 			}
 
 			return false;

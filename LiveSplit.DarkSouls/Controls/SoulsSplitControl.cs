@@ -298,7 +298,8 @@ namespace LiveSplit.DarkSouls.Controls
 				"On rest",
 				"On kindle (first)",
 				"On kindle (second)",
-				"On kindle (third)"
+				"On kindle (third)",
+				"On warp"
 			}, "Criteria", BonfireCriteriaWidth, false);
 
 			var bonfireList = GetDropdown(lists.Bonfires, "Bonfire", BonfireListWidth);

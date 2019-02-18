@@ -193,6 +193,7 @@ namespace LiveSplit.DarkSouls.Memory
 			(int)BossFlags.Firesage,
 			(int)BossFlags.FourKings,
 			(int)BossFlags.GapingDragon,
+			(int)BossFlags.Gargoyles,
 			(int)BossFlags.Gwyn,
 			(int)BossFlags.Gwyndolin,
 			(int)BossFlags.IronGolem,
