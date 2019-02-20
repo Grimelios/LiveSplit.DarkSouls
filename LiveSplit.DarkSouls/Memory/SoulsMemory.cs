@@ -31,6 +31,7 @@ namespace LiveSplit.DarkSouls.Memory
 		public SoulsMemory()
 		{
 			itemTracker = new Dictionary<int, IntPtr>();
+			openSlots = new List<int>();
 		}
 
 		public bool ProcessHooked { get; private set; }
@@ -76,15 +77,29 @@ namespace LiveSplit.DarkSouls.Memory
 				return;
 			}
 
-			IntPtr keyStart = pointers.CharacterStats + 0x342;
-			IntPtr itemStart = pointers.CharacterStats + 0xA40;
+			// 0 = consumable
+			// 140 = spear
+			// 150 = fist
+			// 196 = dagger (or maybe short sword?)
+			// 200 = sword
+			// 250 = armor (maybe light armor?)
+			// 300 = shield
+			// 450 = helm (maybe heavy armor?)
+
+			IntPtr keyStart = pointers.Inventory + 0x342;
+			IntPtr itemStart = pointers.Inventory + 0xA40;
 			IntPtr address = itemStart;
 
 			int size = GetInventorySize();
-
 			for (int i = 0; i < size; i++)
 			{
-				int id = MemoryTools.ReadInt(handle, address);
+				IntPtr baseItem = address + i * 0x1C;
+
+				int id = MemoryTools.ReadInt(handle, baseItem);
+				int type = MemoryTools.ReadInt(handle, baseItem + 0x1B);
+				int count = MemoryTools.ReadInt(handle, baseItem + 0x4);
+
+				Console.WriteLine($"Id: {id}, Type: {type}, Count: {count}");
 
 				if (itemIds.Contains(id))
 				{
@@ -172,7 +187,10 @@ namespace LiveSplit.DarkSouls.Memory
 			// 0x324 = Keys
 			// 0xA40 = Items
 
-			return MemoryTools.ReadInt(handle, pointers.CharacterStats + 0x128);
+			// All things summed up, the value in memory always seems to be one short of the actual inventory size. My
+			// guess is that the stored value is actually the index of the last item (i.e. the number of 1C jumps
+			// required to fully traverse the item list).
+			return MemoryTools.ReadInt(handle, pointers.Inventory + 0x128) + 1;
 		}
 
 		public ItemState GetItemState(int itemId)
@@ -180,13 +198,22 @@ namespace LiveSplit.DarkSouls.Memory
 			// It's assumed that an item ID will only be queried if it was present in the list of saved splits.
 			IntPtr address = itemTracker[itemId];
 
-			// For upgradeable items, mods and reinforcement are represented through the ID directly. The hundreds
-			// digit (third from the right) represents mods, while the ones digit (far right) represents reinforcement.
-			// All such IDs are at least five digits long.
-			int actualId = MemoryTools.ReadInt(handle, address);
-			int mods = (actualId % 1000) / 100;
-			int reinforcement = actualId % 10;
+			int mods = -1;
+			int reinforcement = -1;
 			int count = MemoryTools.ReadInt(handle, address + 0x4);
+
+			// Items with an ID five digits or greater are upgradeable equipment (weapons, armor, shields, and
+			// pyromancy flames). All other items have shorter IDs.
+			if (itemId / 10000 > 0)
+			{
+				// For upgradeable items, mods and reinforcement are represented through the ID directly. The hundreds
+				// digit (third from the right) represents mods, while the ones digit (far right) represents reinforcement.
+				// All such IDs are at least five digits long.
+				int actualId = MemoryTools.ReadInt(handle, address);
+
+				mods = (actualId % 1000) / 100;
+				reinforcement = actualId % 10;
+			}
 
 			return new ItemState(mods, reinforcement, count);
 		}

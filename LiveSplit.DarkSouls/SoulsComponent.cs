@@ -285,12 +285,27 @@ namespace LiveSplit.DarkSouls
 			}
 		}
 
+		private bool thing = true;
+
 		public void Refresh()
 		{
 			if (!Hook())
 			{
 				return;
 			}
+
+			//memory.RefreshItems(new [] { 330 });
+
+			//var state = memory.GetItemState(330);
+
+			if (thing)
+			{
+				memory.RefreshItems(new [] { 0 });
+
+				thing = false;
+			}
+
+			return;
 
 			Split split = splitCollection.CurrentSplit;
 

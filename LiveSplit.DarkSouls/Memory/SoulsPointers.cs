@@ -13,12 +13,15 @@ namespace LiveSplit.DarkSouls.Memory
 		public SoulsPointers(IntPtr handle)
 		{
 			this.handle = handle;
+
+			Refresh();
 		}
 
 		public IntPtr Character { get; private set; }
 		public IntPtr CharacterStats { get; private set; }
 		public IntPtr CharacterMap { get; private set; }
 		public IntPtr CharacterPosition { get; private set; }
+		public IntPtr Inventory { get; private set; }
 		public IntPtr WorldState { get; private set; }
 
 		public void Refresh()
@@ -34,6 +37,11 @@ namespace LiveSplit.DarkSouls.Memory
 
 			CharacterMap = (IntPtr)MemoryTools.ReadInt(handle, character + 0x28);
 			CharacterPosition = (IntPtr)MemoryTools.ReadInt(handle, CharacterMap + 0x1C);
+
+			IntPtr inventory = (IntPtr)MemoryTools.ReadInt(handle, (IntPtr)0x1378700);
+			inventory = (IntPtr)MemoryTools.ReadInt(handle, inventory + 0x8);
+			Inventory = inventory + 0x1B8;
+
 			WorldState = (IntPtr)MemoryTools.ReadInt(handle, (IntPtr)0x13784A0);
 		}
 	}
