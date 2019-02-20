@@ -25,6 +25,7 @@ namespace LiveSplit.DarkSouls.Controls
 		public void Refresh(Split[] splits, bool useGameTime)
 		{
 			igtCheckbox.Checked = useGameTime;
+			CollectionControl.ClearSplits();
 
 			foreach (var split in splits)
 			{

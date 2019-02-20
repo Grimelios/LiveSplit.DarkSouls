@@ -241,7 +241,8 @@ namespace LiveSplit.DarkSouls
 					break;
 
 				case SplitTypes.Covenant:
-					bool onDiscover = data[1] < 2;
+					// The first and third options involve discovery, while the second and fourth involve joining.
+					bool onDiscover = data[1] % 2 == 0;
 
 					if (onDiscover)
 					{
@@ -470,17 +471,23 @@ namespace LiveSplit.DarkSouls
 
 		private bool ProcessCovenant(int[] data)
 		{
-			switch (data[1])
+			int criteria = data[1];
+
+			bool onDiscovery = criteria % 2 == 0;
+			bool preWarpSatisfied = onDiscovery ? CheckCovenantDiscovery() : CheckCovenantJoin();
+
+			if (preWarpSatisfied)
 			{
-				// On discover
-				case 0: return CheckCovenantDiscovery();
+				bool onWarp = criteria >= 2;
 
-				// On join
-				case 1: return CheckCovenantJoin();
+				if (onWarp)
+				{
+					PrepareWarp();
 
-				// On warp
-				case 2:
-					break;
+					return false;
+				}
+
+				return true;
 			}
 
 			return false;

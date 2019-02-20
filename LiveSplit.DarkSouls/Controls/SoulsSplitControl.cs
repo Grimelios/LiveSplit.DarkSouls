@@ -342,13 +342,14 @@ namespace LiveSplit.DarkSouls.Controls
 		private Control[] GetCovenantControls()
 		{
 			const int CovenantListWidth = 139;
-			const int CovenantCriteriaWidth = 87;
+			const int CovenantCriteriaWidth = 167;
 
 			var covenantCriteria = GetDropdown(new []
 			{
 				"On discover",
 				"On join",
-				"On warp"
+				"On warp (following discovery)",
+				"On warp (following join)"
 			}, "Criteria", CovenantCriteriaWidth, false);
 
 			var covenantList = GetDropdown(lists.Covenants, "Covenants", CovenantListWidth);

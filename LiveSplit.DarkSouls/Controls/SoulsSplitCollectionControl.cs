@@ -230,6 +230,11 @@ namespace LiveSplit.DarkSouls.Controls
 			}
 		}
 
+		public void ClearSplits()
+		{
+			splitsPanel.Controls.Clear();
+		}
+
 		public Split[] ExtractSplits()
 		{
 			var controls = splitsPanel.Controls;
