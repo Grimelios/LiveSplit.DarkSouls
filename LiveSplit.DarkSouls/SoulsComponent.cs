@@ -25,9 +25,11 @@ namespace LiveSplit.DarkSouls
 		private SoulsMemory memory;
 		private SoulsMasterControl masterControl;
 		private Dictionary<SplitTypes, Func<int[], bool>> splitFunctions;
+		private Vector3[] covenantLocations;
 		private RunState run;
 
 		private bool preparedForWarp;
+		private bool isLoadScreenVisible;
 
 		public SoulsComponent()
 		{
@@ -43,6 +45,23 @@ namespace LiveSplit.DarkSouls
 				{ SplitTypes.Covenant, ProcessCovenant },
 				{ SplitTypes.Event, ProcessEvent },
 				{ SplitTypes.Item, ProcessEvent }
+			};
+
+			// This arrau is used for covenant discovery splits. Discovery occurs when the player is prompted to join a
+			// covenant via a yes/no confirmation box. That prompt's appearance can be detected through memory, but
+			// it's shared among all covenants. As such, position is used to narrow down the covenant.
+			covenantLocations = new []
+			{
+				new Vector3(-28, -53, 87), // Way of White (in front of Petrus)
+				new Vector3(9, 29, 121), // Way of White (beside Rhea) 
+				new Vector3(622, 164, 255), // Princess (in front of Gwynevere)
+				new Vector3(36, 12, -32), // Sunlight (in front of the sunlight altar) 
+				new Vector3(93, -311, 4), // Darkwraith (in front of Kaathe)
+				new Vector3(-702, -412, -333), // Dragon (in front of the everlasting dragon)
+				new Vector3(-161, -265, -32), // Gravelord (below Nito)
+				new Vector3(285, -3, -105), // Forest (below Alvina) 
+				new Vector3(430, 60, 255), // Darkmoon (just outside Gwyndolin's boss arena)
+				new Vector3(138, -252, 94) // Chaos (in front of the fair lady)
 			};
 		}
 
@@ -172,44 +191,13 @@ namespace LiveSplit.DarkSouls
 				state.OnReset += (sender, value) => { splitCollection.OnReset(); };
 			}
 
-			var phase = state.CurrentPhase;
-
-			switch (phase)
+			switch (state.CurrentPhase)
 			{
 				case TimerPhase.NotRunning:
 				case TimerPhase.Ended:
 					return;
 
 				case TimerPhase.Running: Refresh(); break;
-			}
-
-			if (masterControl.UseGameTime)
-			{
-				int gameTime = memory.GetGameTimeInMilliseconds();
-				int runTime = run.MaxGameTime;
-				int previousTime = run.GameTime;
-
-				// This condition is only possible during a run when game time isn't increasing (game time resets to
-				// zero on the main menu).
-				bool pause = gameTime == 0 && previousTime > 0;
-				bool unpause = previousTime == 0 && gameTime > 0;
-
-				if (pause && phase == TimerPhase.Running)
-				{
-					timer.Pause();
-					state.IsGameTimePaused = true;
-				}
-				else if (unpause && phase == TimerPhase.Paused)
-				{
-					timer.UndoAllPauses();
-					state.IsGameTimePaused = false;
-				}
-
-				int max = Math.Max(gameTime, runTime);
-
-				state.SetGameTime(TimeSpan.FromMilliseconds(max));
-				run.GameTime = gameTime;
-				run.MaxGameTime = max;
 			}
 		}
 
@@ -253,8 +241,18 @@ namespace LiveSplit.DarkSouls
 					break;
 
 				case SplitTypes.Covenant:
-					run.Data = (int)memory.GetCovenant();
-					run.Target = Flags.OrderedCovenants[data[0]];
+					bool onDiscover = data[1] < 2;
+
+					if (onDiscover)
+					{
+						run.Data = memory.GetPromptedMenu();
+						run.Target = Flags.OrderedCovenants[data[0]];
+					}
+					else
+					{
+						run.Data = (int)memory.GetCovenant();
+						run.Target = Flags.OrderedCovenants[data[0]];
+					}
 
 					break;
 
@@ -301,15 +299,55 @@ namespace LiveSplit.DarkSouls
 				return;
 			}
 
+			/*
+			// The timer is intentionally updated before an autosplit occurs (to ensure the split time is as accurate
+			// as possible).
+			if (masterControl.UseGameTime)
+			{
+				int gameTime = memory.GetGameTimeInMilliseconds();
+				int previousTime = run.GameTime;
+				int previousTime = run.GameTime;
+
+				run.GameTime = gameTime;
+
+				// This condition is only possible during a run when game time isn't increasing (game time resets to
+				// zero on the main menu).
+				bool pause = gameTime == 0 && previousTime > 0;
+				bool unpause = previousTime == 0 && gameTime > 0;
+
+				if (pause && phase == TimerPhase.Running)
+				{
+					timer.Pause();
+					state.IsGameTimePaused = true;
+				}
+				else if (unpause && phase == TimerPhase.Paused)
+				{
+					timer.UndoAllPauses();
+					state.IsGameTimePaused = false;
+				}
+
+				int max = Math.Max(gameTime, runTime);
+
+				state.SetGameTime(TimeSpan.FromMilliseconds(max));
+				run.GameTime = gameTime;
+				run.MaxGameTime = max;
+			}
+			*/
+
 			// This condition covers all split types with warping as an option.
 			if (preparedForWarp)
 			{
+				if (CheckWarp())
+				{
+					// Timer is null when testing the program from the testing class.
+					timer?.Split();
+				}
+
 				return;
 			}
 
 			if (splitFunctions[split.Type](split.Data))
 			{
-				// Timer is null when testing the program from the testing class.
 				timer?.Split();
 			}
 		}
@@ -326,6 +364,32 @@ namespace LiveSplit.DarkSouls
 			}
 
 			return memory.ProcessHooked;
+		}
+
+		private bool CheckWarp()
+		{
+			const int Darksign = 117;
+			const int HomewardBone = 330;
+
+			bool visible = memory.IsLoadScreenVisible();
+			bool previouslyVisible = isLoadScreenVisible;
+
+			isLoadScreenVisible = visible;
+
+			if (!visible || previouslyVisible)
+			{
+				return false;
+			}
+
+			int itemUsed = memory.GetPromptedItem();
+
+			return itemUsed == Darksign || itemUsed == HomewardBone;
+		}
+
+		private void PrepareWarp()
+		{
+			preparedForWarp = true;
+			isLoadScreenVisible = memory.IsLoadScreenVisible();
 		}
 
 		private bool ProcessBonfire(int[] data)
@@ -358,7 +422,7 @@ namespace LiveSplit.DarkSouls
 
 					if (onWarp)
 					{
-						preparedForWarp = true;
+						PrepareWarp();
 
 						return false;
 					}
@@ -398,7 +462,7 @@ namespace LiveSplit.DarkSouls
 					return true;
 				}
 
-				preparedForWarp = true;
+				PrepareWarp();
 			}
 
 			return false;
@@ -406,18 +470,86 @@ namespace LiveSplit.DarkSouls
 
 		private bool ProcessCovenant(int[] data)
 		{
-			bool onJoin = data[1] == 1;
-
-			if (onJoin)
+			switch (data[1])
 			{
-				int covenant = (int)memory.GetCovenant();
+				// On discover
+				case 0: return CheckCovenantDiscovery();
 
-				if (covenant != run.Data)
+				// On join
+				case 1: return CheckCovenantJoin();
+
+				// On warp
+				case 2:
+					break;
+			}
+
+			return false;
+		}
+
+		private bool CheckCovenantDiscovery()
+		{
+			// This radius is arbitrary and could be smaller. All that matters is that the radius is large enough to
+			// account for the maximum distance between any two points from which the player could join a single
+			// covenant. For reference, the largest distance I could find is about 25 units surrounding the ancient
+			// dragon in Ash Lake.
+			const int Radius = 40;
+			const int CovenantPromptId = 121;
+
+			int menu = memory.GetPromptedMenu();
+
+			if (menu != run.Data)
+			{
+				run.Data = menu;
+
+				if (menu == CovenantPromptId)
 				{
-					run.Data = covenant;
+					// At this point, the covenant prompt has appeared, but it's unknown to which covenant the prompt
+					// applies (since all covenants use the same prompt).
+					int closestIndex = -1;
+					float closestDistanceSquared = float.MaxValue;
 
-					return covenant == run.Target;
+					Vector3 playerPosition = memory.GetPlayerPosition();
+
+					for (int i = 0; i < covenantLocations.Length; i++)
+					{
+						float d = playerPosition.ComputeDistanceSquared(covenantLocations[i]);
+
+						// For any covenant, there's a range of positions from which the player can join (i.e. the
+						// interaction radius).
+						if (d <= Radius && d < closestDistanceSquared)
+						{
+							closestDistanceSquared = d;
+							closestIndex = i;
+						}
+					}
+
+					int target = run.Target;
+
+					// Way of White is the only covenant that can be joined from two locations. Conveniently, the first
+					// two locations in the array can both be used for Way of White (since there's no covenant zero).
+					if (closestIndex <= 1)
+					{
+						return target == (int)CovenantFlags.WayOfWhite;
+					}
+
+					// Covenant locations are ordered the same as their corresponding covenant ID (ranging from 1
+					// through 9 inclusive).
+					return closestIndex == target;
 				}
+			}
+
+			return false;
+		}
+
+		private bool CheckCovenantJoin()
+		{
+			int covenant = (int)memory.GetCovenant();
+
+			if (covenant != run.Data)
+			{
+				run.Data = covenant;
+
+				return covenant == run.Target;
 			}
 
 			return false;
@@ -445,7 +577,7 @@ namespace LiveSplit.DarkSouls
 					return true;
 				}
 
-				preparedForWarp = true;
+				PrepareWarp();
 			}
 
 			return false;

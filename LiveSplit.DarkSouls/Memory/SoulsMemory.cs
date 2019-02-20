@@ -37,12 +37,19 @@ namespace LiveSplit.DarkSouls.Memory
 
 		public bool Hook()
 		{
-			if (ProcessHooked && process.HasExited)
+			if (ProcessHooked)
 			{
-				ProcessHooked = false;
-				process = null;
+				if (process.HasExited)
+				{
+					ProcessHooked = false;
+					process = null;
 
-				return false;
+					return false;
+				}
+
+				pointers.Refresh();
+
+				return true;
 			}
 
 			Process[] processes = Process.GetProcessesByName("DARKSOULS");
@@ -112,10 +119,15 @@ namespace LiveSplit.DarkSouls.Memory
 
 		// "Prompted menu" here refers to the small menu near the bottom of the screen (such as yes/no confirmation
 		// boxes). Each box has a unique ID (based on the text displayed).
-		public int GetPromptedMenu()
+		public byte GetPromptedMenu()
 		{
 			// The prompted menu ID is stored using a static address.
-			return MemoryTools.ReadInt(handle, (IntPtr)0xEE33E0);
+			return MemoryTools.ReadByte(handle, (IntPtr)0x12E33E0);
+		}
+
+		public bool IsLoadScreenVisible()
+		{
+			return MemoryTools.ReadBoolean(handle, pointers.WorldState - 0x37EF4);
 		}
 
 		public int GetClearCount()
@@ -130,9 +142,28 @@ namespace LiveSplit.DarkSouls.Memory
 			return MemoryTools.ReadInt(handle, pointer + 0x3C);
 		}
 
+		public Vector3 GetPlayerPosition()
+		{
+			float x = GetPlayerX();
+			float y = GetPlayerY();
+			float z = GetPlayerZ();
+
+			return new Vector3(x, y, z);
+		}
+
 		public float GetPlayerX()
 		{
 			return MemoryTools.ReadFloat(handle, pointers.CharacterPosition + 0x10);
+		}
+
+		public float GetPlayerY()
+		{
+			return MemoryTools.ReadFloat(handle, pointers.CharacterPosition + 0x14);
+		}
+
+		public float GetPlayerZ()
+		{
+			return MemoryTools.ReadFloat(handle, pointers.CharacterPosition + 0x18);
 		}
 
 		public int GetInventorySize()
