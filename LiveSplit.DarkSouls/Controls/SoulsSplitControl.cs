@@ -55,6 +55,7 @@ namespace LiveSplit.DarkSouls.Controls
 				{ SplitTypes.Boss, GetBossControls },
 				{ SplitTypes.Covenant, GetCovenantControls },
 				{ SplitTypes.Event, GetEventControls },
+				{ SplitTypes.Flag, GetFlagControls },
 				{ SplitTypes.Item, GetItemControls },
 				{ SplitTypes.Zone, GetZoneControls }
 			};
@@ -496,6 +497,11 @@ namespace LiveSplit.DarkSouls.Controls
 				eventList,
 				eventCriteria
 			};
+		}
+
+		private Control[] GetFlagControls()
+		{
+			return null;
 		}
 
 		private Control[] GetItemControls()

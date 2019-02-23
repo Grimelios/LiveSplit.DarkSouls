@@ -62,11 +62,11 @@ namespace LiveSplit.DarkSouls.Controls
 
 				if (value.Length == 0)
 				{
+					g.FillRectangle(new SolidBrush(Color.White), bounds);
+
 					return;
 				}
-
-				//e.DrawBackground();
-
+				
 				bool isCategoryLine = value[0] == '-';
 
 				if ((e.State & DrawItemState.Selected) > 0)

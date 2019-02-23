@@ -12,6 +12,7 @@ namespace LiveSplit.DarkSouls.Data
 		Boss,
 		Covenant,
 		Event,
+		Flag,
 		Item,
 		Manual,
 		Zone,
