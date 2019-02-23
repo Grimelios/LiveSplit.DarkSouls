@@ -16,12 +16,42 @@ namespace LiveSplit.DarkSouls.Controls
 	{
 		private SoulsSplitControl draggedSplit;
 
+		private int unfinishedCount;
+		private int previousUnfinishedCount;
+
+		// This value is used on load to make sure splits don't erroneously decrement the unfinished count. Bit of a
+		// sloppy solution, but it works.
+		private bool ignoreOnRefresh;
+
 		public SoulsSplitCollectionControl()
 		{
 			InitializeComponent();
+			UnfinishedCount = 0;
 		}
 
 		public int SplitCount => splitsPanel.Controls.Count;
+
+		// This value is updated by child splits as their details change.
+		public int UnfinishedCount
+		{
+			get => unfinishedCount;
+			set
+			{
+				if (ignoreOnRefresh)
+				{
+					return;
+				}
+
+				previousUnfinishedCount = unfinishedCount;
+
+				// When loading splits from a file, split controls have their data refreshed from a split object. This
+				// can cause the unfinished count to dip into the negatives due to the (wrong) assumption that the
+				// split was previously invalid (when in reality, it just wasn't loaded yet). This check fixes that
+				// problem.
+				unfinishedCount = Math.Max(value, 0);
+				UpdateUnfinishedCount();
+			}
+		}
 
 		private void addSplitButton_Click(object sender, EventArgs e)
 		{
@@ -45,8 +75,7 @@ namespace LiveSplit.DarkSouls.Controls
 
 			if (clear)
 			{
-				splitsPanel.Controls.Clear();
-				UpdateSplitCount();
+				ClearSplits();
 			}
 		}
 
@@ -56,6 +85,30 @@ namespace LiveSplit.DarkSouls.Controls
 
 			splitCountLabel.Text = count + " split" + (count != 1 ? "s" : "");
 			clearSplitsButton.Enabled = count > 0;
+		}
+
+		private void UpdateUnfinishedCount()
+		{
+			// I found pure red and green (255) to be too bright.
+			const int Red = 225;
+
+			if (unfinishedCount > 0)
+			{
+				string s = "split" + (unfinishedCount != 1 ? "s" : "");
+
+				unfinishedSplitsLabel.Text = $"{unfinishedCount} {s} unfinished";
+				unfinishedSplitsLabel.ForeColor = Color.FromArgb(255, Red, 0, 0);
+
+				if (previousUnfinishedCount == 0)
+				{
+					unfinishedSplitsLabel.Visible = true;
+				}
+			}
+			else if (splitsPanel.Controls.Count > 0)
+			{
+				unfinishedSplitsLabel.Text = "All splits finished";
+				unfinishedSplitsLabel.ForeColor = Color.LimeGreen;
+			}
 		}
 
 		public void BeginDrag(SoulsSplitControl split)
@@ -183,15 +236,36 @@ namespace LiveSplit.DarkSouls.Controls
 
 			SoulsSplitControl control = new SoulsSplitControl(this, controls.Count);
 
-			if (split != null)
+			bool nullSplit = split == null;
+
+			if (!nullSplit)
 			{
+				ignoreOnRefresh = true;
 				control.Refresh(split);
+				ignoreOnRefresh = false;
+			}
+			
+			if (nullSplit || !split.IsFinished)
+			{
+				UnfinishedCount++;
 			}
 
 			int y = controls.Count == 0 ? 0 : controls[controls.Count - 1].Bottom;
 
 			control.Location = new Point(0, y);
 			controls.Add(control);
+
+			if (!unfinishedSplitsLabel.Visible)
+			{
+				unfinishedSplitsLabel.Visible = true;
+
+				// If the split was invalid, the label's text and color would have already been updated above (when
+				// incrementing the unfinished count).
+				if (!nullSplit && split.IsFinished)
+				{
+					UpdateUnfinishedCount();
+				}
+			}
 
 			UpdateSplitCount();
 		}
@@ -200,9 +274,21 @@ namespace LiveSplit.DarkSouls.Controls
 		{
 			// This function is only called from split controls, which means the index is guaranteed to be valid.
 			var controls = splitsPanel.Controls;
-			int height = controls[index].Height;
+			var split = (SoulsSplitControl)controls[index];
+
+			int height = split.Height;
 
 			controls.RemoveAt(index);
+
+			if (!split.IsFinished)
+			{
+				UnfinishedCount--;
+			}
+
+			if (controls.Count == 0)
+			{
+				unfinishedSplitsLabel.Visible = false;
+			}
 
 			for (int i = index; i < controls.Count; i++)
 			{
@@ -233,6 +319,11 @@ namespace LiveSplit.DarkSouls.Controls
 		public void ClearSplits()
 		{
 			splitsPanel.Controls.Clear();
+
+			unfinishedCount = 0;
+			unfinishedSplitsLabel.Visible = false;
+
+			UpdateSplitCount();
 		}
 
 		public Split[] ExtractSplits()

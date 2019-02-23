@@ -10,12 +10,24 @@ namespace LiveSplit.DarkSouls.Controls
 {
 	public class SoulsDropdown : ComboBox
 	{
+		private static readonly Color DefaultColor = Color.White;
+		private static readonly Color UnfinishedColor = Color.PaleVioletRed;
+
+		private SoulsSplitControl parent;
+
 		private int previousIndex = -1;
 
-		public SoulsDropdown()
+		// The parent split is null for split type (which is added directly from the forms editor).
+		public SoulsDropdown(SoulsSplitControl parent = null)
 		{
+			this.parent = parent;
+
 			DropDownStyle = ComboBoxStyle.DropDownList;
 			DrawMode = DrawMode.OwnerDrawFixed;
+
+			// When a dropdown is created, it's unfinished by default (because no value is selected).
+			BackColor = UnfinishedColor;
+			ForeColor = SystemColors.ControlText;
 		}
 
 		public string Prompt { get; set; }
@@ -36,7 +48,13 @@ namespace LiveSplit.DarkSouls.Controls
 			if (e.Index == -1)
 			{
 				value = Prompt;
-				textColor = SystemColors.ButtonShadow;
+
+				// Enabled splits with a -1 index have a red-tinted background. On that background, grey text is hard
+				// to read.
+				if (!Enabled)
+				{
+					textColor = SystemColors.ButtonShadow;
+				}
 			}
 			else
 			{
@@ -47,7 +65,7 @@ namespace LiveSplit.DarkSouls.Controls
 					return;
 				}
 
-				e.DrawBackground();
+				//e.DrawBackground();
 
 				bool isCategoryLine = value[0] == '-';
 
@@ -58,6 +76,10 @@ namespace LiveSplit.DarkSouls.Controls
 					Color highlightColor = isCategoryLine ? Color.White : Color.LimeGreen;
 
 					g.FillRectangle(new SolidBrush(highlightColor), bounds);
+				}
+				else
+				{
+					g.FillRectangle(new SolidBrush(Color.White), bounds);
 				}
 
 				if (isCategoryLine)
@@ -75,6 +97,17 @@ namespace LiveSplit.DarkSouls.Controls
 
 			// See http://blog.stevex.net/rendering-text-using-the-net-framework/.
 			TextRenderer.DrawText(g, value, Font, new Point(bounds.X + offsetX, bounds.Y + offsetY), textColor);
+		}
+
+		protected override void OnEnabledChanged(EventArgs e)
+		{
+			const int DisabledLightness = 240;
+
+			BackColor = Enabled
+				? UnfinishedColor
+				: Color.FromArgb(255, DisabledLightness, DisabledLightness, DisabledLightness);
+
+			base.OnEnabledChanged(e);
 		}
 
 		protected override void OnSelectedIndexChanged(EventArgs e)
@@ -103,6 +136,14 @@ namespace LiveSplit.DarkSouls.Controls
 			previousIndex = SelectedIndex;
 
 			base.OnSelectedIndexChanged(e);
+
+			// This function is intentionally called after other callbacks (to ensure other split controls are updated
+			// before the split's finished state is updated).
+			if (SelectedIndex >= 0)
+			{
+				parent?.RefreshFinished();
+				BackColor = DefaultColor;
+			}
 		}
 
 		public void RefreshPrompt(string prompt, bool enabled = false)
@@ -110,6 +151,12 @@ namespace LiveSplit.DarkSouls.Controls
 			Prompt = prompt;
 			Enabled = enabled;
 			SelectedIndex = -1;
+
+			if (enabled)
+			{
+				parent?.RefreshFinished(false);
+				BackColor = UnfinishedColor;
+			}
 
 			// Clearing items also invalidates the control.
 			Items.Clear();

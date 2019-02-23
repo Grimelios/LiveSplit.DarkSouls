@@ -44,6 +44,7 @@ namespace LiveSplit.DarkSouls.Controls
 			this.parent = parent;
 
 			Index = index;
+			previousSplitType = SplitTypes.Unassigned;
 
 			InitializeComponent();
 
@@ -116,6 +117,10 @@ namespace LiveSplit.DarkSouls.Controls
 		// Indices can be updated if earlier splits are removed.
 		public int Index { get; set; }
 
+		// This field helps inform users when any split in the UI is unfinished (through text at the top of the
+		// configuration window).
+		public bool IsFinished { get; private set; }
+
 		public Split ExtractSplit()
 		{
 			var index = splitTypeComboBox.SelectedIndex;
@@ -141,7 +146,12 @@ namespace LiveSplit.DarkSouls.Controls
 						continue;
 					}
 
-					data[i] = ((ComboBox)controls[i]).SelectedIndex;
+					var dropdown = (ComboBox)controls[i];
+					int selectedIndex = dropdown.SelectedIndex;
+
+					// -1 as a selected index isn't always invalid (it's valid if the combo box is disabled). Storing a
+					// positive value in these cases allows splits to determine whether they're actually valid on load.
+					data[i] = dropdown.Enabled ? selectedIndex : (selectedIndex == -1 ? int.MaxValue : selectedIndex);
 				}
 			}
 
@@ -156,7 +166,7 @@ namespace LiveSplit.DarkSouls.Controls
 			{
 				return;
 			}
-
+			
 			splitTypeComboBox.SelectedIndex = (int)type;
 
 			var controls = splitDetailsPanel.Controls;
@@ -176,8 +186,68 @@ namespace LiveSplit.DarkSouls.Controls
 					continue;
 				}
 
-				((ComboBox)controls[i]).SelectedIndex = data[i];
+				var dropdown = (ComboBox)controls[i];
+				int index = data[i];
+				
+				dropdown.SelectedIndex = dropdown.Enabled ? index : (index == int.MaxValue ? -1 : index);
 			}
+
+			// For non-manual splits, the finished state will already have been refreshed (as dropdowns are set).
+			if (type == SplitTypes.Manual)
+			{
+				RefreshFinished(true);
+			}
+		}
+
+		// This function is called from dropdowns in the details section of the split. Some changes (such as the
+		// selected index resetting to -1) are guaranteed to invalidate the split.
+		public void RefreshFinished(bool? value = null)
+		{
+			bool previouslyFinished = IsFinished;
+
+			IsFinished = value ?? ComputeFinished();
+
+			if (IsFinished && !previouslyFinished)
+			{
+				parent.UnfinishedCount--;
+			}
+			else if (previouslyFinished && !IsFinished)
+			{
+				parent.UnfinishedCount++;
+			}
+		}
+
+		private bool ComputeFinished()
+		{
+			var index = splitTypeComboBox.SelectedIndex;
+			var type = index != -1 ? (SplitTypes)index : SplitTypes.Unassigned;
+
+			switch (type)
+			{
+				case SplitTypes.Manual: return true;
+				case SplitTypes.Unassigned: return false;
+			}
+
+			var controls = splitDetailsPanel.Controls;
+
+			for (int i = 0; i < controls.Count; i++)
+			{
+				var control = controls[i];
+
+				// It's impossible for the item count textbox to be invalid (since it only accepts numeric input
+				// and is reset to one when focus is lost).
+				if (!control.Enabled || (type == SplitTypes.Item && i == 2))
+				{
+					continue;
+				}
+
+				if (((ComboBox)control).SelectedIndex == -1)
+				{
+					return false;
+				}
+			}
+
+			return true;
 		}
 
 		private void deleteButton_Click(object sender, EventArgs e)
@@ -226,6 +296,8 @@ namespace LiveSplit.DarkSouls.Controls
 
 		private void OnSplitTypeChange(SplitTypes splitType)
 		{
+			bool previouslyFinished = IsFinished;
+
 			Control[] controls = splitType != SplitTypes.Manual ? functionMap[splitType]() : null;
 			ControlCollection panelControls = splitDetailsPanel.Controls;
 			panelControls.Clear();
@@ -234,13 +306,13 @@ namespace LiveSplit.DarkSouls.Controls
 			{
 				for (int i = 0; i < controls.Length; i++)
 				{
-					Control control = controls[i];
+					var control = controls[i];
 
 					if (i > 0)
 					{
 						control.Location = new Point(controls[i - 1].Bounds.Right + ControlSpacing, 0);
 					}
-
+					
 					panelControls.Add(control);
 				}
 			}
@@ -282,6 +354,22 @@ namespace LiveSplit.DarkSouls.Controls
 				Height = (Height + ItemSplitCorrection) / 2;
 				splitDetailsPanel.Height = (splitDetailsPanel.Height - ControlSpacing) / 2;
 				parent.ShiftSplits(Index + 1);
+			}
+
+			if (previouslyFinished)
+			{
+				// Changing the split type always adds new, empty controls, which means the new split is unfinished by
+				// default (unless it's manual).
+				if (splitType != SplitTypes.Manual)
+				{
+					parent.UnfinishedCount++;
+					IsFinished = false;
+				}
+			}
+			else if (splitType == SplitTypes.Manual)
+			{
+				parent.UnfinishedCount--;
+				IsFinished = true;
 			}
 
 			previousSplitType = splitType;
@@ -370,12 +458,8 @@ namespace LiveSplit.DarkSouls.Controls
 			const int EventListWidth = 88;
 			const int EventCriteriaWidth = 80;
 
-			var eventCriteria = GetDropdown(new []
-			{
-				"On ring",
-				"On warp"
-			}, "Criteria", EventCriteriaWidth, false);
-
+			// Criteria items are added below as needed.
+			var eventCriteria = GetDropdown(null, "Criteria", EventCriteriaWidth, false);
 			var eventList = GetDropdown(new []
 			{
 				"- Bells -",
@@ -389,7 +473,22 @@ namespace LiveSplit.DarkSouls.Controls
 			
 			eventList.SelectedIndexChanged += (sender, args) =>
 			{
-				eventCriteria.Enabled = eventList.SelectedIndex <= 2;
+				if (eventList.SelectedIndex <= 2)
+				{
+					if (eventCriteria.SelectedIndex == -1)
+					{
+						eventCriteria.RefreshPrompt("Criteria", true);
+						eventCriteria.Items.AddRange(new []
+						{
+							"On ring",
+							"On warp"
+						});
+					}
+				}
+				else
+				{
+					eventCriteria.RefreshPrompt("N/A");
+				}
 			};
 
 			return new Control[]
@@ -715,7 +814,7 @@ namespace LiveSplit.DarkSouls.Controls
 
 		private SoulsDropdown GetDropdown(string[] items, string prompt, int width, bool enabled = true)
 		{
-			SoulsDropdown box = new SoulsDropdown
+			SoulsDropdown box = new SoulsDropdown(this)
 			{
 				Enabled = enabled,
 				Width = width,

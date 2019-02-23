@@ -17,16 +17,16 @@ namespace LiveSplit.DarkSouls.Data
 			Type = type;
 			Data = data;
 
-			// A split is considered valid if all dropdowns have valid values. Note that for items with modification or
-			// reinforcement enabled, empty dropdowns are saved as int.MaxValue rather than -1 (in order to keep the 
-			// simple rule that -1 values are always invalid).
-			IsValid = type != SplitTypes.Unassigned && data != null && data.All(d => d >= 0);
+			// A split is considered valid if all dropdowns have valid values (or the split is manual). Note that
+			// disabled dropdowns have their index stored as int.MaxValue rather than -1 (in order to keep the simple
+			// rule that -1 always means unfinished).
+			IsFinished = type == SplitTypes.Manual || (data != null && data.All(d => d >= 0));
 		}
 
 		public SplitTypes Type { get; set; }
 
 		public int[] Data { get; set; }
 
-		public bool IsValid { get; }
+		public bool IsFinished{ get; }
 	}
 }

@@ -183,14 +183,7 @@ namespace LiveSplit.DarkSouls.Memory
 
 		public int GetInventorySize()
 		{
-			// 0x128 = Count
-			// 0x324 = Keys
-			// 0xA40 = Items
-
-			// All things summed up, the value in memory always seems to be one short of the actual inventory size. My
-			// guess is that the stored value is actually the index of the last item (i.e. the number of 1C jumps
-			// required to fully traverse the item list).
-			return MemoryTools.ReadInt(handle, pointers.Inventory + 0x128) + 1;
+			return MemoryTools.ReadInt(handle, pointers.Inventory + 0x128);
 		}
 
 		public ItemState GetItemState(int itemId)

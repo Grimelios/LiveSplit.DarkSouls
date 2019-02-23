@@ -205,7 +205,7 @@ namespace LiveSplit.DarkSouls
 		{
 			Split split = splitCollection.CurrentSplit;
 
-			if (split == null || split.Type == SplitTypes.Manual || !split.IsValid)
+			if (split == null || split.Type == SplitTypes.Manual || !split.IsFinished)
 			{
 				return;
 			}
@@ -284,33 +284,18 @@ namespace LiveSplit.DarkSouls
 					break;
 			}
 		}
-
-		private bool thing = true;
-
+		
 		public void Refresh()
 		{
 			if (!Hook())
 			{
 				return;
 			}
-
-			//memory.RefreshItems(new [] { 330 });
-
-			//var state = memory.GetItemState(330);
-
-			if (thing)
-			{
-				memory.RefreshItems(new [] { 0 });
-
-				thing = false;
-			}
-
-			return;
-
+			
 			Split split = splitCollection.CurrentSplit;
 
 			// It's possible for the current split to be null if no splits were configured at all.
-			if (split == null || split.Type == SplitTypes.Manual || !split.IsValid)
+			if (split == null || split.Type == SplitTypes.Manual || !split.IsFinished)
 			{
 				return;
 			}
@@ -512,9 +497,9 @@ namespace LiveSplit.DarkSouls
 		{
 			// This radius is arbitrary and could be smaller. All that matters is that the radius is large enough to
 			// account for the maximum distance between any two points from which the player could join a single
-			// covenant. For reference, the largest distance I could find is about 25 units surrounding the ancient
+			// covenant. For reference, the largest distance I could find is within the area surrounding the ancient
 			// dragon in Ash Lake.
-			const int Radius = 40;
+			const int Radius = 60;
 			const int CovenantPromptId = 121;
 
 			int menu = memory.GetPromptedMenu();

@@ -123,6 +123,14 @@ namespace LiveSplit.DarkSouls.Memory
 		WayOfWhite = 1
 	}
 
+	public enum InventoryFlags
+	{
+		ItemCount = 0x128,
+		ItemStart = 0xA24,
+		KeyCount = 0x12C,
+		KeyStart = 0x234
+	}
+
 	public static class Flags
 	{
 		public static readonly int[] OrderedBonfires =
