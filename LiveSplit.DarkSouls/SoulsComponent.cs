@@ -31,6 +31,11 @@ namespace LiveSplit.DarkSouls
 		private bool preparedForWarp;
 		private bool isLoadScreenVisible;
 
+		// This variable tracks whether the player confirmed a warp from a bonfire prompt. The data used to detect this
+		// state (beginning a bonfire warp) doesn't persist up to the loading screen's appearance, so it needs to be
+		// tracked separately.
+		private bool isBonfireWarpActive;
+
 		public SoulsComponent()
 		{
 			splitCollection = new SplitCollection();
@@ -211,17 +216,21 @@ namespace LiveSplit.DarkSouls
 			}
 
 			preparedForWarp = false;
+			isBonfireWarpActive = false;
 
 			int[] data = split.Data;
 
 			switch (split.Type)
 			{
 				case SplitTypes.Bonfire:
-					bool onRest = data[1] == 1;
+					int criteria = data[1];
+
+					bool onRest = criteria == 1;
+					bool onWarp = criteria == 5;
 
 					int bonfire = Flags.OrderedBonfires[data[0]];
 
-					if (onRest)
+					if (onRest || onWarp)
 					{
 						run.Target = bonfire;
 					}
@@ -284,14 +293,14 @@ namespace LiveSplit.DarkSouls
 					break;
 			}
 		}
-		
+
 		public void Refresh()
 		{
 			if (!Hook())
 			{
 				return;
 			}
-			
+
 			Split split = splitCollection.CurrentSplit;
 
 			// It's possible for the current split to be null if no splits were configured at all.
@@ -367,10 +376,25 @@ namespace LiveSplit.DarkSouls
 			return memory.ProcessHooked;
 		}
 
+		private void PrepareWarp()
+		{
+			preparedForWarp = true;
+			isLoadScreenVisible = memory.IsLoadScreenVisible();
+		}
+
 		private bool CheckWarp()
 		{
 			const int Darksign = 117;
 			const int HomewardBone = 330;
+			const int BonfireWarpPrompt = 80;
+			const int BonfireWarpAnimation = 7725;
+
+			if (!isBonfireWarpActive)
+			{
+				// This state becomes true for just a moment when the player confirms a bonfire warp.
+				isBonfireWarpActive = memory.GetPromptedMenu() == BonfireWarpPrompt &&
+					memory.GetForcedAnimation() == BonfireWarpAnimation;
+			}
 
 			bool visible = memory.IsLoadScreenVisible();
 			bool previouslyVisible = isLoadScreenVisible;
@@ -382,15 +406,25 @@ namespace LiveSplit.DarkSouls
 				return false;
 			}
 
+			// Note that for bonfire warp splits, this point will only be reached if the player is resting at the
+			// correct bonfire.
+			if (isBonfireWarpActive)
+			{
+				isBonfireWarpActive = false;
+
+				return true;
+			}
+
+			// This point in the code can only be reached via an on-warp bonfire split (meaning that warp items are
+			// irrelevant).
+			if (splitCollection.CurrentSplit.Type == SplitTypes.Bonfire)
+			{
+				return false;
+			}
+
 			int itemUsed = memory.GetPromptedItem();
 
 			return itemUsed == Darksign || itemUsed == HomewardBone;
-		}
-
-		private void PrepareWarp()
-		{
-			preparedForWarp = true;
-			isLoadScreenVisible = memory.IsLoadScreenVisible();
 		}
 
 		private bool ProcessBonfire(int[] data)
@@ -421,14 +455,16 @@ namespace LiveSplit.DarkSouls
 						return false;
 					}
 
-					if (onWarp)
+					bool correctBonfire = bonfire == run.Target;
+
+					if (correctBonfire && onWarp)
 					{
 						PrepareWarp();
 
 						return false;
 					}
 
-					return bonfire == run.Target;
+					return correctBonfire;
 				}
 
 				return false;
