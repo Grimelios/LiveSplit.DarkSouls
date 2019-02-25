@@ -35,6 +35,7 @@ namespace LiveSplit.DarkSouls.Controls
 		protected override void OnDrawItem(DrawItemEventArgs e)
 		{
 			const int SeparatorPadding = 2;
+			const int UnfinishedTextColor = 80;
 
 			string value;
 
@@ -54,6 +55,12 @@ namespace LiveSplit.DarkSouls.Controls
 				if (!Enabled)
 				{
 					textColor = SystemColors.ButtonShadow;
+				}
+				else
+				{
+					// Making the text a bit more grey helps indicate that it's a prompt rather than a valid value, I
+					// think (even with the reddish background).
+					textColor = Color.FromArgb(255, UnfinishedTextColor, UnfinishedTextColor, UnfinishedTextColor);
 				}
 			}
 			else
