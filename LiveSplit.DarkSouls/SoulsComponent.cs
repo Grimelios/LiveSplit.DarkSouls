@@ -36,6 +36,10 @@ namespace LiveSplit.DarkSouls
 		// tracked separately.
 		private bool isBonfireWarpActive;
 
+		// Most warp splits detect an event, then wait for a warp to occur. Bonfire warp splits are unique in that the
+		// "prepared for warp" state can be reverted if the player leaves the target bonfire.
+		private bool bonfireWarpSplit;
+
 		public SoulsComponent()
 		{
 			splitCollection = new SplitCollection();
@@ -217,6 +221,7 @@ namespace LiveSplit.DarkSouls
 
 			preparedForWarp = false;
 			isBonfireWarpActive = false;
+			bonfireWarpSplit = false;
 
 			int[] data = split.Data;
 
@@ -233,6 +238,7 @@ namespace LiveSplit.DarkSouls
 					if (onRest || onWarp)
 					{
 						run.Target = bonfire;
+						bonfireWarpSplit = onWarp;
 					}
 					else
 					{
@@ -293,14 +299,14 @@ namespace LiveSplit.DarkSouls
 					break;
 			}
 		}
-
+		
 		public void Refresh()
 		{
 			if (!Hook())
 			{
 				return;
 			}
-
+			
 			Split split = splitCollection.CurrentSplit;
 
 			// It's possible for the current split to be null if no splits were configured at all.
@@ -347,6 +353,27 @@ namespace LiveSplit.DarkSouls
 			// This condition covers all split types with warping as an option.
 			if (preparedForWarp)
 			{
+				if (bonfireWarpSplit)
+				{
+					int[] leaveValues =
+					{
+						(int)AnimationFlags.BonfireLeave1,
+						(int)AnimationFlags.BonfireLeave2,
+						(int)AnimationFlags.BonfireLeave3
+					};
+
+					int animation = memory.GetForcedAnimation();
+
+					// Without this check, the player could rest at a target bonfire (without warping), then warp from
+					// another bonfire and have the tool incorrectly split.
+					if (leaveValues.Contains(animation))
+					{
+						preparedForWarp = false;
+
+						return;
+					}
+				}
+
 				if (CheckWarp())
 				{
 					// Timer is null when testing the program from the testing class.
@@ -387,13 +414,12 @@ namespace LiveSplit.DarkSouls
 			const int Darksign = 117;
 			const int HomewardBone = 330;
 			const int BonfireWarpPrompt = 80;
-			const int BonfireWarpAnimation = 7725;
 
 			if (!isBonfireWarpActive)
 			{
 				// This state becomes true for just a moment when the player confirms a bonfire warp.
 				isBonfireWarpActive = memory.GetPromptedMenu() == BonfireWarpPrompt &&
-					memory.GetForcedAnimation() == BonfireWarpAnimation;
+					memory.GetForcedAnimation() == (int)AnimationFlags.BonfireWarp;
 			}
 
 			bool visible = memory.IsLoadScreenVisible();

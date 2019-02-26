@@ -8,10 +8,16 @@ namespace LiveSplit.DarkSouls.Memory
 {
 	public enum AnimationFlags
 	{
+		// These three flags are matched with their respective sitting animations below.
+		BonfireLeave1 = 7702,
+		BonfireLeave2 = 7712,
+		BonfireLeave3 = 7722,
+
 		// These three flags correspond to all possible sitting styles the player can take when resting at a bonfire.
 		BonfireSit1 = 7700,
 		BonfireSit2 = 7710,
-		BonfireSit3 = 7720
+		BonfireSit3 = 7720,
+		BonfireWarp = 7725
 	}
 
 	public enum BellFlags

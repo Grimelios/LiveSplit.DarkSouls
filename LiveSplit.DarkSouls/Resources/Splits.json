@@ -237,7 +237,6 @@
 			"Egg Vermifuge",
 			"Elizabeth's Mushroom",
 			"Estus Flask",
-			"Fire Keeper Soul",
 			"Green Blossom",
 			"Gold Pine Resin",
 			"Homeward Bone",
@@ -663,8 +662,8 @@
 			"Red Titanite Chunk",
 			"Red Titanite Slab",
 			"Titanite Chunk",
-			"Titanite Slab",
 			"Titanite Shard",
+			"Titanite Slab",
 			"Twinkling Titanite",
 			"White Titanite Chunk",
 			"White Titanite Slab"
@@ -874,10 +873,10 @@
 			"Soul of Quelaag",
 			"",
 			"- Key Boss Souls -",
-			"Bequeathed Lord Soul Shard",
-			"Soul of Bed of Chaos",
 			"Soul of Gravelord Nito",
-			"Soul of Seath the Scaleless"
+			"Soul of Seath the Scaleless",
+			"Soul of the Bed of Chaos",
+			"Soul of the Four Kings"
 		],
 
 		"Spears": [
