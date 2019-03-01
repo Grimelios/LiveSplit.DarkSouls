@@ -18,21 +18,10 @@ namespace LiveSplit.DarkSouls.Memory
 		private IntPtr handle;
 		private SoulsPointers pointers;
 
-		// Tracking items is more complex than other split types. For efficiency (given that inventory items are stored
-		// in a list), addresses of split items are tracked as they are detected.
-		private Dictionary<int, IntPtr> itemTracker;
-
-		// When items are picked up in-game, they're appended to a list in memory (in order). When items are dropped,
-		// however, earlier slots in that list can open up. Picking up new items fills those slots first (before
-		// appending). As such, tracking those open slots allows the code to immediately check new items as they're
-		// acquired (rather than having to loop through the full list from the beginning).
-		private List<int> openSlots;
-
-		public SoulsMemory()
-		{
-			itemTracker = new Dictionary<int, IntPtr>();
-			openSlots = new List<int>();
-		}
+		// Tracking items is a bit complex. It makes more sense for the memory class to manage that complexity rather
+		// than the main component class.
+		private ItemTracker keyTracker;
+		private ItemTracker itemTracker;
 
 		public bool ProcessHooked { get; private set; }
 
@@ -58,17 +47,34 @@ namespace LiveSplit.DarkSouls.Memory
 			if (processes.Length > 0)
 			{
 				process = processes[0];
+
+				if (process.HasExited)
+				{
+					return false;
+				}
+
 				handle = process.Handle;
 				pointers = new SoulsPointers(handle);
+
+				keyTracker = new ItemTracker(pointers, handle, (int)InventoryFlags.KeyStart,
+					(int)InventoryFlags.KeyCount);
+				itemTracker = new ItemTracker(pointers, handle, (int)InventoryFlags.ItemStart,
+					(int)InventoryFlags.ItemCount);
+
 				ProcessHooked = true;
 			}
 
 			return ProcessHooked;
 		}
 
-		// This function is called once when the timer starts (or when the process is hooked if the timer was already
-		// running).
-		public void RefreshItems(int[] itemIds)
+		// This function is called once per update tick if item splits are in use (regardless of whether an item split
+		// is active). In contrast, the function below effectively resets the tracker at the start of a new run.
+		public void RefreshItems()
+		{
+			itemTracker.Refresh();
+		}
+
+		public void SetItems(List<ItemId> itemIds)
 		{
 			itemTracker.Clear();
 
@@ -76,6 +82,8 @@ namespace LiveSplit.DarkSouls.Memory
 			{
 				return;
 			}
+
+			itemTracker.SetItems(itemIds);
 
 			// 0 = consumable
 			// 140 = spear
@@ -86,11 +94,7 @@ namespace LiveSplit.DarkSouls.Memory
 			// 300 = shield
 			// 450 = helm (maybe heavy armor?)
 
-			IntPtr keyStart = pointers.Inventory + 0x342;
-			IntPtr itemStart = pointers.Inventory + 0xA40;
-			IntPtr address = itemStart;
-
-			int size = GetInventorySize();
+			/*
 			for (int i = 0; i < size; i++)
 			{
 				IntPtr baseItem = address + i * 0x1C;
@@ -105,6 +109,37 @@ namespace LiveSplit.DarkSouls.Memory
 				{
 					itemTracker.Add(id, address);
 				}
+			}
+			*/
+		}
+
+		public ItemState[] GetItemStates(int baseId, int category)
+		{
+			// Key items don't share IDs with any other items (except for a few mystery items, but those aren't
+			// included in the autosplitter UI).
+			ItemTracker tracker = Enum.IsDefined(typeof(KeyFlags), baseId) ? keyTracker : itemTracker;
+
+			return tracker.GetItemStates(baseId, category);
+		}
+
+		public void ItemTest()
+		{
+			IntPtr address = pointers.Inventory + (int)InventoryFlags.ItemStart;
+
+			int count = MemoryTools.ReadInt(handle, pointers.Inventory + (int)InventoryFlags.ItemCount);
+
+			Console.WriteLine("Count: " + count);
+			Console.WriteLine("-");
+
+			for (int i = 0; i < count; i++)
+			{
+				int id = MemoryTools.ReadInt(handle, address);
+				int category = MemoryTools.ReadByte(handle, address - 0x1);
+				int itemCount = MemoryTools.ReadInt(handle, address + 0x4);
+
+				Console.WriteLine($"Id: {id}, Category: {category.ToString("X")[0]}, Count: {itemCount}");
+
+				address += 0x1C;
 			}
 		}
 
@@ -179,36 +214,6 @@ namespace LiveSplit.DarkSouls.Memory
 		public float GetPlayerZ()
 		{
 			return MemoryTools.ReadFloat(handle, pointers.CharacterPosition + 0x18);
-		}
-
-		public int GetInventorySize()
-		{
-			return MemoryTools.ReadInt(handle, pointers.Inventory + 0x128);
-		}
-
-		public ItemState GetItemState(int itemId)
-		{
-			// It's assumed that an item ID will only be queried if it was present in the list of saved splits.
-			IntPtr address = itemTracker[itemId];
-
-			int mods = -1;
-			int reinforcement = -1;
-			int count = MemoryTools.ReadInt(handle, address + 0x4);
-
-			// Items with an ID five digits or greater are upgradeable equipment (weapons, armor, shields, and
-			// pyromancy flames). All other items have shorter IDs.
-			if (itemId / 10000 > 0)
-			{
-				// For upgradeable items, mods and reinforcement are represented through the ID directly. The hundreds
-				// digit (third from the right) represents mods, while the ones digit (far right) represents reinforcement.
-				// All such IDs are at least five digits long.
-				int actualId = MemoryTools.ReadInt(handle, address);
-
-				mods = (actualId % 1000) / 100;
-				reinforcement = actualId % 10;
-			}
-
-			return new ItemState(mods, reinforcement, count);
 		}
 
 		public CovenantFlags GetCovenant()

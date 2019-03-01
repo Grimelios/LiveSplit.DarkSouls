@@ -53,7 +53,7 @@ namespace LiveSplit.DarkSouls
 				{ SplitTypes.Boss, ProcessBoss },
 				{ SplitTypes.Covenant, ProcessCovenant },
 				{ SplitTypes.Event, ProcessEvent },
-				{ SplitTypes.Item, ProcessEvent }
+				{ SplitTypes.Item, ProcessItem }
 			};
 
 			// This arrau is used for covenant discovery splits. Discovery occurs when the player is prompted to join a
@@ -293,19 +293,53 @@ namespace LiveSplit.DarkSouls
 					break;
 
 				case SplitTypes.Item:
+					int rawId = ItemFlags.MasterList[data[0]][data[1]];
+					int digit = rawId;
+					int divisor = 1;
+
+					// See https://stackoverflow.com/a/701355/7281613.
+					while (digit > 10)
+					{
+						digit /= 10;
+						divisor *= 10;
+					}
+
+					// Item 
+					int count = data[2];
+					int category = digit;
+					int mods = data[3];
+					int reinforcement = data[4];
+
+					// The data field of the run state isn't otherwise used for item splits, so it's used to store item
+					// category (required to differentiate between items with the same ID).
+					run.Id = rawId % divisor;
+					run.Data = category;
+					run.ItemTarget = new ItemState(mods, reinforcement, count);
+
 					break;
 
 				case SplitTypes.Zone:
 					break;
 			}
 		}
-		
+
+		private bool test;
+
 		public void Refresh()
 		{
 			if (!Hook())
 			{
 				return;
 			}
+
+			if (!test)
+			{
+				memory.SetItems(new List<ItemId>());
+
+				test = true;
+			}
+
+			return;
 			
 			Split split = splitCollection.CurrentSplit;
 
@@ -666,6 +700,32 @@ namespace LiveSplit.DarkSouls
 
 				return isDarkLord == isDarkLordTarget;
 			}
+
+			return false;
+		}
+
+		private bool ProcessItem(int[] data)
+		{
+			ItemState[] states = memory.GetItemStates(run.Id, run.Data);
+
+			/*
+			// Null is returned if the target item isn't currently in the inventory (either because it hasn't been
+			// acquired yet or because it was dropped).
+			if (state != null && state.Satisfies(run.ItemTarget))
+			{
+				bool onWarp = data[5] == 1;
+
+				// The alternative to "On warp" is "On acquisition".
+				if (onWarp)
+				{
+					PrepareWarp();
+
+					return false;
+				}
+
+				return true;
+			}
+			*/
 
 			return false;
 		}

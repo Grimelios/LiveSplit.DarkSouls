@@ -3,9 +3,31 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LiveSplit.DarkSouls.Data;
 
 namespace LiveSplit.DarkSouls.Memory
 {
+	// Important note about all item flags: item category (see the list below) is embedded into each flag as the flag's
+	// highest digit. For example, the Bloodbite Ring (ID 109) has a category of 20 (as a hex byte), so its enum value
+	// is 2109. This category is extracted and stored as needed to allow the autosplitter to distinguish between
+	// multiple items with a shared ID.
+	//
+	// Also note that most item categories share values. All that really matters is that those categories are distinct
+	// among items that share an ID.
+	//
+	// Armor = 0x10,
+	// Consumable = 0x40,
+	// Key = 0x40,
+	// Material = 0x40,
+	// MeleeWeapon = 0x00,
+	// RangedWeapon = 0x00,
+	// Ring = 0x20,
+	// Shield = 0x00,
+	// Spell = 0x40,
+	// SpellTool = 0x00,
+	// Usable = 0x40
+	//
+
 	public enum AmmunitionFlags
 	{
 		DragonslayerArrow = 2007000,
@@ -225,6 +247,8 @@ namespace LiveSplit.DarkSouls.Memory
 	{
 	}
 
+	// Key flags don't actually need their category embedded (since keys are located in a separate array in memory),
+	// but it's simpler to use them anyway.
 	public enum KeyFlags
 	{
 		AnnexKey = 2009,
@@ -289,7 +313,7 @@ namespace LiveSplit.DarkSouls.Memory
 		BlackSeparationCrystal = 103,
 		BlueEyeOrb = 113,
 		BookOfTheGuilty = 108,
-		CrackedRedEyeOrb,
+		CrackedRedEyeOrb = 111,
 		DragonEye = 114,
 		Indictment = 373,
 		OrangeGuidanceSoapstone = 106,
@@ -355,47 +379,47 @@ namespace LiveSplit.DarkSouls.Memory
 
 	public enum RingFlags
 	{
-		BellowingDragoncrestRing = 115,
-		BloodbiteRing = 109,
-		BlueTearstoneRing = 147,
-		CalamityRing = 150,
-		CatCovenantRing = 103,
-		CloranthyRing = 104,
-		CovenantofArtorias = 138,
-		CovetousGoldSerpentRing = 121,
-		CovetousSilverSerpentRing = 122,
-		CursebiteRing = 113,
-		DarkmoonBladeCovenantRing = 102,
-		DarkmoonSeanceRing = 149,
-		DarkWoodGrainRing = 128,
-		DuskCrownRing = 116,
-		EastWoodGrainRing = 145,
-		FlameStoneplateRing = 105,
-		HavelsRing = 100,
-		HawkRing = 119,
-		HornetRing = 117,
-		LeoRing = 144,
-		LingeringDragoncrestRing = 141,
-		OldWitchsRing = 137,
-		OrangeCharredRing = 139,
-		PoisonbiteRing = 110,
-		RedTearstoneRing = 101,
-		RareRingofSacrifice = 127,
-		RingOfFavorAndProtection = 143,
-		RingOfFog = 124,
-		RingOfSacrifice = 126,
-		RingOfSteelProtection = 120,
-		RingOfTheEvilEye = 142,
-		RingOfTheSunPrincess = 130,
-		RingOfTheSunsFirstborn = 148,
-		RustedIronRing = 125,
-		SlumberingDragoncrestRing = 123,
-		SpeckledStoneplateRing = 108,
-		SpellStoneplateRing = 107,
-		TinyBeingsRing = 111,
-		ThunderStoneplateRing = 106,
-		WhiteSeanceRing = 114,
-		WolfRing = 146
+		BellowingDragoncrestRing = 2115,
+		BloodbiteRing = 2109,
+		BlueTearstoneRing = 2147,
+		CalamityRing = 2150,
+		CatCovenantRing = 2103,
+		CloranthyRing = 2104,
+		CovenantofArtorias = 2138,
+		CovetousGoldSerpentRing = 2121,
+		CovetousSilverSerpentRing = 2122,
+		CursebiteRing = 2113,
+		DarkmoonBladeCovenantRing = 2102,
+		DarkmoonSeanceRing = 2149,
+		DarkWoodGrainRing = 2128,
+		DuskCrownRing = 2116,
+		EastWoodGrainRing = 2145,
+		FlameStoneplateRing = 2105,
+		HavelsRing = 2100,
+		HawkRing = 2119,
+		HornetRing = 2117,
+		LeoRing = 2144,
+		LingeringDragoncrestRing = 2141,
+		OldWitchsRing = 2137,
+		OrangeCharredRing = 2139,
+		PoisonbiteRing = 2110,
+		RedTearstoneRing = 2101,
+		RareRingofSacrifice = 2127,
+		RingOfFavorAndProtection = 2143,
+		RingOfFog = 2124,
+		RingOfSacrifice = 2126,
+		RingOfSteelProtection = 2120,
+		RingOfTheEvilEye = 2142,
+		RingOfTheSunPrincess = 2130,
+		RingOfTheSunsFirstborn = 2148,
+		RustedIronRing = 2125,
+		SlumberingDragoncrestRing = 2123,
+		SpeckledStoneplateRing = 2108,
+		SpellStoneplateRing = 2107,
+		TinyBeingsRing = 2111,
+		ThunderStoneplateRing = 2106,
+		WhiteSeanceRing = 2114,
+		WolfRing = 2146
 	}
 
 	public enum ShieldFlags
@@ -960,6 +984,37 @@ namespace LiveSplit.DarkSouls.Memory
 			(int)WhipFlags.GuardianTail,
 			(int)WhipFlags.NotchedWhip,
 			(int)WhipFlags.Whip
+		};
+
+		public static readonly int[][] MasterList =
+		{
+			OrderedAmmunition,
+			OrderedAxes,
+			OrderedBonfireItems,
+			OrderedBows,
+			OrderedCatalysts,
+			OrderedConsumables,
+			OrderedCovenantItems,
+			OrderedCrossbows,
+			OrderedDaggers,
+			OrderedEmbers,
+			OrderedFistItems,
+			OrderedFlames,
+			OrderedGreatswords,
+			OrderedHalberds,
+			OrderedHammers,
+			OrderedKeys,
+			OrderedMiracles,
+			OrderedMultiplayerItems,
+			OrderedOres,
+			OrderedProjectiles,
+			OrderedPyromancies,
+			OrderedRings,
+			OrderedSorceries,
+			OrderedSouls,
+			OrderedSpears,
+			OrderedTalismans,
+			OrderedWhips
 		};
 	}
 }
