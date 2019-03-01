@@ -53,11 +53,9 @@ namespace LiveSplit.DarkSouls.Data
 		// already running). The list of item IDs is pulled from the UI.
 		public void SetItems(List<ItemId> itemIds)
 		{
-			tracker.Clear();
-			totalItems = MemoryTools.ReadInt(handle, itemCount);
+			Clear();
 
-			Console.WriteLine("Total items: " + totalItems);
-			Console.WriteLine("-");
+			totalItems = MemoryTools.ReadInt(handle, itemCount);
 
 			// It's simpler to add each list at the start (since each one will become relevant at some point anyway,
 			// assuming the splits are correctly configured).
@@ -71,46 +69,27 @@ namespace LiveSplit.DarkSouls.Data
 			{
 				ItemId id = ComputeItemId(address);
 
-				Console.Write($"[{slot}]: ");
-
-				int temp = MemoryTools.ReadInt(handle, address);
-
-				if (temp != -1)
-				{
-					Console.Write($"Raw: {temp}, Base: {id.BaseId}, Category: {id.Category}");
-				}
-
 				int index = itemIds.IndexOf(id);
 
 				// If this function is called, it's assumed that at least one ID is given (rather than an empty list).
 				if (index >= 0)
 				{
-					Console.WriteLine(" (tracked)");
-
 					tracker[id].Add(address);
 					itemIds.RemoveAt(index);
 				}
 				else if (id.BaseId == -1)
 				{
-					Console.WriteLine("Open");
-
 					openSlots.AddLast(slot);
 
 					// This trick ensures that all slots are reached.
 					i--;
 				}
-				else
-				{
-					Console.WriteLine();
-				}
-
+				
 				address += Step;
 				slot++;
 			}
 
 			totalSlots = slot;
-
-			Console.WriteLine();
 		}
 
 		public void Refresh()
@@ -129,8 +108,6 @@ namespace LiveSplit.DarkSouls.Data
 				// the list if no slots are available).
 				if (newTotal > totalItems)
 				{
-					Console.WriteLine("New total: " + newTotal);
-
 					// It's pretty common to acquire multiple items at once (such as an entire armor set).
 					int pickupCount = newTotal - totalItems;
 
@@ -155,13 +132,9 @@ namespace LiveSplit.DarkSouls.Data
 						// Items not in the current set of splits are irrelevant for tracking purposes.
 						if (!tracker.TryGetValue(id, out List<IntPtr> list))
 						{
-							Console.WriteLine($"Item [BaseId: {id.BaseId}, Category: {id.Category}] ignored (slot: {itemIndex})");
-
 							continue;
 						}
-
-						Console.WriteLine($"Item [BaseId: {id.BaseId}, Category: {id.Category}] tracked (slot: {itemIndex})");
-
+						
 						list.Add(address);
 					}
 				}
@@ -187,6 +160,18 @@ namespace LiveSplit.DarkSouls.Data
 						{
 							int rawId = MemoryTools.ReadInt(handle, address);
 
+							foreach (var list in tracker.Values)
+							{
+								int index = list.IndexOf(address);
+
+								if (index >= 0)
+								{
+									list.RemoveAt(index);
+									
+									break;
+								}
+							}
+
 							// Decrementing values here ensures the values are correct for the next outer loop
 							// iteration.
 							itemIndex--;
@@ -194,8 +179,6 @@ namespace LiveSplit.DarkSouls.Data
 
 							if (openNode != null && itemIndex < openNode.Value - 1)
 							{
-								Console.WriteLine("Skipping open slot " + (itemIndex + 2));
-
 								openNode = openNode.Previous;
 							}
 
@@ -226,17 +209,11 @@ namespace LiveSplit.DarkSouls.Data
 									openSlots.InsertSorted(itemIndex + 1);
 								}
 
-								Console.WriteLine($"Open slot added ({itemIndex + 1})");
-
 								break;
 							}
 						}
 					}
 				}
-
-				Console.WriteLine("Total slots: " + totalSlots);
-				Console.WriteLine("-");
-				Console.WriteLine();
 
 				totalItems = newTotal;
 			}

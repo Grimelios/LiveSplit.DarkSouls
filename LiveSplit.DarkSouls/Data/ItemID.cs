@@ -19,8 +19,12 @@ namespace LiveSplit.DarkSouls.Data
 
 		public bool Equals(ItemId other)
 		{
-			// By design, null checks and self-equality checks aren't needed.
 			return BaseId == other.BaseId && Category == other.Category;
+		}
+
+		public override int GetHashCode()
+		{
+			return new Tuple<int, int>(BaseId, Category).GetHashCode();
 		}
 	}
 }

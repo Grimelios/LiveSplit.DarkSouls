@@ -335,6 +335,7 @@ namespace LiveSplit.DarkSouls
 			if (!test)
 			{
 				List<ItemId> list = new List<ItemId>();
+				list.Add(new ItemId(1004000, 0));
 
 				memory.SetItems(list);
 				test = true;
