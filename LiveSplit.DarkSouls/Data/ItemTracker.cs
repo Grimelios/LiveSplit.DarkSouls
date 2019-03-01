@@ -26,8 +26,12 @@ namespace LiveSplit.DarkSouls.Data
 		// instead. Tracking open slots as total item count changes allows new items to be checked more efficiently
 		// (rather than looping through the full item list).
 		private LinkedList<int> openSlots;
-		
-		private int total;
+
+		// The total slot count needs to be tracked separately from item count. If items are dropped, the item count
+		// decreases even though the total length of the array remains unchanged (unless the last item in the array was
+		// lost).
+		private int totalItems;
+		private int totalSlots;
 
 		public ItemTracker(SoulsPointers pointers, IntPtr handle, int start, int count)
 		{
@@ -50,50 +54,70 @@ namespace LiveSplit.DarkSouls.Data
 		public void SetItems(List<ItemId> itemIds)
 		{
 			tracker.Clear();
-			total = MemoryTools.ReadInt(handle, itemCount);
+			totalItems = MemoryTools.ReadInt(handle, itemCount);
 
-			Console.WriteLine("Total: " + total);
+			Console.WriteLine("Total items: " + totalItems);
+			Console.WriteLine("-");
+
+			// It's simpler to add each list at the start (since each one will become relevant at some point anyway,
+			// assuming the splits are correctly configured).
+			itemIds.ForEach(id => tracker.Add(id, new List<IntPtr>()));
 
 			IntPtr address = itemStart;
 
-			for (int i = 0; i < total; i++)
-			{
-				Console.Write($"[{i}]: ");
+			int slot = 0;
 
+			for (int i = 0; i < totalItems; i++)
+			{
 				ItemId id = ComputeItemId(address);
+
+				Console.Write($"[{slot}]: ");
+
+				int temp = MemoryTools.ReadInt(handle, address);
+
+				if (temp != -1)
+				{
+					Console.Write($"Raw: {temp}, Base: {id.BaseId}, Category: {id.Category}");
+				}
 
 				int index = itemIds.IndexOf(id);
 
 				// If this function is called, it's assumed that at least one ID is given (rather than an empty list).
 				if (index >= 0)
 				{
-					if (tracker.TryGetValue(id, out List<IntPtr> list))
-					{
-						list.Add(address);
-					}
-					else
-					{
-						tracker.Add(id, new List<IntPtr> { address });
-					}
+					Console.WriteLine(" (tracked)");
 
+					tracker[id].Add(address);
 					itemIds.RemoveAt(index);
 				}
 				else if (id.BaseId == -1)
 				{
 					Console.WriteLine("Open");
 
-					openSlots.AddLast(i);
+					openSlots.AddLast(slot);
+
+					// This trick ensures that all slots are reached.
+					i--;
+				}
+				else
+				{
+					Console.WriteLine();
 				}
 
 				address += Step;
+				slot++;
 			}
+
+			totalSlots = slot;
+
+			Console.WriteLine();
 		}
 
 		public void Refresh()
 		{
 			int newTotal = MemoryTools.ReadInt(handle, itemCount);
 
-			if (newTotal != total)
+			if (newTotal != totalItems)
 			{
 				// This variable is used for two different purposes. For new items, it tracks the index of all newly-
 				// acquired items. For drops, it's used as a loop index to find new open slots.
@@ -103,10 +127,12 @@ namespace LiveSplit.DarkSouls.Data
 
 				// When a new item is acquired, it goes into the first available slot (or it's appended to the end of
 				// the list if no slots are available).
-				if (newTotal > total)
+				if (newTotal > totalItems)
 				{
+					Console.WriteLine("New total: " + newTotal);
+
 					// It's pretty common to acquire multiple items at once (such as an entire armor set).
-					int pickupCount = newTotal - total;
+					int pickupCount = newTotal - totalItems;
 
 					for (int i = 0; i < pickupCount; i++)
 					{
@@ -118,42 +144,89 @@ namespace LiveSplit.DarkSouls.Data
 						}
 						else
 						{
-							itemIndex = total;
+							itemIndex = totalSlots;
+							totalSlots++;
 						}
 
 						address = itemStart + itemIndex * Step;
 
-						int id = MemoryTools.ReadInt(handle, address);
-						int category = MemoryTools.ReadInt(handle, address - 0x1);
-						int count = MemoryTools.ReadInt(handle, address + 0x4);
+						ItemId id = ComputeItemId(address);
+
+						// Items not in the current set of splits are irrelevant for tracking purposes.
+						if (!tracker.TryGetValue(id, out List<IntPtr> list))
+						{
+							Console.WriteLine($"Item [BaseId: {id.BaseId}, Category: {id.Category}] ignored (slot: {itemIndex})");
+
+							continue;
+						}
+
+						Console.WriteLine($"Item [BaseId: {id.BaseId}, Category: {id.Category}] tracked (slot: {itemIndex})");
+
+						list.Add(address);
 					}
 				}
+				// This means that items were lost (dropped, sold, etc.).
 				else
 				{
 					// I'm fairly certain that only one item can be removed from the inventory at one time (via drop or
 					// giving items to an NPC), but I'm not completely sure. A loop guarantees that the autosplitter's
 					// internal inventory state remains correct.
-					int dropCount = total - newTotal;
+					int dropCount = totalItems - newTotal;
 
-					itemIndex = 0;
-					address = itemStart;
+					// See the comment below (about looping backwards).
+					itemIndex = totalSlots - 1;
+					address = itemStart + itemIndex * Step;
 
 					for (int i = 0; i < dropCount; i++)
 					{
-						while (itemIndex < newTotal)
+						LinkedListNode<int> openNode = openSlots.Last;
+
+						// Looping backwards allows the total slots to be decreased correctly if items were dropped
+						// from the end of the array.
+						while (itemIndex >= 0)
 						{
-							int id = MemoryTools.ReadInt(handle, address);
+							int rawId = MemoryTools.ReadInt(handle, address);
 
-							// Incrementing values here ensures the values are correct for the next outer loop iteration.
-							itemIndex++;
-							address += Step;
+							// Decrementing values here ensures the values are correct for the next outer loop
+							// iteration.
+							itemIndex--;
+							address -= Step;
 
-							// Empty inventory slots have an ID of -1 (equivalent to 4B+ as an unsigned value).
-							if (id == -1)
+							if (openNode != null && itemIndex < openNode.Value - 1)
 							{
-								openSlots.InsertSorted(itemIndex - 1);
+								Console.WriteLine("Skipping open slot " + (itemIndex + 2));
 
-								Console.WriteLine($"Open slot added ({itemIndex - 1})");
+								openNode = openNode.Previous;
+							}
+
+							// Empty inventory slots have an ID of -1 (equivalent to 4B+ as an unsigned integer).
+							if (rawId == -1)
+							{
+								// This check ensures that the same open slot isn't accidentally added twice.
+								if (openNode != null && itemIndex + 1 == openNode.Value)
+								{
+									continue;
+								}
+
+								// Note that the index was already decremented above.
+								if (itemIndex == totalSlots - 2)
+								{
+									totalSlots--;
+
+									// This loop allows the tracked inventory to shrink as much as possible if there
+									// are a series of open slots at the end.
+									while (openSlots.Count > 0 && openSlots.Last.Value == totalSlots - 1)
+									{
+										openSlots.RemoveLast();
+										totalSlots--;
+									}
+								}
+								else
+								{
+									openSlots.InsertSorted(itemIndex + 1);
+								}
+
+								Console.WriteLine($"Open slot added ({itemIndex + 1})");
 
 								break;
 							}
@@ -161,7 +234,11 @@ namespace LiveSplit.DarkSouls.Data
 					}
 				}
 
-				total = newTotal;
+				Console.WriteLine("Total slots: " + totalSlots);
+				Console.WriteLine("-");
+				Console.WriteLine();
+
+				totalItems = newTotal;
 			}
 		}
 
@@ -216,11 +293,6 @@ namespace LiveSplit.DarkSouls.Data
 			else
 			{
 				baseId = rawId;
-			}
-
-			if (rawId != -1)
-			{
-				Console.WriteLine($"Raw: {rawId}, Base: {baseId}, Category: {category}");
 			}
 
 			return new ItemId(baseId, category);

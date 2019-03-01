@@ -334,10 +334,13 @@ namespace LiveSplit.DarkSouls
 
 			if (!test)
 			{
-				memory.SetItems(new List<ItemId>());
+				List<ItemId> list = new List<ItemId>();
 
+				memory.SetItems(list);
 				test = true;
 			}
+
+			memory.RefreshItems();
 
 			return;
 			
