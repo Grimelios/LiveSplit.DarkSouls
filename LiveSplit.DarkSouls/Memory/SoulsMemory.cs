@@ -84,33 +84,6 @@ namespace LiveSplit.DarkSouls.Memory
 			}
 
 			itemTracker.SetItems(itemIds);
-
-			// 0 = consumable
-			// 140 = spear
-			// 150 = fist
-			// 196 = dagger (or maybe short sword?)
-			// 200 = sword
-			// 250 = armor (maybe light armor?)
-			// 300 = shield
-			// 450 = helm (maybe heavy armor?)
-
-			/*
-			for (int i = 0; i < size; i++)
-			{
-				IntPtr baseItem = address + i * 0x1C;
-
-				int id = MemoryTools.ReadInt(handle, baseItem);
-				int type = MemoryTools.ReadInt(handle, baseItem + 0x1B);
-				int count = MemoryTools.ReadInt(handle, baseItem + 0x4);
-
-				Console.WriteLine($"Id: {id}, Type: {type}, Count: {count}");
-
-				if (itemIds.Contains(id))
-				{
-					itemTracker.Add(id, address);
-				}
-			}
-			*/
 		}
 
 		public ItemState[] GetItemStates(int baseId, int category)
@@ -120,27 +93,6 @@ namespace LiveSplit.DarkSouls.Memory
 			ItemTracker tracker = Enum.IsDefined(typeof(KeyFlags), baseId) ? keyTracker : itemTracker;
 
 			return tracker.GetItemStates(baseId, category);
-		}
-
-		public void ItemTest()
-		{
-			IntPtr address = pointers.Inventory + (int)InventoryFlags.ItemStart;
-
-			int count = MemoryTools.ReadInt(handle, pointers.Inventory + (int)InventoryFlags.ItemCount);
-
-			Console.WriteLine("Count: " + count);
-			Console.WriteLine("-");
-
-			for (int i = 0; i < count; i++)
-			{
-				int id = MemoryTools.ReadInt(handle, address);
-				int category = MemoryTools.ReadByte(handle, address - 0x1);
-				int itemCount = MemoryTools.ReadInt(handle, address + 0x4);
-
-				Console.WriteLine($"Id: {id}, Category: {category.ToString("X")[0]}, Count: {itemCount}");
-
-				address += 0x1C;
-			}
 		}
 
 		public int GetGameTimeInMilliseconds()

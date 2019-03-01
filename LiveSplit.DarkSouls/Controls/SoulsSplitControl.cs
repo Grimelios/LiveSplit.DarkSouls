@@ -19,47 +19,15 @@ namespace LiveSplit.DarkSouls.Controls
 		private const int ControlSpacing = 4;
 		private const int ItemSplitCorrection = 2;
 
+		private static SplitLists lists;
+		private static Dictionary<string, string[]> itemMap;
+		private static Dictionary<string, int> modReinforcementMap;
+
 		// This value can be static since only one split can be dragged at one time.
 		private static int dragAnchor;
 
-		private SplitLists lists;
-		private Dictionary<SplitTypes, Func<Control[]>> functionMap;
-		private Dictionary<string, string[]> itemMap;
-		private Dictionary<string, int> modReinforcementMap;
-		private SoulsSplitCollectionControl parent;
-
-		private bool dragActive;
-
-		// Equipment lists need to track upgrade data per item in order to properly update secondary item lines. This
-		// array is updated whenever equipment type changes.
-		private int[] upgrades;
-
-		private bool modsApplicable;
-
-		// Tracking this value is required to properly shrink item splits that swap to a different type.
-		private SplitTypes previousSplitType;
-
-		public SoulsSplitControl(SoulsSplitCollectionControl parent, int index)
+		static SoulsSplitControl()
 		{
-			this.parent = parent;
-
-			Index = index;
-			previousSplitType = SplitTypes.Unassigned;
-
-			InitializeComponent();
-
-			lists = JsonConvert.DeserializeObject<SplitLists>(Resources.Splits);
-			functionMap = new Dictionary<SplitTypes, Func<Control[]>>()
-			{
-				{ SplitTypes.Bonfire, GetBonfireControls },
-				{ SplitTypes.Boss, GetBossControls },
-				{ SplitTypes.Covenant, GetCovenantControls },
-				{ SplitTypes.Event, GetEventControls },
-				{ SplitTypes.Flag, GetFlagControls },
-				{ SplitTypes.Item, GetItemControls },
-				{ SplitTypes.Zone, GetZoneControls }
-			};
-
 			modReinforcementMap = new Dictionary<string, int>
 			{
 				{ "Basic", 15 },
@@ -73,6 +41,8 @@ namespace LiveSplit.DarkSouls.Controls
 				{ "Occult", 5 },
 				{ "Raw", 5 }
 			};
+
+			lists = JsonConvert.DeserializeObject<SplitLists>(Resources.Splits);
 
 			var items = lists.Items;
 
@@ -113,6 +83,41 @@ namespace LiveSplit.DarkSouls.Controls
 				{ "Talismans", items.Talismans },
 				{ "Whips", items.Whips },
 			};
+		}
+
+		private Dictionary<SplitTypes, Func<Control[]>> functionMap;
+		private SoulsSplitCollectionControl parent;
+
+		private bool dragActive;
+
+		// Equipment lists need to track upgrade data per item in order to properly update secondary item lines. This
+		// array is updated whenever equipment type changes.
+		private int[] upgrades;
+
+		private bool modsApplicable;
+
+		// Tracking this value is required to properly shrink item splits that swap to a different type.
+		private SplitTypes previousSplitType;
+
+		public SoulsSplitControl(SoulsSplitCollectionControl parent, int index)
+		{
+			this.parent = parent;
+
+			Index = index;
+			previousSplitType = SplitTypes.Unassigned;
+
+			InitializeComponent();
+
+			functionMap = new Dictionary<SplitTypes, Func<Control[]>>()
+			{
+				{ SplitTypes.Bonfire, GetBonfireControls },
+				{ SplitTypes.Boss, GetBossControls },
+				{ SplitTypes.Covenant, GetCovenantControls },
+				{ SplitTypes.Event, GetEventControls },
+				{ SplitTypes.Flag, GetFlagControls },
+				{ SplitTypes.Item, GetItemControls },
+				{ SplitTypes.Zone, GetZoneControls }
+			};	
 		}
 
 		// Indices can be updated if earlier splits are removed.
@@ -564,8 +569,8 @@ namespace LiveSplit.DarkSouls.Controls
 			{
 				"- Armor -",
 				"Chest Pieces",
-				"Helmets",
 				"Gauntlets",
+				"Helmets",
 				"Leggings",
 				"",
 				"- Magic -",
@@ -599,6 +604,7 @@ namespace LiveSplit.DarkSouls.Controls
 				"Ore",
 				"",
 				"- Weapons -",
+				"Axes",
 				"Bows",
 				"Crossbows",
 				"Daggers",

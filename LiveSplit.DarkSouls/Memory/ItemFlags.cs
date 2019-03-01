@@ -600,6 +600,10 @@ namespace LiveSplit.DarkSouls.Memory
 			(int)CatalystFlags.TinDarkmoonCatalyst
 		};
 
+		public static readonly int[] OrderedChestPieces =
+		{
+		};
+
 		public static readonly int[] OrderedConsumables =
 		{
 			-1,
@@ -684,6 +688,10 @@ namespace LiveSplit.DarkSouls.Memory
 			(int)FlameFlags.PyromancyFlameAscended
 		};
 
+		public static readonly int[] OrderedGauntlets =
+		{
+		};
+
 		public static readonly int[] OrderedGreatswords =
 		{
 			-1,
@@ -749,6 +757,10 @@ namespace LiveSplit.DarkSouls.Memory
 			(int)HammerFlags.SmoughsHammer
 		};
 
+		public static readonly int[] OrderedHelmets =
+		{
+		};
+
 		public static readonly int[] OrderedKeys =
 		{
 			(int)KeyFlags.AnnexKey,
@@ -775,6 +787,10 @@ namespace LiveSplit.DarkSouls.Memory
 			(int)KeyFlags.UndeadAsylumF2EastKey,
 			(int)KeyFlags.UndeadAsylumF2WestKey,
 			(int)KeyFlags.WatchtowerBasementKey
+		};
+
+		public static readonly int[] OrderedLeggings =
+		{
 		};
 
 		public static readonly int[] OrderedMiracles =
@@ -918,6 +934,10 @@ namespace LiveSplit.DarkSouls.Memory
 			(int)RingFlags.WolfRing
 		};
 
+		public static readonly int[] OrderedShields =
+		{
+		};
+
 		public static readonly int[] OrderedSorceries =
 		{
 			(int)SorceryFlags.AuralDecoy,
@@ -968,6 +988,10 @@ namespace LiveSplit.DarkSouls.Memory
 			(int)SpearFlags.WingedSpear
 		};
 
+		public static readonly int[] OrderedSwords =
+		{
+		};
+
 		public static readonly int[] OrderedTalismans =
 		{
 			(int)TalismanFlags.CanvasTalisman,
@@ -988,32 +1012,50 @@ namespace LiveSplit.DarkSouls.Memory
 
 		public static readonly int[][] MasterList =
 		{
-			OrderedAmmunition,
-			OrderedAxes,
-			OrderedBonfireItems,
-			OrderedBows,
+			null,
+			OrderedChestPieces,
+			OrderedGauntlets,
+			OrderedHelmets,
+			OrderedLeggings,
+			null,
+			null,
 			OrderedCatalysts,
-			OrderedConsumables,
+			OrderedFlames,
+			OrderedMiracles,
+			OrderedPyromancies,
+			OrderedSorceries,
+			OrderedTalismans,
+			null,
+			null,
+			OrderedBonfireItems,
 			OrderedCovenantItems,
+			OrderedKeys,
+			OrderedMultiplayerItems,
+			null,
+			OrderedSouls,
+			null,
+			null,
+			OrderedAmmunition,
+			OrderedConsumables,
+			OrderedProjectiles,
+			OrderedRings,
+			OrderedShields,
+			null,
+			null,
+			OrderedEmbers,
+			OrderedOres,
+			null,
+			null,
+			OrderedAxes,
+			OrderedBows,
 			OrderedCrossbows,
 			OrderedDaggers,
-			OrderedEmbers,
 			OrderedFistItems,
-			OrderedFlames,
 			OrderedGreatswords,
 			OrderedHalberds,
 			OrderedHammers,
-			OrderedKeys,
-			OrderedMiracles,
-			OrderedMultiplayerItems,
-			OrderedOres,
-			OrderedProjectiles,
-			OrderedPyromancies,
-			OrderedRings,
-			OrderedSorceries,
-			OrderedSouls,
 			OrderedSpears,
-			OrderedTalismans,
+			OrderedSwords,
 			OrderedWhips
 		};
 	}

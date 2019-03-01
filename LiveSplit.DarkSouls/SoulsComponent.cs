@@ -40,6 +40,9 @@ namespace LiveSplit.DarkSouls
 		// "prepared for warp" state can be reverted if the player leaves the target bonfire.
 		private bool bonfireWarpSplit;
 
+		// If a particular run doesn't ever split on items, it would be wasteful to track them.
+		private bool itemsEnabled;
+
 		public SoulsComponent()
 		{
 			splitCollection = new SplitCollection();
@@ -175,6 +178,15 @@ namespace LiveSplit.DarkSouls
 
 				state.OnStart += (sender, args) =>
 				{
+					var splits = splitCollection.Splits;
+
+					itemsEnabled = splits.Any(s => s.Type == SplitTypes.Item);
+
+					if (itemsEnabled)
+					{
+						memory.SetItems(splits.Select(ComputeItemId).ToList());
+					}
+
 					splitCollection.OnStart();
 					UpdateRunState();
 				};
@@ -200,14 +212,7 @@ namespace LiveSplit.DarkSouls
 				state.OnReset += (sender, value) => { splitCollection.OnReset(); };
 			}
 
-			switch (state.CurrentPhase)
-			{
-				case TimerPhase.NotRunning:
-				case TimerPhase.Ended:
-					return;
-
-				case TimerPhase.Running: Refresh(); break;
-			}
+			Refresh(state.CurrentPhase);
 		}
 
 		private void UpdateRunState()
@@ -293,27 +298,21 @@ namespace LiveSplit.DarkSouls
 					break;
 
 				case SplitTypes.Item:
-					int rawId = ItemFlags.MasterList[data[0]][data[1]];
-					int digit = rawId;
-					int divisor = 1;
+					ItemId id = ComputeItemId(split);
 
-					// See https://stackoverflow.com/a/701355/7281613.
-					while (digit > 10)
-					{
-						digit /= 10;
-						divisor *= 10;
-					}
-
-					// Item 
 					int count = data[2];
-					int category = digit;
 					int mods = data[3];
 					int reinforcement = data[4];
 
+					// In the layout file, mods and reinforcement are stored as int.MaxValue to simplify split
+					// validation.
+					mods = mods == int.MaxValue ? 0 : mods;
+					reinforcement = reinforcement == int.MaxValue ? 0 : reinforcement;
+
 					// The data field of the run state isn't otherwise used for item splits, so it's used to store item
 					// category (required to differentiate between items with the same ID).
-					run.Id = rawId % divisor;
-					run.Data = category;
+					run.Id = id.BaseId;
+					run.Data = id.Category;
 					run.ItemTarget = new ItemState(mods, reinforcement, count);
 
 					break;
@@ -323,27 +322,23 @@ namespace LiveSplit.DarkSouls
 			}
 		}
 
-		private bool test;
-
-		public void Refresh()
+		// Making the phase nullable makes testing easier.
+		public void Refresh(TimerPhase? phase = null)
 		{
 			if (!Hook())
 			{
 				return;
 			}
 
-			if (!test)
+			if (phase != null)
 			{
-				List<ItemId> list = new List<ItemId>();
-				list.Add(new ItemId(1004000, 0));
+				TimerPhase value = phase.Value;
 
-				memory.SetItems(list);
-				test = true;
+				if (value == TimerPhase.NotRunning || value == TimerPhase.Ended)
+				{
+					return;
+				}
 			}
-
-			memory.RefreshItems();
-
-			return;
 			
 			Split split = splitCollection.CurrentSplit;
 
@@ -387,6 +382,13 @@ namespace LiveSplit.DarkSouls
 				run.MaxGameTime = max;
 			}
 			*/
+
+			// This is called each tick regardless of whether the current split is an item split (to ensure that the
+			// inventory state is accurate by the time an item split crops up).
+			if (itemsEnabled)
+			{
+				memory.RefreshItems();
+			}
 
 			// This condition covers all split types with warping as an option.
 			if (preparedForWarp)
@@ -439,6 +441,25 @@ namespace LiveSplit.DarkSouls
 			}
 
 			return memory.ProcessHooked;
+		}
+
+		private ItemId ComputeItemId(Split split)
+		{
+			int[] data = split.Data;
+			int rawId = ItemFlags.MasterList[data[0]][data[1]];
+			int digit = rawId;
+			int divisor = 1;
+
+			// See https://stackoverflow.com/a/701355/7281613.
+			while (digit > 10)
+			{
+				digit /= 10;
+				divisor *= 10;
+			}
+
+			int baseId = rawId % divisor;
+
+			return new ItemId(baseId, digit);
 		}
 
 		private void PrepareWarp()
@@ -712,10 +733,7 @@ namespace LiveSplit.DarkSouls
 		{
 			ItemState[] states = memory.GetItemStates(run.Id, run.Data);
 
-			/*
-			// Null is returned if the target item isn't currently in the inventory (either because it hasn't been
-			// acquired yet or because it was dropped).
-			if (state != null && state.Satisfies(run.ItemTarget))
+			if (states != null && states.Any(s => s.Satisfies(run.ItemTarget)))
 			{
 				bool onWarp = data[5] == 1;
 
@@ -729,7 +747,6 @@ namespace LiveSplit.DarkSouls
 
 				return true;
 			}
-			*/
 
 			return false;
 		}

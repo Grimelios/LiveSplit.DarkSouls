@@ -227,7 +227,7 @@ namespace LiveSplit.DarkSouls.Data
 
 			// It's assumed that an item ID will only be queried if it was present in the list of saved splits
 			// (although it may not have been acquired yet).
-			if (!tracker.TryGetValue(id, out List<IntPtr> list))
+			if (!tracker.TryGetValue(id, out List<IntPtr> list) || list.Count == 0)
 			{
 				// Returning null means that item isn't currently in the inventory.
 				return null;
@@ -241,8 +241,13 @@ namespace LiveSplit.DarkSouls.Data
 
 				int rawId = MemoryTools.ReadInt(handle, address);
 				int count = MemoryTools.ReadInt(handle, address + 0x4);
+				int mods = 0;
+				int reinforcement = 0;
 
-				ComputeUpgrades(rawId, out int mods, out int reinforcement);
+				if (rawId / 10000 > 0)
+				{
+					ComputeUpgrades(rawId, out mods, out reinforcement);
+				}
 
 				states[i] = new ItemState(mods, reinforcement, count);
 			}
