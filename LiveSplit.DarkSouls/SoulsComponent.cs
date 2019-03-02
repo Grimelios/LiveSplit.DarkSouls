@@ -34,11 +34,12 @@ namespace LiveSplit.DarkSouls
 		// This variable tracks whether the player confirmed a warp from a bonfire prompt. The data used to detect this
 		// state (beginning a bonfire warp) doesn't persist up to the loading screen's appearance, so it needs to be
 		// tracked separately.
-		private bool isBonfireWarpActive;
+		private bool isBonfireWarpConfirmed;
 
-		// Most warp splits detect an event, then wait for a warp to occur. Bonfire warp splits are unique in that the
-		// "prepared for warp" state can be reverted if the player leaves the target bonfire.
-		private bool bonfireWarpSplit;
+		// Most warp splits detect an event, then wait for a warp to occur. Bonfire and item warps are unique in that
+		// they can be undone once activated (by leaving the target bonfire or losing the target item).
+		private bool isBonfireWarpSplitActive;
+		private bool isItemWarpSplitActive;
 
 		// If a particular run doesn't ever split on items, it would be wasteful to track them.
 		private bool itemsEnabled;
@@ -225,8 +226,9 @@ namespace LiveSplit.DarkSouls
 			}
 
 			preparedForWarp = false;
-			isBonfireWarpActive = false;
-			bonfireWarpSplit = false;
+			isBonfireWarpConfirmed = false;
+			isBonfireWarpSplitActive = false;
+			isItemWarpSplitActive = false;
 
 			int[] data = split.Data;
 
@@ -243,7 +245,7 @@ namespace LiveSplit.DarkSouls
 					if (onRest || onWarp)
 					{
 						run.Target = bonfire;
-						bonfireWarpSplit = onWarp;
+						isBonfireWarpConfirmed = onWarp;
 					}
 					else
 					{
@@ -303,6 +305,8 @@ namespace LiveSplit.DarkSouls
 					int mods = data[2];
 					int reinforcement = data[3];
 					int count = data[4];
+
+					isItemWarpSplitActive = data[5] == 1;
 
 					// In the layout file, mods and reinforcement are stored as int.MaxValue to simplify split
 					// validation.
@@ -393,7 +397,7 @@ namespace LiveSplit.DarkSouls
 			// This condition covers all split types with warping as an option.
 			if (preparedForWarp)
 			{
-				if (bonfireWarpSplit)
+				if (isBonfireWarpSplitActive)
 				{
 					int[] leaveValues =
 					{
@@ -412,6 +416,12 @@ namespace LiveSplit.DarkSouls
 
 						return;
 					}
+				}
+				else if (isItemWarpSplitActive && !IsItemStateSatisfied())
+				{
+					preparedForWarp = false;
+
+					return;
 				}
 
 				if (CheckWarp())
@@ -474,10 +484,10 @@ namespace LiveSplit.DarkSouls
 			const int HomewardBone = 330;
 			const int BonfireWarpPrompt = 80;
 
-			if (!isBonfireWarpActive)
+			if (!isBonfireWarpConfirmed)
 			{
 				// This state becomes true for just a moment when the player confirms a bonfire warp.
-				isBonfireWarpActive = memory.GetPromptedMenu() == BonfireWarpPrompt &&
+				isBonfireWarpConfirmed = memory.GetPromptedMenu() == BonfireWarpPrompt &&
 					memory.GetForcedAnimation() == (int)AnimationFlags.BonfireWarp;
 			}
 
@@ -493,9 +503,9 @@ namespace LiveSplit.DarkSouls
 
 			// Note that for bonfire warp splits, this point will only be reached if the player is resting at the
 			// correct bonfire.
-			if (isBonfireWarpActive)
+			if (isBonfireWarpConfirmed)
 			{
-				isBonfireWarpActive = false;
+				isBonfireWarpConfirmed = false;
 
 				return true;
 			}
@@ -731,9 +741,7 @@ namespace LiveSplit.DarkSouls
 
 		private bool ProcessItem(int[] data)
 		{
-			ItemState[] states = memory.GetItemStates(run.Id, run.Data);
-
-			if (states != null && states.Any(s => s.Satisfies(run.ItemTarget)))
+			if (IsItemStateSatisfied())
 			{
 				bool onWarp = data[5] == 1;
 
@@ -749,6 +757,15 @@ namespace LiveSplit.DarkSouls
 			}
 
 			return false;
+		}
+
+		// This check is done from two places (processing item splits and verifying that an item wasn't dropped while
+		// waiting for a warp).
+		private bool IsItemStateSatisfied()
+		{
+			ItemState[] states = memory.GetItemStates(run.Id, run.Data);
+
+			return states != null && states.Any(s => s.Satisfies(run.ItemTarget));
 		}
 
 		public void Dispose()
