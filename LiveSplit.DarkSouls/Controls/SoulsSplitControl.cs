@@ -18,6 +18,7 @@ namespace LiveSplit.DarkSouls.Controls
 	{
 		private const int ControlSpacing = 4;
 		private const int ItemSplitCorrection = 2;
+		private const int ItemCountIndex = 4;
 
 		private static SplitLists lists;
 		private static Dictionary<string, string[]> itemMap;
@@ -143,11 +144,11 @@ namespace LiveSplit.DarkSouls.Controls
 				{
 					// Item splits have a numeric textbox (representing item count). All other split types use
 					// exclusively dropdowns.
-					if (type == SplitTypes.Item && i == 2)
+					if (type == SplitTypes.Item && i == ItemCountIndex)
 					{
-						string text = ((TextBox)controls[2]).Text;
+						string text = ((TextBox)controls[ItemCountIndex]).Text;
 
-						data[2] = text.Length > 0 ? int.Parse(text) : -1;
+						data[ItemCountIndex] = text.Length > 0 ? int.Parse(text) : -1;
 
 						continue;
 					}
@@ -183,11 +184,11 @@ namespace LiveSplit.DarkSouls.Controls
 
 			for (int i = 0; i < controls.Count; i++)
 			{
-				if (type == SplitTypes.Item && i == 2)
+				if (type == SplitTypes.Item && i == ItemCountIndex)
 				{
-					int value = data[2];
+					int value = data[ItemCountIndex];
 
-					((TextBox)controls[2]).Text = value != -1 ? data[2].ToString() : "";
+					((TextBox)controls[ItemCountIndex]).Text = value != -1 ? data[ItemCountIndex].ToString() : "";
 
 					continue;
 				}
@@ -242,7 +243,7 @@ namespace LiveSplit.DarkSouls.Controls
 
 				// It's impossible for the item count textbox to be invalid (since it only accepts numeric input
 				// and is reset to one when focus is lost).
-				if (!control.Enabled || (type == SplitTypes.Item && i == 2))
+				if (!control.Enabled || (type == SplitTypes.Item && i == ItemCountIndex))
 				{
 					continue;
 				}
@@ -436,7 +437,7 @@ namespace LiveSplit.DarkSouls.Controls
 		private Control[] GetCovenantControls()
 		{
 			const int CovenantListWidth = 139;
-			const int CovenantCriteriaWidth = 167;
+			const int CovenantCriteriaWidth = 166;
 
 			var covenantCriteria = GetDropdown(new []
 			{
@@ -511,58 +512,10 @@ namespace LiveSplit.DarkSouls.Controls
 
 		private Control[] GetItemControls()
 		{
-			const int ItemTypeWidth = 95;
-			const int ItemListWidth = 185;
-			const int ItemCountWidth = 32;
-
-			var itemCount = new TextBox
-			{
-				Enabled = false,
-				Width = ItemCountWidth,
-
-				// This height results in the text box exactly lining up with the adjacent item list dropdown.
-				AutoSize = false,
-				Height = 21,
-				MaxLength = 3,
-				TextAlign = HorizontalAlignment.Center
-			};
-
-			// See https://stackoverflow.com/q/463299/7281613.
-			itemCount.KeyPress += (sender, args) =>
-			{
-				if (!char.IsDigit(args.KeyChar) && args.KeyChar != (char)Keys.Back)
-				{
-					args.Handled = true;
-				}
-			};
-
-			itemCount.GotFocus += (sender, args) =>
-			{
-				itemCount.SelectAll();
-			};
-
-			itemCount.Enter += (sender, args) =>
-			{
-				// See https://stackoverflow.com/a/6857301/7281613. This causes all text to be selected after the click
-				// is processed.
-				BeginInvoke((Action)itemCount.SelectAll);
-			};
-
-			itemCount.LostFocus += (sender, args) =>
-			{
-				// This ensures that the textbox always ends up with a valid value.
-				if (itemCount.Text.Length == 0)
-				{
-					itemCount.Text = "1";
-				}
-			};
+			const int ItemTypeWidth = 93;
+			const int ItemListWidth = 224;
 
 			var itemList = GetDropdown(null, "Items", ItemListWidth, false);
-			itemList.SelectedIndexChanged += (sender, args) =>
-			{
-				itemCount.Enabled = true;
-				itemCount.Text = "1";
-			};
 
 			// Additional callbacks are added when item lines are linked.
 			var itemTypes = GetDropdown(new []
@@ -620,40 +573,90 @@ namespace LiveSplit.DarkSouls.Controls
 			return new Control[]
 			{
 				itemTypes,
-				itemList,
-				itemCount
+				itemList
 			};
 		}
 
 		private Control[] GetItemSecondaryControls()
 		{
-			const int ItemModificationWidth = 96;
-			const int ItemReinforcementWidth = 104;
-			const int ItemCriteriaWidth = 97;
+			const int ItemModificationWidth = 81;
+			const int ItemReinforcementWidth = 100;
+			const int ItemCountWidth = 32;
+			const int ItemCriteriaWidth = 96;
 
 			// Mods and reinforcements are updated based on item type.
-			var itemModifications = GetDropdown(null, "Modifications", ItemModificationWidth, false);
+			var itemModifications = GetDropdown(null, "Infusions", ItemModificationWidth, false);
 			var itemReinforcements = GetDropdown(null, "Reinforcement", ItemReinforcementWidth, false);
-			var itemCriteria = GetDropdown(new []
+			var itemCriteria = GetDropdown(new[]
 			{
 				"On acquisition",
 				"On warp"
 			}, "Criteria", ItemCriteriaWidth);
 
+			// The item count textbox was originally on line one, but it was moved down to accomodate extra width
+			// needed for the item list.
+			var itemCount = new TextBox
+			{
+				Enabled = false,
+				Width = ItemCountWidth,
+
+				// This height results in the text box exactly lining up with the adjacent item list dropdown.
+				AutoSize = false,
+				Height = 21,
+				MaxLength = 3,
+				Text = "1",
+				TextAlign = HorizontalAlignment.Center
+			};
+
+			// See https://stackoverflow.com/q/463299/7281613.
+			itemCount.KeyPress += (sender, args) =>
+			{
+				if (!char.IsDigit(args.KeyChar) && args.KeyChar != (char)Keys.Back)
+				{
+					args.Handled = true;
+				}
+			};
+
+			itemCount.GotFocus += (sender, args) =>
+			{
+				itemCount.SelectAll();
+			};
+
+			itemCount.Enter += (sender, args) =>
+			{
+				// See https://stackoverflow.com/a/6857301/7281613. This causes all text to be selected after the click
+				// is processed.
+				BeginInvoke((Action)itemCount.SelectAll);
+			};
+
+			itemCount.LostFocus += (sender, args) =>
+			{
+				// This ensures that the textbox always ends up with a valid value.
+				if (itemCount.Text.Length == 0)
+				{
+					itemCount.Text = "1";
+				}
+			};
+
 			return new Control[]
 			{
 				itemModifications,
 				itemReinforcements,
+				itemCount,
 				itemCriteria
 			};
 		}
 
 		private void LinkItemLines(Control[] line1, Control[] line2)
 		{
-			const string ModString = "Modifications";
-			const string UnmodString = "Unmodifiable";
+			// Infusions are called "modifications" in most of the codebase. Swapping to "infusions" happened pretty
+			// late in the project, so it wasn't worth renaming everything internally.
+			const string ModString = "Infusions";
 			const string ReinforceString = "Reinforcement";
-			const string UnreinforceString = "Unreinforceable";
+
+			// There were originally two strings here ("Uninfusable" and "Unreinforceable"). They were later replaced
+			// with "Locked" in order to reclaim space (since LiveSplit's window width is fixed).
+			const string LockedString = "Locked";
 			const string NaString = "N/A";
 
 			SoulsDropdown itemTypes = (SoulsDropdown)line1[0];
@@ -661,9 +664,13 @@ namespace LiveSplit.DarkSouls.Controls
 			SoulsDropdown mods = (SoulsDropdown)line2[0];
 			SoulsDropdown reinforcements = (SoulsDropdown)line2[1];
 
+			TextBox itemCount = (TextBox)line2[2];
+
 			itemTypes.SelectedIndexChanged += (sender, args) =>
 			{
 				itemList.Enabled = true;
+				itemCount.Enabled = true;
+				itemCount.Text = "1";
 
 				var rawList = itemMap[itemTypes.Text];
 				var items = itemList.Items;
@@ -751,7 +758,7 @@ namespace LiveSplit.DarkSouls.Controls
 					}
 					else
 					{
-						reinforcements.RefreshPrompt(UnreinforceString);
+						reinforcements.RefreshPrompt(LockedString);
 					}
 				}
 				else
@@ -761,15 +768,15 @@ namespace LiveSplit.DarkSouls.Controls
 					switch (modType)
 					{
 						case ModificationTypes.None:
-							mods.RefreshPrompt(UnmodString);
-							reinforcements.RefreshPrompt(UnreinforceString);
+							mods.RefreshPrompt(LockedString);
+							reinforcements.RefreshPrompt(LockedString);
 
 							break;
 
 						// "Special" in this context means that the weapon is unique. It can be reinforced up to +5,
 						// but can't be modified.
 						case ModificationTypes.Special:
-							mods.RefreshPrompt(UnmodString);
+							mods.RefreshPrompt(LockedString);
 							reinforcements.RefreshPrompt(ReinforceString, true);
 							reinforcements.Items.AddRange(GetReinforcementList(5));
 

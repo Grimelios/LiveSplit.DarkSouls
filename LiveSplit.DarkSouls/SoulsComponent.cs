@@ -300,9 +300,9 @@ namespace LiveSplit.DarkSouls
 				case SplitTypes.Item:
 					ItemId id = ComputeItemId(split);
 
-					int count = data[2];
-					int mods = data[3];
-					int reinforcement = data[4];
+					int mods = data[2];
+					int reinforcement = data[3];
+					int count = data[4];
 
 					// In the layout file, mods and reinforcement are stored as int.MaxValue to simplify split
 					// validation.

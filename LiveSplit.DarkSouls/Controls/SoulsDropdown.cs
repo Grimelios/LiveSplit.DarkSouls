@@ -52,16 +52,9 @@ namespace LiveSplit.DarkSouls.Controls
 
 				// Enabled splits with a -1 index have a red-tinted background. On that background, grey text is hard
 				// to read.
-				if (!Enabled)
-				{
-					textColor = SystemColors.ButtonShadow;
-				}
-				else
-				{
-					// Making the text a bit more grey helps indicate that it's a prompt rather than a valid value, I
-					// think (even with the reddish background).
-					textColor = Color.FromArgb(255, UnfinishedTextColor, UnfinishedTextColor, UnfinishedTextColor);
-				}
+				textColor = !Enabled
+					? SystemColors.ButtonShadow
+					: Color.FromArgb(255, UnfinishedTextColor, UnfinishedTextColor, UnfinishedTextColor);
 			}
 			else
 			{

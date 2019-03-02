@@ -24,7 +24,7 @@ namespace LiveSplit.DarkSouls.Data
 
 		public override int GetHashCode()
 		{
-			return new Tuple<int, int>(BaseId, Category).GetHashCode();
+			return BaseId.GetHashCode() + Category.GetHashCode();
 		}
 	}
 }

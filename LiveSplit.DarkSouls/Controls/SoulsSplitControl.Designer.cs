@@ -37,9 +37,9 @@
 			// 
 			// splitDetailsPanel
 			// 
-			this.splitDetailsPanel.Location = new System.Drawing.Point(93, 4);
+			this.splitDetailsPanel.Location = new System.Drawing.Point(92, 4);
 			this.splitDetailsPanel.Name = "splitDetailsPanel";
-			this.splitDetailsPanel.Size = new System.Drawing.Size(320, 21);
+			this.splitDetailsPanel.Size = new System.Drawing.Size(321, 21);
 			this.splitDetailsPanel.TabIndex = 1;
 			// 
 			// deleteButton
@@ -82,7 +82,7 @@
 			this.splitTypeComboBox.Location = new System.Drawing.Point(12, 4);
 			this.splitTypeComboBox.Name = "splitTypeComboBox";
 			this.splitTypeComboBox.Prompt = null;
-			this.splitTypeComboBox.Size = new System.Drawing.Size(77, 21);
+			this.splitTypeComboBox.Size = new System.Drawing.Size(76, 21);
 			this.splitTypeComboBox.TabIndex = 2;
 			this.splitTypeComboBox.SelectedIndexChanged += new System.EventHandler(this.splitTypeComboBox_SelectedIndexChanged);
 			// 
