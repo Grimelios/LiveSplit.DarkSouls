@@ -31,7 +31,6 @@ namespace LiveSplit.DarkSouls.Data
 		public string[] Miracles { get; set; }
 		public string[] Multiplayer { get; set; }
 		public string[] Ore { get; set; }
-		public string[] Other { get; set; }
 		public string[] Projectiles { get; set; }
 		public string[] Pyromancies { get; set; }
 		public string[] Rings { get; set; }
@@ -41,6 +40,8 @@ namespace LiveSplit.DarkSouls.Data
 		public string[] Spears { get; set; }
 		public string[] Swords { get; set; }
 		public string[] Talismans { get; set; }
+		public string[] Tools { get; set; }
+		public string[] Trinkets { get; set; }
 		public string[] Whips { get; set; }
 	}
 }

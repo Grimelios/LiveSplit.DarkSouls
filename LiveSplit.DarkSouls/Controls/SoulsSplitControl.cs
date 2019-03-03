@@ -72,7 +72,6 @@ namespace LiveSplit.DarkSouls.Controls
 				{ "Miracles", items.Miracles },
 				{ "Multiplayer", items.Multiplayer },
 				{ "Ore", items.Ore },
-				{ "Other", items.Other },
 				{ "Projectiles", items.Projectiles },
 				{ "Pyromancies", items.Pyromancies },
 				{ "Rings", items.Rings },
@@ -82,6 +81,8 @@ namespace LiveSplit.DarkSouls.Controls
 				{ "Spears", items.Spears },
 				{ "Swords", items.Swords },
 				{ "Talismans", items.Talismans },
+				{ "Tools", items.Tools },
+				{ "Trinkets", items.Trinkets },
 				{ "Whips", items.Whips },
 			};
 		}
@@ -536,21 +537,22 @@ namespace LiveSplit.DarkSouls.Controls
 				"",
 				"- Miscellaneous -",
 				"Bonfire",
+				"Consumables",
 				"Covenant",
 				"Keys",
 				"Multiplayer",
-				"Other",
 				"Souls",
+				"Trinkets",
 				"",
 
 				// Ideally, this category would read "Other Equipment", but it's shortened to better fit into the 
 				// LiveSplit window.
 				"- Equipment -",
 				"Ammunition",
-				"Consumables",
 				"Projectiles",
 				"Rings",
 				"Shields",
+				"Tools",
 				"",
 				"- Smithing -",
 				"Embers",

@@ -9,8 +9,8 @@ namespace LiveSplit.DarkSouls.Memory
 {
 	// Important note about all item flags: item category (see the list below) is embedded into each flag as the flag's
 	// highest digit. For example, the Bloodbite Ring (ID 109) has a category of 20 (as a hex byte), so its enum value
-	// is 2109. This category is extracted and stored as needed to allow the autosplitter to distinguish between
-	// multiple items with a shared ID.
+	// is 2109 (only the two matters). This category is extracted and stored as needed to allow the autosplitter to
+	// distinguish between multiple items with a shared ID.
 	//
 	// Also note that most item categories share values. All that really matters is that those categories are distinct
 	// among items that share an ID.
@@ -63,12 +63,12 @@ namespace LiveSplit.DarkSouls.Memory
 
 	public enum BonfireItemFlags
 	{
-		ArmorSmithbox = 2601,
-		BottomlessBox = 2608,
-		Lordvessel = 2510,
-		Repairbox = 2602,
-		RiteOfKindling = 2607,
-		WeaponSmithbox = 2600
+		ArmorSmithbox = 42601,
+		BottomlessBox = 42608,
+		Lordvessel = 42510,
+		Repairbox = 42602,
+		RiteOfKindling = 42607,
+		WeaponSmithbox = 42600
 	}
 
 	public enum BowFlags
@@ -159,37 +159,32 @@ namespace LiveSplit.DarkSouls.Memory
 
 	public enum ConsumableFlags
 	{
-		BloodredMossClump = 270,
-		BloomingPurpleMossClump = 272,
-		CharcoalPineResin = 310,
-		DivineBlessing = 240,
-		EggVermifuge = 275,
-		ElizabethsMushroom = 230,
-		EstusFlask = 201,
-		GreenBlossom = 260,
-		GoldPineResin = 311,
-		HelloCarving = 510,
-		HelpMeCarving = 514,
-		HomewardBone = 330,
-		Humanity = 500,
-		ImSorryCarving = 513,
-		PrismStone = 370,
-		PurgingStone = 274,
-		PurpleMossClump = 271,
-		RepairPowder = 280,
-		RottenPineResin = 313,
-		ThankYouCarving = 511,
-		TransientCurse = 312,
-		TwinHumanities = 501,
-		VeryGoodCarving = 512
+		BloodredMossClump = 4270,
+		BloomingPurpleMossClump = 4272,
+		CharcoalPineResin = 4310,
+		DivineBlessing = 4240,
+		EggVermifuge = 4275,
+		ElizabethsMushroom = 4230,
+		EstusFlask = 4201,
+		GreenBlossom = 4260,
+		GoldPineResin = 4311,
+		HomewardBone = 4330,
+		Humanity = 4500,
+		PrismStone = 4370,
+		PurgingStone = 4274,
+		PurpleMossClump = 4271,
+		RepairPowder = 4280,
+		RottenPineResin = 4313,
+		TransientCurse = 4312,
+		TwinHumanities = 4501
 	}
 
 	public enum CovenantItemFlags
 	{
-		DriedFinger = 385,
-		EyeOfDeath = 109,
-		SunlightMedal = 375,
-		SouvenirOfReprisal = 374
+		DriedFinger = 4385,
+		EyeOfDeath = 4109,
+		SunlightMedal = 4375,
+		SouvenirOfReprisal = 4374
 	}
 
 	public enum CrossbowFlags
@@ -212,16 +207,16 @@ namespace LiveSplit.DarkSouls.Memory
 
 	public enum EmberFlags
 	{
-		ChaosFlameEmber = 813,
-		CrystalEmber = 802,
-		DarkEmber = 810,
-		DivineEmber = 808,
-		EnchantedEmber = 807,
-		LargeDivineEmber = 809,
-		LargeEmber = 800,
-		LargeFlameEmber = 812,
-		LargeMagicEmber = 806,
-		VeryLargeEmber = 801
+		ChaosFlameEmber = 4813,
+		CrystalEmber = 4802,
+		DarkEmber = 4810,
+		DivineEmber = 4808,
+		EnchantedEmber = 4807,
+		LargeDivineEmber = 4809,
+		LargeEmber = 4800,
+		LargeFlameEmber = 4812,
+		LargeMagicEmber = 4806,
+		VeryLargeEmber = 4801
 	}
 
 	public enum FistFlags
@@ -427,30 +422,30 @@ namespace LiveSplit.DarkSouls.Memory
 	// but it's simpler to use them anyway.
 	public enum KeyFlags
 	{
-		AnnexKey = 2009,
-		ArchivePrisonExtraKey = 2020,
-		ArchiveTowerCellKey = 2004,
-		ArchiveTowerGiantCellKey = 2006,
-		ArchiveTowerGiantDoorKey = 2005,
-		BasementKey = 2001,
-		BigPilgrimsKey = 2011,
-		BlightttownKey = 2007,
-		BrokenPendant = 2520,
-		CageKey = 2003,
-		CrestKey = 2022,
-		CrestOfArtorias = 2002,
-		DungeonCellKey = 2010,
-		KeyToTheDepths = 2014,
-		KeyToNewLondoRuins = 2008,
-		KeyToTheSeal = 2013,
-		MasterKey = 2100,
-		MysteryKey = 2017,
-		PeculiarDoll = 384,
-		ResidenceKey = 2021,
-		SewerChamberKey = 2018,
-		UndeadAsylumF2EastKey = 2012,
-		UndeadAsylumF2WestKey = 2012,
-		WatchtowerBasementKey = 2019
+		AnnexKey = 42009,
+		ArchivePrisonExtraKey = 42020,
+		ArchiveTowerCellKey = 42004,
+		ArchiveTowerGiantCellKey = 42006,
+		ArchiveTowerGiantDoorKey = 42005,
+		BasementKey = 42001,
+		BigPilgrimsKey = 42011,
+		BlightttownKey = 42007,
+		BrokenPendant = 42520,
+		CageKey = 42003,
+		CrestKey = 42022,
+		CrestOfArtorias = 42002,
+		DungeonCellKey = 42010,
+		KeyToTheDepths = 42014,
+		KeyToNewLondoRuins = 42008,
+		KeyToTheSeal = 42013,
+		MasterKey = 42100,
+		MysteryKey = 42017,
+		PeculiarDoll = 4384,
+		ResidenceKey = 42021,
+		SewerChamberKey = 42018,
+		UndeadAsylumF2EastKey = 42012,
+		UndeadAsylumF2WestKey = 42012,
+		WatchtowerBasementKey = 42019
 	}
 
 	public enum LeggingFlags
@@ -515,98 +510,98 @@ namespace LiveSplit.DarkSouls.Memory
 
 	public enum MiracleFlags
 	{
-		BountifulSunlight = 5050,
-		DarkmoonBlade = 5910,
-		EmitForce = 5320,
-		Force = 5300,
-		GravelordGreatswordDance = 5110,
-		GravelordSwordDance = 5100,
-		GreatHeal = 5010,
-		GreatHealExcerpt = 5020,
-		GreatLightningSpear = 5510,
-		GreatMagicBarrier = 5610,
-		Heal = 5000,
-		Homeward = 5210,
-		KarmicJustice = 5700,
-		LightningSpear = 5500,
-		MagicBarrier = 5600,
-		Replenishment = 5040,
-		SeekGuidance = 5400,
-		SoothingSunlight = 5030,
-		SunlightBlade = 5900,
-		SunlightSpear = 5520,
-		TranquilWalkOfPeace = 5800,
-		VowOfSilence = 5810,
-		WrathOfTheGods = 5310
+		BountifulSunlight = 45050,
+		DarkmoonBlade = 45910,
+		EmitForce = 45320,
+		Force = 45300,
+		GravelordGreatswordDance = 45110,
+		GravelordSwordDance = 45100,
+		GreatHeal = 45010,
+		GreatHealExcerpt = 45020,
+		GreatLightningSpear = 45510,
+		GreatMagicBarrier = 45610,
+		Heal = 45000,
+		Homeward = 45210,
+		KarmicJustice = 45700,
+		LightningSpear = 45500,
+		MagicBarrier = 45600,
+		Replenishment = 45040,
+		SeekGuidance = 45400,
+		SoothingSunlight = 45030,
+		SunlightBlade = 45900,
+		SunlightSpear = 45520,
+		TranquilWalkOfPeace = 45800,
+		VowOfSilence = 45810,
+		WrathOfTheGods = 45310
 	}
 
 	public enum MultiplayerItemFlags
 	{
-		BlackSeparationCrystal = 103,
-		BlueEyeOrb = 113,
-		BookOfTheGuilty = 108,
-		CrackedRedEyeOrb = 111,
-		DragonEye = 114,
-		Indictment = 373,
-		OrangeGuidanceSoapstone = 106,
-		PurpleCowardsCrystal = 118,
-		RedEyeOrb = 102,
-		RedSignSoapstone = 101,
-		ServantRoster = 112,
-		WhiteSignSoapstone = 100
+		BlackSeparationCrystal = 4103,
+		BlueEyeOrb = 4113,
+		BookOfTheGuilty = 4108,
+		CrackedRedEyeOrb = 4111,
+		DragonEye = 4114,
+		Indictment = 4373,
+		OrangeGuidanceSoapstone = 4106,
+		PurpleCowardsCrystal = 4118,
+		RedEyeOrb = 4102,
+		RedSignSoapstone = 4101,
+		ServantRoster = 4112,
+		WhiteSignSoapstone = 4100
 	}
 
 	public enum OreFlags
 	{
-		BlueTitaniteChunk = 1040,
-		BlueTitaniteSlab = 1080,
-		DemonTitanite = 1120,
-		DragonScale = 1110,
-		GreenTitaniteShard = 1020,
-		LargeTitaniteShard = 1010,
-		RedTitaniteChunk = 1060,
-		RedTitaniteSlab = 1100,
-		TitaniteChunk = 1030,
-		TitaniteSlab = 1070,
-		TitaniteShard = 1000,
-		TwinklingTitanite = 1130,
-		WhiteTitaniteChunk = 1050,
-		WhiteTitaniteSlab = 1090
+		BlueTitaniteChunk = 41040,
+		BlueTitaniteSlab = 41080,
+		DemonTitanite = 41120,
+		DragonScale = 41110,
+		GreenTitaniteShard = 41020,
+		LargeTitaniteShard = 41010,
+		RedTitaniteChunk = 41060,
+		RedTitaniteSlab = 41100,
+		TitaniteChunk = 41030,
+		TitaniteSlab = 41070,
+		TitaniteShard = 41000,
+		TwinklingTitanite = 41130,
+		WhiteTitaniteChunk = 41050,
+		WhiteTitaniteSlab = 41090
 	}
 
 	public enum ProjectileFlags
 	{
-		AlluringSkull = 294,
-		BlackFirebomb = 297,
-		DungPie = 293,
-		Firebomb = 292,
-		LloydsTalisman = 296,
-		PoisonThrowingKnife = 291,
-		ThrowingKnife = 290
+		AlluringSkull = 4294,
+		BlackFirebomb = 4297,
+		DungPie = 4293,
+		Firebomb = 4292,
+		LloydsTalisman = 4296,
+		PoisonThrowingKnife = 4291,
+		ThrowingKnife = 4290
 	}
 
 	public enum PyromancyFlags
 	{
-		AcidSurge = 4220,
-		BlackFlame = 4530,
-		ChaosFireWhip = 4520,
-		ChaosStorm = 4510,
-		Combustion = 4100,
-		Fireball = 4000,
-		FireOrb = 4010,
-		Firestorm = 4030,
-		FireSurge = 4050,
-		FireTempest = 4040,
-		FireWhip = 4060,
-		FlashSweat = 4310,
-		GreatChaosFireball = 4500,
-		GreatCombustion = 4110,
-		GreatFireball = 4020,
-		IronFlesh = 4300,
-		PoisonMist = 4200,
-		PowerWithin = 4400,
-		ToxicMist = 4210,
-		UndeadRapport = 4360
+		AcidSurge = 44220,
+		BlackFlame = 44530,
+		ChaosFireWhip = 44520,
+		ChaosStorm = 44510,
+		Combustion = 44100,
+		Fireball = 44000,
+		FireOrb = 44010,
+		Firestorm = 44030,
+		FireSurge = 44050,
+		FireTempest = 44040,
+		FireWhip = 44060,
+		FlashSweat = 44310,
+		GreatChaosFireball = 44500,
+		GreatCombustion = 44110,
+		GreatFireball = 44020,
+		IronFlesh = 44300,
+		PoisonMist = 44200,
+		PowerWithin = 44400,
+		ToxicMist = 44210,
+		UndeadRapport = 44360
 	};
 
 	public enum RingFlags
@@ -703,71 +698,71 @@ namespace LiveSplit.DarkSouls.Memory
 
 	public enum SorceryFlags
 	{
-		AuralDecoy = 3520,
-		CastLight = 3500,
-		Chameleon = 3550,
-		CrystalMagicWeapon = 3120,
-		CrystalSoulSpear = 3070,
-		DarkBead = 3720,
-		DarkFog = 3730,
-		DarkOrb = 3710,
-		FallControl = 3540,
-		GreatHeavySoulArrow = 3030,
-		GreatMagicWeapon = 3110,
-		GreatSoulArrow = 3010,
-		HeavySoulArrow = 3020,
-		HiddenBody = 3410,
-		HiddenWeapon = 3400,
-		HomingCrystalSoulmass = 3050,
-		HomingSoulmass = 3040,
-		Hush = 3510,
-		MagicShield = 3300,
-		MagicWeapon = 3100,
-		Pursuers = 3740,
-		Remedy = 3610,
-		Repair = 3530,
-		ResistCurse = 6600,
-		SoulArrow = 3000,
-		SoulSpear = 3060,
-		StrongMagicShield = 3310,
-		WhiteDragonBreath = 3700
+		AuralDecoy = 43520,
+		CastLight = 43500,
+		Chameleon = 43550,
+		CrystalMagicWeapon = 43120,
+		CrystalSoulSpear = 43070,
+		DarkBead = 43720,
+		DarkFog = 43730,
+		DarkOrb = 43710,
+		FallControl = 43540,
+		GreatHeavySoulArrow = 43030,
+		GreatMagicWeapon = 43110,
+		GreatSoulArrow = 43010,
+		HeavySoulArrow = 43020,
+		HiddenBody = 43410,
+		HiddenWeapon = 43400,
+		HomingCrystalSoulmass = 43050,
+		HomingSoulmass = 43040,
+		Hush = 43510,
+		MagicShield = 43300,
+		MagicWeapon = 43100,
+		Pursuers = 43740,
+		Remedy = 43610,
+		Repair = 43530,
+		ResistCurse = 46600,
+		SoulArrow = 43000,
+		SoulSpear = 43060,
+		StrongMagicShield = 43310,
+		WhiteDragonBreath = 43700
 	}
 
 	public enum SoulFlags
 	{
-		BequeathedLordSoulShardFourKings = 2502,
-		BequeathedLordSoulShardSeath = 2503,
-		CoreOfAnIronGolem = 703,
-		FireKeeperSoulAnastacia = 390,
-		FireKeeperSoulDarkmoonKnightess = 391,
-		FireKeeperSoulDaughterOfChaos = 392,
-		FireKeeperSoulNewLondoRuins = 393,
-		FireKeeperSoulBlighttown = 394,
-		FireKeeperSoulDukesArchives = 395,
-		FireKeeperSoulUndeadParish = 396,
-		GuardianSoul = 709,
-		LargeSoulOfABraveWarrior = 407,
-		LargeSoulOfALostUndead = 401,
-		LargeSoulOfANamelessSoldier = 403,
-		LargeSoulOfAProudKnight = 405,
-		LordSoulBedOfChaos = 2501,
-		LordSoulNito = 2500,
-		SoulOfABraveWarrior = 406,
-		SoulOfAGreatHero = 409,
-		SoulOfAHero = 408,
-		SoulOfALostUndead = 400,
-		SoulOfANamelessSoldier = 402,
-		SoulOfAProudKnight = 404,
-		SoulOfArtorias = 710,
-		SoulOfGwyn = 702,
-		SoulOfGwyndolin = 708,
-		SoulOfManus = 711,
-		SoulOfOrnstein = 7004,
-		SoulOfPriscilla = 707,
-		SoulOfSif = 701,
-		SoulOfSmough = 706,
-		SoulOfTheMoonlightButterfly = 705,
-		SoulOfQuelaag = 700
+		BequeathedLordSoulShardFourKings = 42502,
+		BequeathedLordSoulShardSeath = 42503,
+		CoreOfAnIronGolem = 4703,
+		FireKeeperSoulAnastacia = 4390,
+		FireKeeperSoulDarkmoonKnightess = 4391,
+		FireKeeperSoulDaughterOfChaos = 4392,
+		FireKeeperSoulNewLondoRuins = 4393,
+		FireKeeperSoulBlighttown = 4394,
+		FireKeeperSoulDukesArchives = 4395,
+		FireKeeperSoulUndeadParish = 4396,
+		GuardianSoul = 4709,
+		LargeSoulOfABraveWarrior = 4407,
+		LargeSoulOfALostUndead = 4401,
+		LargeSoulOfANamelessSoldier = 4403,
+		LargeSoulOfAProudKnight = 4405,
+		LordSoulBedOfChaos = 42501,
+		LordSoulNito = 42500,
+		SoulOfABraveWarrior = 4406,
+		SoulOfAGreatHero = 4409,
+		SoulOfAHero = 4408,
+		SoulOfALostUndead = 4400,
+		SoulOfANamelessSoldier = 4402,
+		SoulOfAProudKnight = 4404,
+		SoulOfArtorias = 4710,
+		SoulOfGwyn = 4702,
+		SoulOfGwyndolin = 4708,
+		SoulOfManus = 4711,
+		SoulOfOrnstein = 4704,
+		SoulOfPriscilla = 4707,
+		SoulOfSif = 4701,
+		SoulOfSmough = 4706,
+		SoulOfTheMoonlightButterfly = 4705,
+		SoulOfQuelaag = 4700
 	}
 
 	public enum SpearFlags
@@ -826,6 +821,31 @@ namespace LiveSplit.DarkSouls.Memory
 		Talisman = 1360000,
 		ThorolundTalisman = 1362000,
 		VelkasTalisman = 1367000
+	}
+
+	public enum ToolFlags
+	{
+		Binoculars = 4371,
+		BlackEyeOrb = 4115,
+		Darksign = 4117,
+		DragonHeadStone = 4377,
+		DragonTorsoStone = 4378,
+		HelloCarving = 4510,
+		HelpMeCarving = 4514,
+		ImSorryCarving = 4513,
+		SilverPendant = 4220,
+		SkullLantern = 1396000,
+		ThankYouCarving = 4511,
+		VeryGoodCarving = 4512
+	}
+
+	public enum TrinketFlags
+	{
+		CopperCoin = 4381,
+		GoldCoin = 4383,
+		Pendant = 4376,
+		Rubbish = 4380,
+		SilverCoin = 4382
 	}
 
 	public enum WhipFlags
@@ -986,7 +1006,6 @@ namespace LiveSplit.DarkSouls.Memory
 
 		public static readonly int[] OrderedConsumables =
 		{
-			-1,
 			(int)ConsumableFlags.BloodredMossClump,
 			(int)ConsumableFlags.BloomingPurpleMossClump,
 			(int)ConsumableFlags.CharcoalPineResin,
@@ -1005,13 +1024,6 @@ namespace LiveSplit.DarkSouls.Memory
 			(int)ConsumableFlags.RottenPineResin,
 			(int)ConsumableFlags.TransientCurse,
 			(int)ConsumableFlags.TwinHumanities
-			-1,
-			-1,
-			(int)ConsumableFlags.HelloCarving,
-			(int)ConsumableFlags.HelpMeCarving,
-			(int)ConsumableFlags.ImSorryCarving,
-			(int)ConsumableFlags.ThankYouCarving,
-			(int)ConsumableFlags.VeryGoodCarving
 		};
 
 		public static readonly int[] OrderedCovenantItems =
@@ -1716,6 +1728,34 @@ namespace LiveSplit.DarkSouls.Memory
 			(int)TalismanFlags.VelkasTalisman
 		};
 
+		public static readonly int[] OrderedTools =
+		{
+			-1,
+			(int)ToolFlags.Binoculars,
+			(int)ToolFlags.BlackEyeOrb,
+			(int)ToolFlags.Darksign,
+			(int)ToolFlags.DragonHeadStone,
+			(int)ToolFlags.DragonTorsoStone,
+			(int)ToolFlags.SilverPendant,
+			(int)ToolFlags.SkullLantern,
+			-1,
+			-1,
+			(int)ToolFlags.HelloCarving,
+			(int)ToolFlags.HelpMeCarving,
+			(int)ToolFlags.ImSorryCarving,
+			(int)ToolFlags.ThankYouCarving,
+			(int)ToolFlags.VeryGoodCarving
+		};
+
+		public static readonly int[] OrderedTrinkets =
+		{
+			(int)TrinketFlags.CopperCoin,
+			(int)TrinketFlags.GoldCoin,
+			(int)TrinketFlags.Pendant,
+			(int)TrinketFlags.Rubbish,
+			(int)TrinketFlags.SilverCoin
+		};
+
 		public static readonly int[] OrderedWhips =
 		{
 			(int)WhipFlags.GuardianTail,
@@ -1741,18 +1781,19 @@ namespace LiveSplit.DarkSouls.Memory
 			null,
 			null,
 			OrderedBonfireItems,
+			OrderedConsumables,
 			OrderedCovenantItems,
 			OrderedKeys,
 			OrderedMultiplayerItems,
-			null,
 			OrderedSouls,
+			OrderedTrinkets,
 			null,
 			null,
 			OrderedAmmunition,
-			OrderedConsumables,
 			OrderedProjectiles,
 			OrderedRings,
 			OrderedShields,
+			OrderedTools,
 			null,
 			null,
 			OrderedEmbers,

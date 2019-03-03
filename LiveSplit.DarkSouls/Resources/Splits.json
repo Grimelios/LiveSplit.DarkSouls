@@ -229,7 +229,6 @@
 		],
 
 		"Consumables": [
-			"- Regular Consumables -",
 			"Bloodred Moss Clump",
 			"Blooming Purple Moss Clump",
 			"Charcoal Pine Resin",
@@ -247,14 +246,7 @@
 			"Repair Powder",
 			"Rotten Pine Resin",
 			"Transient Curse",
-			"Twin Humanities",
-			"",
-			"- Carvings -",
-			"Hello Carving",
-			"Help Me Carving",
-			"I'm Sorry Carving",
-			"Thank You Carving",
-			"Very Good Carving"
+			"Twin Humanities"
 		],
 
 		"Covenant": [
@@ -668,21 +660,6 @@
 			"White Titanite Slab"
 		],
 
-		"Other": [
-			"Binoculars",
-			"Black Eye Orb",
-			"Copper Coin",
-			"Darksign",
-			"Dragon Head Stone",
-			"Dragon Torso Stone",
-			"Gold Coin",
-			"Pendant",
-			"Rubbish",
-			"Silver Coin",
-			"Silver Pendant",
-			"Skull Lantern"
-		],
-
 		"Projectiles": [
 			"Alluring Skull",
 			"Black Firebomb",
@@ -947,6 +924,32 @@
 			"Talisman",
 			"Thorolund Talisman",
 			"Velka's Talisman"
+		],
+
+		"Tools": [
+			"- Regular Tools -",
+			"Binoculars",
+			"Black Eye Orb",
+			"Darksign",
+			"Dragon Head Stone",
+			"Dragon Torso Stone",
+			"Silver Pendant",
+			"Skull Lantern",
+			"",
+			"- Carvings -",
+			"Hello Carving",
+			"Help Me Carving",
+			"I'm Sorry Carving",
+			"Thank You Carving",
+			"Very Good Carving"
+		],
+
+		"Trinkets": [
+			"Copper Coin",
+			"Gold Coin",
+			"Pendant",
+			"Rubbish",
+			"Silver Coin"
 		],
 
 		"Whips": [
