@@ -823,7 +823,15 @@ namespace LiveSplit.DarkSouls.Controls
 
 		private string[] GetReinforcementList(int max)
 		{
-			return Enumerable.Range(0, max + 1).Select(r => "+" + r).ToArray(); ;
+			string[] results = new string[max + 1];
+			results[0] = "+0 [None]";
+
+			for (int i = 1; i <= max; i++)
+			{
+				results[i] = "+" + i;
+			}
+
+			return results;
 		}
 
 		private Control[] GetZoneControls()
