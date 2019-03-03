@@ -15,8 +15,6 @@ namespace LiveSplit.DarkSouls.Controls
 
 		private SoulsSplitControl parent;
 
-		private int previousIndex = -1;
-
 		// The parent split is null for split type (which is added directly from the forms editor).
 		public SoulsDropdown(SoulsSplitControl parent = null)
 		{
@@ -24,6 +22,7 @@ namespace LiveSplit.DarkSouls.Controls
 
 			DropDownStyle = ComboBoxStyle.DropDownList;
 			DrawMode = DrawMode.OwnerDrawFixed;
+			PreviousIndex = 1;
 
 			// When a dropdown is created, it's unfinished by default (because no value is selected).
 			BackColor = UnfinishedColor;
@@ -31,6 +30,11 @@ namespace LiveSplit.DarkSouls.Controls
 		}
 
 		public string Prompt { get; set; }
+
+		// This value is exposed publicly because of the estus flask. Selecting the estus flask (from the consumables
+		// item list) enables the reinforcement dropdown. As such, that dropdown needs to be disabled again when a
+		// different consumable is chosen.
+		public int PreviousIndex { get; private set; }
 
 		protected override void OnDrawItem(DrawItemEventArgs e)
 		{
@@ -112,14 +116,16 @@ namespace LiveSplit.DarkSouls.Controls
 
 		protected override void OnSelectedIndexChanged(EventArgs e)
 		{
-			if (SelectedIndex == previousIndex)
+			if (SelectedIndex == PreviousIndex)
 			{
 				return;
 			}
 
+			base.OnSelectedIndexChanged(e);
+
 			if (SelectedIndex == -1)
 			{
-				previousIndex = -1;
+				PreviousIndex = -1;
 
 				return;
 			}
@@ -128,14 +134,12 @@ namespace LiveSplit.DarkSouls.Controls
 
 			if (value.Length == 0 || value[0] == '-')
 			{
-				SelectedIndex = previousIndex;
+				SelectedIndex = PreviousIndex;
 
 				return;
 			}
 
-			previousIndex = SelectedIndex;
-
-			base.OnSelectedIndexChanged(e);
+			PreviousIndex = SelectedIndex;
 
 			// This function is intentionally called after other callbacks (to ensure other split controls are updated
 			// before the split's finished state is updated).

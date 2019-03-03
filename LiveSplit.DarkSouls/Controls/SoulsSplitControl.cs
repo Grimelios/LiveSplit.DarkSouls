@@ -670,6 +670,10 @@ namespace LiveSplit.DarkSouls.Controls
 
 			itemTypes.SelectedIndexChanged += (sender, args) =>
 			{
+				const int FlameIndex = 8;
+				const int ShieldIndex = 27;
+				const int WeaponIndex = 34;
+
 				itemList.Enabled = true;
 				itemCount.Enabled = true;
 				itemCount.Text = "1";
@@ -683,9 +687,9 @@ namespace LiveSplit.DarkSouls.Controls
 				int typeIndex = itemTypes.SelectedIndex;
 
 				bool isArmorType = typeIndex >= 1 && typeIndex <= 4;
-				bool isShield = typeIndex == 27;
-				bool isWeaponType = typeIndex >= 34;
-				bool isFlame = typeIndex == 8;
+				bool isShield = typeIndex == ShieldIndex;
+				bool isWeaponType = typeIndex >= WeaponIndex;
+				bool isFlame = typeIndex == FlameIndex;
 
 				modsApplicable = isWeaponType || isShield;
 
@@ -744,13 +748,30 @@ namespace LiveSplit.DarkSouls.Controls
 
 			itemList.SelectedIndexChanged += (sender, args) =>
 			{
-				// This means the current item type is not equipment.
-				if (upgrades == null)
+				const int ConsumableIndex = 16;
+				const int EstusIndex = 6;
+
+				int index = itemList.SelectedIndex;
+
+				// The estus flask can be upgraded, so some special logic is needed to account for that.
+				bool isConsumable = itemTypes.SelectedIndex == ConsumableIndex;
+				bool isEstus = isConsumable && index == EstusIndex;
+
+				// The upgrade array being null means that the current item type is not equipment.
+				if (upgrades == null && !isEstus)
 				{
+					bool previouslyEstus = isConsumable && itemList.PreviousIndex == EstusIndex;
+
+					if (previouslyEstus)
+					{
+						reinforcements.RefreshPrompt("N/A");
+					}
+
 					return;
 				}
 
-				int data = upgrades[itemList.SelectedIndex];
+				// The maximum estus upgrade is +7.
+				int data = isEstus ? 7 : upgrades[index];
 
 				// Armor and flames can be reinforced, but never modified.
 				if (!modsApplicable)
