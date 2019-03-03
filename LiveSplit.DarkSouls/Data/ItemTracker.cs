@@ -33,7 +33,7 @@ namespace LiveSplit.DarkSouls.Data
 		private int totalItems;
 		private int totalSlots;
 
-		public ItemTracker(SoulsPointers pointers, IntPtr handle, int start, int count)
+		public ItemTracker(SoulsPointers pointers, IntPtr handle, int start, int count, List<ItemId> ids)
 		{
 			this.handle = handle;
 
@@ -41,20 +41,14 @@ namespace LiveSplit.DarkSouls.Data
 			itemCount = pointers.Inventory + count;
 			tracker = new Dictionary<ItemId, List<IntPtr>>();
 			openSlots = new LinkedList<int>();
-		}
 
-		public void Clear()
-		{
-			tracker.Clear();
-			openSlots.Clear();
+			SetItems(ids);
 		}
 
 		// This function is called only once at the start of a run (or when the process is hooked if the timer was
 		// already running). The list of item IDs is pulled from the UI.
-		public void SetItems(List<ItemId> itemIds)
+		private void SetItems(List<ItemId> itemIds)
 		{
-			Clear();
-
 			totalItems = MemoryTools.ReadInt(handle, itemCount);
 
 			// It's simpler to add each list at the start (since each one will become relevant at some point anyway,

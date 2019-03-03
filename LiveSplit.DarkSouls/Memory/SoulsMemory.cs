@@ -53,13 +53,9 @@ namespace LiveSplit.DarkSouls.Memory
 					return false;
 				}
 
+				// Item trackers are created below (or left as null if not needed).
 				handle = process.Handle;
 				pointers = new SoulsPointers(handle);
-
-				keyTracker = new ItemTracker(pointers, handle, (int)InventoryFlags.KeyStart,
-					(int)InventoryFlags.KeyCount);
-				itemTracker = new ItemTracker(pointers, handle, (int)InventoryFlags.ItemStart,
-					(int)InventoryFlags.ItemCount);
 
 				ProcessHooked = true;
 			}
@@ -67,23 +63,73 @@ namespace LiveSplit.DarkSouls.Memory
 			return ProcessHooked;
 		}
 
-		// This function is called once per update tick if item splits are in use (regardless of whether an item split
-		// is active). In contrast, the function below effectively resets the tracker at the start of a new run.
-		public void RefreshItems()
-		{
-			itemTracker.Refresh();
-		}
-
 		public void SetItems(List<ItemId> itemIds)
 		{
-			itemTracker.Clear();
-
 			if (itemIds == null)
 			{
+				keyTracker = null;
+				itemTracker = null;
+
 				return;
 			}
 
-			itemTracker.SetItems(itemIds);
+			List<ItemId> keys = new List<ItemId>();
+			List<ItemId> items = new List<ItemId>();
+
+			// In terms of memory layout, "key items" refer to bonfire items, key boss souls, and actual keys.
+			List<int> keyIds = new List<int>();
+			keyIds.AddRange(ItemFlags.OrderedKeys);
+			keyIds.AddRange(ItemFlags.OrderedBonfireItems);
+			keyIds.Add((int)SoulFlags.BequeathedLordSoulShardFourKings);
+			keyIds.Add((int)SoulFlags.BequeathedLordSoulShardSeath);
+			keyIds.Add((int)SoulFlags.LordSoulBedOfChaos);
+			keyIds.Add((int)SoulFlags.LordSoulNito);
+
+			for (int i = 0; i < keyIds.Count; i++)
+			{
+				// This strips the category from each ID (since every key flag is five digits long).
+				keyIds[i] %= 10000;
+			}
+
+			foreach (ItemId id in itemIds)
+			{
+				if (keyIds.Contains(id.BaseId))
+				{
+					keys.Add(id);
+				}
+				else
+				{
+					items.Add(id);
+				}
+			}
+
+			if (keys.Count > 0)
+			{
+				keyTracker = new ItemTracker(pointers, handle, (int)InventoryFlags.KeyStart,
+					(int)InventoryFlags.KeyCount, keys);
+			}
+			else
+			{
+				keyTracker = null;
+			}
+
+			if (items.Count > 0)
+			{
+				itemTracker = new ItemTracker(pointers, handle, (int)InventoryFlags.ItemStart,
+					(int)InventoryFlags.ItemCount, items);
+			}
+			else
+			{
+				itemTracker = null;
+			}
+		}
+
+		// This function is called once per update tick if item splits are in use (regardless of whether an item split
+		// is active). In contrast, the function above effectively resets the tracker at the start of a new run.
+		public void RefreshItems()
+		{
+			keyTracker?.Refresh();
+			itemTracker?.Refresh();
 		}
 
 		public ItemState[] GetItemStates(int baseId, int category)
