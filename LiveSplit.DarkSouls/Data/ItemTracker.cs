@@ -45,10 +45,6 @@ namespace LiveSplit.DarkSouls.Data
 			SetItems(ids);
 		}
 
-		public delegate void ItemPickup(int baseId, int category);
-
-		public event ItemPickup PickupEvent;
-
 		// This function is called only once at the start of a run (or when the process is hooked if the timer was
 		// already running). The list of item IDs is pulled from the UI.
 		private void SetItems(List<ItemId> itemIds)
@@ -126,8 +122,6 @@ namespace LiveSplit.DarkSouls.Data
 						address = itemStart + itemIndex * Step;
 
 						ItemId id = ComputeItemId(address);
-
-						PickupEvent?.Invoke(id.BaseId, id.Category);
 
 						// Items not in the current set of splits are irrelevant for tracking purposes.
 						if (!tracker.TryGetValue(id, out List<IntPtr> list))

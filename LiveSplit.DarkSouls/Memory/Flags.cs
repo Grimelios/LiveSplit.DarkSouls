@@ -134,7 +134,7 @@ namespace LiveSplit.DarkSouls.Memory
 		ItemCount = 0x128,
 		ItemStart = 0xA24,
 		KeyCount = 0x12C,
-		KeyStart = 0x234
+		KeyStart = 0x324
 	}
 
 	public static class Flags

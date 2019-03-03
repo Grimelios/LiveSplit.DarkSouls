@@ -23,9 +23,6 @@ namespace LiveSplit.DarkSouls.Memory
 		private ItemTracker keyTracker;
 		private ItemTracker itemTracker;
 
-		public ItemTracker KeyTracker => keyTracker;
-		public ItemTracker ItemTracker => itemTracker;
-
 		public bool ProcessHooked { get; private set; }
 
 		public bool Hook()
