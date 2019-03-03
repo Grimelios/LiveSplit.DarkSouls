@@ -165,7 +165,10 @@ namespace LiveSplit.DarkSouls.Memory
 		DivineBlessing = 4240,
 		EggVermifuge = 4275,
 		ElizabethsMushroom = 4230,
-		EstusFlask = 4201,
+		
+		// Note that item ID 200 is the base (un-upgraded) estus flask while empty. There's additional logic in the
+		// main component class to account for all 14 possible estus flask IDs.
+		EstusFlask = 4200,
 		GreenBlossom = 4260,
 		GoldPineResin = 4311,
 		HomewardBone = 4330,

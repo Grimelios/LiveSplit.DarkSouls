@@ -41,6 +41,11 @@ namespace LiveSplit.DarkSouls
 		private bool isBonfireWarpSplitActive;
 		private bool isItemWarpSplitActive;
 
+		// The estus flask is more complex than other items. Conceptually, you have a single estus flask (either empty
+		// or filled) that can be upgraded to a maximum of +7. Internally, though, each separate flask has its own ID
+		// (16 total). Some special code is required to deal with that fact.
+		private bool isEstusSplit;
+
 		// If a particular run doesn't ever split on items, it would be wasteful to track them.
 		private bool itemsEnabled;
 
@@ -229,6 +234,7 @@ namespace LiveSplit.DarkSouls
 			isBonfireWarpConfirmed = false;
 			isBonfireWarpSplitActive = false;
 			isItemWarpSplitActive = false;
+			isEstusSplit = false;
 
 			int[] data = split.Data;
 
@@ -300,22 +306,31 @@ namespace LiveSplit.DarkSouls
 					break;
 
 				case SplitTypes.Item:
+					const int EstusId = 200;
+
 					ItemId id = ComputeItemId(split);
 
+					int baseId = id.BaseId;
 					int mods = data[2];
 					int reinforcement = data[3];
 					int count = data[4];
 
 					isItemWarpSplitActive = data[5] == 1;
+					isEstusSplit = baseId == EstusId;
 
 					// In the layout file, mods and reinforcement are stored as int.MaxValue to simplify split
 					// validation.
 					mods = mods == int.MaxValue ? 0 : mods;
 					reinforcement = reinforcement == int.MaxValue ? 0 : reinforcement;
 
+					// Each type of estus flask (+0 to +7 and empty or filled) has its own ID in memory (ranging from
+					// 200 through 215 inclusive). Since either an empty or filled flask counts as acquiring the item,
+					// the empty ID is stored as the target, then both that and the filled ID (empty ID + 1) are
+					// queried each tick.
+					run.Id = baseId + (isEstusSplit ? reinforcement * 2 : 0);
+
 					// The data field of the run state isn't otherwise used for item splits, so it's used to store item
 					// category (required to differentiate between items with the same ID).
-					run.Id = id.BaseId;
 					run.Data = id.Category;
 					run.ItemTarget = new ItemState(mods, reinforcement, count);
 
@@ -327,7 +342,7 @@ namespace LiveSplit.DarkSouls
 		}
 
 		// Making the phase nullable makes testing easier.
-		public void Refresh(TimerPhase? phase = null)
+		public void Refresh(TimerPhase? phase = null) 
 		{
 			if (!Hook())
 			{
@@ -417,7 +432,7 @@ namespace LiveSplit.DarkSouls
 						return;
 					}
 				}
-				else if (isItemWarpSplitActive && !IsItemStateSatisfied())
+				else if (isItemWarpSplitActive && !IsTargetItemSatisfied())
 				{
 					preparedForWarp = false;
 
@@ -741,7 +756,7 @@ namespace LiveSplit.DarkSouls
 
 		private bool ProcessItem(int[] data)
 		{
-			if (IsItemStateSatisfied())
+			if (IsTargetItemSatisfied())
 			{
 				bool onWarp = data[5] == 1;
 
@@ -761,11 +776,23 @@ namespace LiveSplit.DarkSouls
 
 		// This check is done from two places (processing item splits and verifying that an item wasn't dropped while
 		// waiting for a warp).
-		private bool IsItemStateSatisfied()
+		private bool IsTargetItemSatisfied()
 		{
-			ItemState[] states = memory.GetItemStates(run.Id, run.Data);
+			int targetId = run.Id;
 
-			return states != null && states.Any(s => s.Satisfies(run.ItemTarget));
+			// This double array felt like the easiest way to handle estus splits, even though literally every item
+			// besides the estus flask will only use a single state array.
+			ItemState[][] states = new ItemState[2][];
+			states[0] = memory.GetItemStates(targetId, run.Data);
+
+			if (isEstusSplit)
+			{
+				// For estus splits, the unfilled ID (at the target reinforement) is stored. Adding one brings you to
+				// the filled ID for that same reinforcement level.
+				states[1] = memory.GetItemStates(targetId + 1, run.Data);
+			}
+
+			return states.Any(a => a != null && a.Any(s => s.Satisfies(run.ItemTarget)));
 		}
 
 		public void Dispose()
