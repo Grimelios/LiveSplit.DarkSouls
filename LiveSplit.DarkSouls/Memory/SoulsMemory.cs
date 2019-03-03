@@ -84,9 +84,10 @@ namespace LiveSplit.DarkSouls.Memory
 			List<ItemId> keys = new List<ItemId>();
 			List<ItemId> items = new List<ItemId>();
 
-			// In terms of memory layout, "key items" refer to bonfire items, key boss souls, and actual keys.
+			// In terms of memory layout, "key items" refer to bonfire items, key boss souls, embers, and actual keys.
 			List<int> keyIds = new List<int>();
 			keyIds.AddRange(ItemFlags.OrderedKeys);
+			keyIds.AddRange(ItemFlags.OrderedEmbers);
 			keyIds.AddRange(ItemFlags.OrderedBonfireItems);
 			keyIds.Add((int)SoulFlags.BequeathedLordSoulShardFourKings);
 			keyIds.Add((int)SoulFlags.BequeathedLordSoulShardSeath);
