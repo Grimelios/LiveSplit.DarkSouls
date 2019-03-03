@@ -23,6 +23,9 @@ namespace LiveSplit.DarkSouls.Memory
 		private ItemTracker keyTracker;
 		private ItemTracker itemTracker;
 
+		public ItemTracker KeyTracker => keyTracker;
+		public ItemTracker ItemTracker => itemTracker;
+
 		public bool ProcessHooked { get; private set; }
 
 		public bool Hook()
@@ -56,6 +59,14 @@ namespace LiveSplit.DarkSouls.Memory
 				// Item trackers are created below (or left as null if not needed).
 				handle = process.Handle;
 				pointers = new SoulsPointers(handle);
+
+				// TODO: Remove.
+				keyTracker = new ItemTracker(pointers, handle, (int)InventoryFlags.KeyStart,
+					(int)InventoryFlags.KeyCount, new List<ItemId>());
+
+				// TODO: Remove.
+				itemTracker = new ItemTracker(pointers, handle, (int)InventoryFlags.ItemStart,
+					(int)InventoryFlags.ItemCount, new List<ItemId>());
 
 				ProcessHooked = true;
 			}

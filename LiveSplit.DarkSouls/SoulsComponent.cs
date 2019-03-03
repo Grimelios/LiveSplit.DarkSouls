@@ -341,6 +341,28 @@ namespace LiveSplit.DarkSouls
 			}
 		}
 
+		private bool first = true;
+		private HashSet<ItemId> items;
+		private Dictionary<ItemId, string> map;
+
+		private void Test(int baseId, int category, string tracker)
+		{
+			ItemId id = new ItemId(baseId, category);
+
+			if (items.Contains(id))
+			{
+				Console.WriteLine($"[{id.BaseId}, {id.Category}] already acquired ({tracker}).");
+
+				return;
+			}
+
+			string item = map[id];
+
+			items.Add(id);
+
+			Console.WriteLine(item + $" acquired! ({tracker})");
+		}
+
 		// Making the phase nullable makes testing easier.
 		public void Refresh(TimerPhase? phase = null) 
 		{
@@ -348,6 +370,83 @@ namespace LiveSplit.DarkSouls
 			{
 				return;
 			}
+
+			if (first)
+			{
+				memory.KeyTracker.PickupEvent += (id, category) => { Test(id, category, "key"); };
+				memory.ItemTracker.PickupEvent += (id, category) => { Test(id, category, "item"); };
+				items = new HashSet<ItemId>();
+				first = false;
+
+				Type[] types =
+				{
+					typeof(AmmunitionFlags),
+					typeof(AxeFlags),
+					typeof(BonfireItemFlags),
+					typeof(BowFlags),
+					typeof(CatalystFlags),
+					typeof(ChestPieceFlags),
+					typeof(ConsumableFlags),
+					typeof(CovenantItemFlags),
+					typeof(CrossbowFlags),
+					typeof(DaggerFlags),
+					typeof(EmberFlags),
+					typeof(FistFlags),
+					typeof(FlameFlags),
+					typeof(GauntletFlags),
+					typeof(GreatswordFlags),
+					typeof(HalberdFlags),
+					typeof(HammerFlags),
+					typeof(HelmetFlags),
+					typeof(KeyFlags),
+					typeof(LeggingFlags),
+					typeof(MiracleFlags),
+					typeof(MultiplayerItemFlags),
+					typeof(OreFlags),
+					typeof(ProjectileFlags),
+					typeof(PyromancyFlags),
+					typeof(RingFlags),
+					typeof(ShieldFlags),
+					typeof(SorceryFlags),
+					typeof(SoulFlags),
+					typeof(SpearFlags),
+					typeof(SwordFlags),
+					typeof(TalismanFlags),
+					typeof(ToolFlags),
+					typeof(TrinketFlags),
+					typeof(WhipFlags)
+				};
+
+				map = new Dictionary<ItemId, string>();
+
+				foreach (var type in types)
+				{
+					foreach (int value in Enum.GetValues(type))
+					{
+						int rawId = value;
+						int digit = rawId;
+						int divisor = 1;
+
+						// See https://stackoverflow.com/a/701355/7281613.
+						while (digit > 10)
+						{
+							digit /= 10;
+							divisor *= 10;
+						}
+
+						int baseId = rawId % divisor;
+						int category = digit == 9 ? 0 : digit;
+
+						ItemId id = new ItemId(baseId, category);
+
+						map.Add(id, Enum.GetName(type, value));
+					}
+				}
+			}
+
+			memory.RefreshItems();
+
+			return;
 
 			if (phase != null)
 			{
@@ -482,9 +581,11 @@ namespace LiveSplit.DarkSouls
 				divisor *= 10;
 			}
 
+			// Many items have a category of zero.
 			int baseId = rawId % divisor;
+			int category = digit == 9 ? 0 : digit;
 
-			return new ItemId(baseId, digit);
+			return new ItemId(baseId, category);
 		}
 
 		private void PrepareWarp()

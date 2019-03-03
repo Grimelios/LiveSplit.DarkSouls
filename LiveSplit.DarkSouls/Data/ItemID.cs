@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace LiveSplit.DarkSouls.Data
 {
+	[DebuggerDisplay("BaseId = {BaseId}, Category = {Category}")]
 	public class ItemId : IEquatable<ItemId>
 	{
 		public ItemId(int baseId, int category)
