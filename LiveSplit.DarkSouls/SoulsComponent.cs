@@ -340,7 +340,7 @@ namespace LiveSplit.DarkSouls
 					break;
 			}
 		}
-
+		
 		// Making the phase nullable makes testing easier.
 		public void Refresh(TimerPhase? phase = null) 
 		{

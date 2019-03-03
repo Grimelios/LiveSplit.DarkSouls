@@ -75,12 +75,12 @@ namespace LiveSplit.DarkSouls.Memory
 
 	public enum BonfireStates
 	{
-		// "Inactive" means that the bonfire's fire keeper is not present.
-		Inactive,
+		// Note that "inactive" bonfires (bonfires that are disabled because their fire keeper is dead) aren't given
+		// their own state (at least not at the same memory location).
 		Lit = 10,
 		KindledOnce = 20,
-		KindledTwice = 40,
-		KindledThrice = 30,
+		KindledTwice = 30,
+		KindledThrice = 40,
 		Undiscovered,
 		Unlit = 0
 	}

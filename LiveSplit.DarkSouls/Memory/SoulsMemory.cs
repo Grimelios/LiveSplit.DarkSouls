@@ -244,21 +244,21 @@ namespace LiveSplit.DarkSouls.Memory
 			pointer = (IntPtr)MemoryTools.ReadInt(handle, IntPtr.Add(pointer, 0x24));
 			pointer = (IntPtr)MemoryTools.ReadInt(handle, pointer);
 
-			IntPtr bonfirePointer = (IntPtr)MemoryTools.ReadInt(handle, IntPtr.Add(pointer, 8));
+			IntPtr bonfirePointer = (IntPtr)MemoryTools.ReadInt(handle, IntPtr.Add(pointer, 0x8));
 
 			while (bonfirePointer != IntPtr.Zero)
 			{
-				int bonfireId = MemoryTools.ReadInt(handle, IntPtr.Add(bonfirePointer, 4));
+				int bonfireId = MemoryTools.ReadInt(handle, IntPtr.Add(bonfirePointer, 0x4));
 
 				if (bonfireId == (int)bonfire)
 				{
-					int bonfireState = MemoryTools.ReadInt(handle, IntPtr.Add(bonfirePointer, 8));
+					int bonfireState = MemoryTools.ReadInt(handle, IntPtr.Add(bonfirePointer, 0x8));
 
 					return (BonfireStates)bonfireState;
 				}
 
 				pointer = (IntPtr)MemoryTools.ReadInt(handle, pointer);
-				bonfirePointer = (IntPtr)MemoryTools.ReadInt(handle, IntPtr.Add(pointer, 8));
+				bonfirePointer = (IntPtr)MemoryTools.ReadInt(handle, IntPtr.Add(pointer, 0x8));
 			}
 
 			return BonfireStates.Undiscovered;
