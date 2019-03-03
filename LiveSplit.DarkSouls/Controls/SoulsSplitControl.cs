@@ -676,7 +676,9 @@ namespace LiveSplit.DarkSouls.Controls
 
 				var rawList = itemMap[itemTypes.Text];
 				var items = itemList.Items;
-				items.Clear();
+
+				// Refreshing the prompt (rather than just clearing items) also resets the background color to red.
+				itemList.RefreshPrompt("Items", true);
 
 				int typeIndex = itemTypes.SelectedIndex;
 
@@ -718,7 +720,7 @@ namespace LiveSplit.DarkSouls.Controls
 								? int.Parse(reinforcementString.Substring(1))
 								: 0;
 						}
-						// Weapons and shields follow the same logic in toggling mods and reinforcement.
+						// Weapons and shields follow the same logic for toggling mods and reinforcement.
 						else
 						{
 							upgradeValue = (int)Enum.Parse(typeof(ModificationTypes), tokens[1]);
