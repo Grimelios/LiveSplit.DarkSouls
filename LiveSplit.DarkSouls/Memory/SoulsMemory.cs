@@ -112,25 +112,14 @@ namespace LiveSplit.DarkSouls.Memory
 				}
 			}
 
-			if (keys.Count > 0)
-			{
-				keyTracker = new ItemTracker(pointers, handle, (int)InventoryFlags.KeyStart,
-					(int)InventoryFlags.KeyCount, keys);
-			}
-			else
-			{
-				keyTracker = null;
-			}
+			// Both trackers are nullified if no splits would require using them.
+			keyTracker = keys.Count > 0
+				? new ItemTracker(pointers, handle, (int)InventoryFlags.KeyStart, (int)InventoryFlags.KeyCount, keys)
+				: null;
 
-			if (items.Count > 0)
-			{
-				itemTracker = new ItemTracker(pointers, handle, (int)InventoryFlags.ItemStart,
-					(int)InventoryFlags.ItemCount, items);
-			}
-			else
-			{
-				itemTracker = null;
-			}
+			itemTracker = items.Count > 0
+				? new ItemTracker(pointers, handle, (int)InventoryFlags.ItemStart, (int)InventoryFlags.ItemCount, items)
+				: null;
 		}
 
 		// This function is called once per update tick if item splits are in use (regardless of whether an item split

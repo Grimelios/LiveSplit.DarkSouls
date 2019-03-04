@@ -306,8 +306,6 @@ namespace LiveSplit.DarkSouls
 					break;
 
 				case SplitTypes.Item:
-					const int EstusId = 200;
-
 					ItemId id = ComputeItemId(split);
 
 					int baseId = id.BaseId;
@@ -316,21 +314,18 @@ namespace LiveSplit.DarkSouls
 					int count = data[4];
 
 					isItemWarpSplitActive = data[5] == 1;
-					isEstusSplit = baseId == EstusId;
+
+					// This spans the range of all possible estus IDs (unfilled +0 through unfilled +7).
+					isEstusSplit = baseId >= 200 && baseId <= 214;
 
 					// In the layout file, mods and reinforcement are stored as int.MaxValue to simplify split
 					// validation.
 					mods = mods == int.MaxValue ? 0 : mods;
 					reinforcement = reinforcement == int.MaxValue ? 0 : reinforcement;
 
-					// Each type of estus flask (+0 to +7 and empty or filled) has its own ID in memory (ranging from
-					// 200 through 215 inclusive). Since either an empty or filled flask counts as acquiring the item,
-					// the empty ID is stored as the target, then both that and the filled ID (empty ID + 1) are
-					// queried each tick.
-					run.Id = baseId + (isEstusSplit ? reinforcement * 2 : 0);
-
 					// The data field of the run state isn't otherwise used for item splits, so it's used to store item
 					// category (required to differentiate between items with the same ID).
+					run.Id = id.BaseId;
 					run.Data = id.Category;
 					run.ItemTarget = new ItemState(mods, reinforcement, count);
 
@@ -470,6 +465,8 @@ namespace LiveSplit.DarkSouls
 
 		private ItemId ComputeItemId(Split split)
 		{
+			const int EstusId = 200;
+
 			int[] data = split.Data;
 			int rawId = ItemFlags.MasterList[data[0]][data[1]];
 			int digit = rawId;
@@ -485,6 +482,18 @@ namespace LiveSplit.DarkSouls
 			// Many items have a category of zero.
 			int baseId = rawId % divisor;
 			int category = digit == 9 ? 0 : digit;
+
+			// Each type of estus flask (+0 to +7 and empty or filled) has its own ID in memory (ranging from 200
+			// through 215 inclusive). Since either an empty or filled flask counts as acquiring the item, the empty ID
+			// is stored as the target, then both that and the filled ID (empty ID + 1) are queried each tick.
+			if (baseId == EstusId)
+			{
+				// Note that by the time this function is called, the split is guaranteed to be finished, meaning that
+				// the reinforcement dropdown will always have a valid value.
+				int reinforcement = data[3];
+
+				baseId += reinforcement * 2;
+			}
 
 			return new ItemId(baseId, category);
 		}
