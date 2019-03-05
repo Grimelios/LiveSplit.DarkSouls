@@ -62,6 +62,7 @@ namespace LiveSplit.DarkSouls
 				{ SplitTypes.Boss, ProcessBoss },
 				{ SplitTypes.Covenant, ProcessCovenant },
 				{ SplitTypes.Event, ProcessEvent },
+				{ SplitTypes.Flag, ProcessFlag },
 				{ SplitTypes.Item, ProcessItem }
 			};
 
@@ -302,6 +303,14 @@ namespace LiveSplit.DarkSouls
 
 						default: run.Data = memory.GetClearCount(); break;
 					}
+
+					break;
+
+				case SplitTypes.Flag:
+					int flag = data[0];
+
+					run.Id = flag;
+					run.Flag = memory.CheckFlag(flag);
 
 					break;
 
@@ -760,6 +769,28 @@ namespace LiveSplit.DarkSouls
 				bool isDarkLordTarget = data[0] == 5;
 
 				return isDarkLord == isDarkLordTarget;
+			}
+
+			return false;
+		}
+
+		private bool ProcessFlag(int[] data)
+		{
+			int flag = data[0];
+
+			if (!run.Flag && memory.CheckFlag(flag))
+			{
+				bool onWarp = data[1] == 1;
+
+				// The alternative here is "On trigger" (i.e. split immediately when the flag is toggled to true).
+				if (onWarp)
+				{
+					PrepareWarp();
+
+					return false;
+				}
+
+				return true;
 			}
 
 			return false;

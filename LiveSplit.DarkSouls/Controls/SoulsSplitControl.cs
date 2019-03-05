@@ -19,6 +19,7 @@ namespace LiveSplit.DarkSouls.Controls
 		private const int ControlSpacing = 4;
 		private const int ItemSplitCorrection = 2;
 		private const int ItemCountIndex = 4;
+		private const int FlagIdIndex = 0;
 
 		private static SplitLists lists;
 		private static Dictionary<string, string[]> itemMap;
@@ -143,13 +144,13 @@ namespace LiveSplit.DarkSouls.Controls
 
 				for (int i = 0; i < controls.Count; i++)
 				{
-					// Item splits have a numeric textbox (representing item count). All other split types use
-					// exclusively dropdowns.
-					if (type == SplitTypes.Item && i == ItemCountIndex)
+					// Item and flag splits have a numeric textbox. All other split types use exclusively dropdowns.
+					if ((type == SplitTypes.Item && i == ItemCountIndex) ||
+					    (type == SplitTypes.Flag && i == FlagIdIndex))
 					{
-						string text = ((TextBox)controls[ItemCountIndex]).Text;
+						string text = ((TextBox)controls[i]).Text;
 
-						data[ItemCountIndex] = text.Length > 0 ? int.Parse(text) : -1;
+						data[i] = text.Length > 0 ? int.Parse(text) : -1;
 
 						continue;
 					}
@@ -185,11 +186,12 @@ namespace LiveSplit.DarkSouls.Controls
 
 			for (int i = 0; i < controls.Count; i++)
 			{
-				if (type == SplitTypes.Item && i == ItemCountIndex)
+				if ((type == SplitTypes.Item && i == ItemCountIndex) ||
+				    (type == SplitTypes.Flag && i == FlagIdIndex))
 				{
-					int value = data[ItemCountIndex];
+					int value = data[i];
 
-					((TextBox)controls[ItemCountIndex]).Text = value != -1 ? data[ItemCountIndex].ToString() : "";
+					((TextBox)controls[i]).Text = value != -1 ? value.ToString() : "";
 
 					continue;
 				}
@@ -247,6 +249,15 @@ namespace LiveSplit.DarkSouls.Controls
 				if (!control.Enabled || (type == SplitTypes.Item && i == ItemCountIndex))
 				{
 					continue;
+				}
+
+				// In contrast to item count, the flag ID textbox can be empty.
+				if (type == SplitTypes.Flag && i == FlagIdIndex)
+				{
+					// Note that the flag itself isn't validated (as far as being an ID that actually exists in the
+					// game). That validation could be done using another ID list, but that approach doesn't seem worth
+					// the effort (and added DLL file size).
+					return ((TextBox)control).Text.Length > 0;
 				}
 
 				if (((ComboBox)control).SelectedIndex == -1)
@@ -508,7 +519,24 @@ namespace LiveSplit.DarkSouls.Controls
 
 		private Control[] GetFlagControls()
 		{
-			return null;
+			const int FlagIdWidth = 68;
+			const int FlagCriteriaWidth = 78;
+
+			var flagId = GetNumericTextbox(FlagIdWidth, 8, true);
+
+			flagId.TextChanged += (sender, args) => { RefreshFinished(); };
+
+			var flagCriteria = GetDropdown(new []
+			{
+				"On trigger",
+				"On warp"
+			}, "Criteria", FlagCriteriaWidth);
+
+			return new Control[]
+			{
+				flagId,
+				flagCriteria
+			};
 		}
 
 		private Control[] GetItemControls()
@@ -597,39 +625,7 @@ namespace LiveSplit.DarkSouls.Controls
 
 			// The item count textbox was originally on line one, but it was moved down to accomodate extra width
 			// needed for the item list.
-			var itemCount = new TextBox
-			{
-				Enabled = false,
-				Width = ItemCountWidth,
-
-				// This height results in the text box exactly lining up with the adjacent item list dropdown.
-				AutoSize = false,
-				Height = 21,
-				MaxLength = 3,
-				Text = "1",
-				TextAlign = HorizontalAlignment.Center
-			};
-
-			// See https://stackoverflow.com/q/463299/7281613.
-			itemCount.KeyPress += (sender, args) =>
-			{
-				if (!char.IsDigit(args.KeyChar) && args.KeyChar != (char)Keys.Back)
-				{
-					args.Handled = true;
-				}
-			};
-
-			itemCount.GotFocus += (sender, args) =>
-			{
-				itemCount.SelectAll();
-			};
-
-			itemCount.Enter += (sender, args) =>
-			{
-				// See https://stackoverflow.com/a/6857301/7281613. This causes all text to be selected after the click
-				// is processed.
-				BeginInvoke((Action)itemCount.SelectAll);
-			};
+			var itemCount = GetNumericTextbox(ItemCountWidth, 3, false, 1);
 
 			itemCount.LostFocus += (sender, args) =>
 			{
@@ -879,6 +875,57 @@ namespace LiveSplit.DarkSouls.Controls
 			}
 
 			return box;
+		}
+
+		private TextBox GetNumericTextbox(int width, int maxLength, bool enabled, int? value = null)
+		{
+			var textbox = new TextBox
+			{
+				Enabled = enabled,
+				Width = width,
+				AutoSize = false,
+
+				// This height results in the text box exactly lining up with adjacent dropdowns.
+				Height = 21,
+				MaxLength = maxLength,
+				TextAlign = HorizontalAlignment.Center
+			};
+
+			if (value.HasValue)
+			{
+				textbox.Text = value.Value.ToString();
+			}
+
+			// See https://stackoverflow.com/q/463299/7281613.
+			textbox.KeyPress += (sender, args) =>
+			{
+				if (!char.IsDigit(args.KeyChar) && args.KeyChar != (char)Keys.Back)
+				{
+					args.Handled = true;
+				}
+			};
+
+			textbox.KeyDown += (sender, args) =>
+			{
+				if (args.KeyCode == Keys.Escape)
+				{
+					ParentForm.Controls[0].Focus();
+				}
+			};
+
+			textbox.GotFocus += (sender, args) =>
+			{
+				textbox.SelectAll();
+			};
+
+			textbox.Enter += (sender, args) =>
+			{
+				// See https://stackoverflow.com/a/6857301/7281613. This causes all text to be selected after the click
+				// is processed.
+				BeginInvoke((Action)textbox.SelectAll);
+			};
+
+			return textbox;
 		}
 	}
 }
