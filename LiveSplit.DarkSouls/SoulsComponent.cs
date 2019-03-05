@@ -665,7 +665,7 @@ namespace LiveSplit.DarkSouls
 			// account for the maximum distance between any two points from which the player could join a single
 			// covenant. For reference, the largest distance I could find is within the area surrounding the ancient
 			// dragon in Ash Lake.
-			const int Radius = 60;
+			const int Radius = 40;
 			const int CovenantPromptId = 121;
 
 			int menu = memory.GetPromptedMenu();
@@ -689,7 +689,7 @@ namespace LiveSplit.DarkSouls
 
 						// For any covenant, there's a range of positions from which the player can join (i.e. the
 						// interaction radius).
-						if (d <= Radius && d < closestDistanceSquared)
+						if (d <= Radius * Radius && d < closestDistanceSquared)
 						{
 							closestDistanceSquared = d;
 							closestIndex = i;
