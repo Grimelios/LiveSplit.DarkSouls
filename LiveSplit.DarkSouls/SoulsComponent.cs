@@ -373,7 +373,7 @@ namespace LiveSplit.DarkSouls
 
 					// In the layout file, mods and reinforcement are stored as int.MaxValue to simplify split
 					// validation. 
-					mods = mods == int.MaxValue ? 0 : mods;
+					mods = mods == int.MaxValue ? 0 : Flags.OrderedInfusions[mods];
 					reinforcement = reinforcement == int.MaxValue ? 0 : reinforcement;
 
 					// Estus splits have their reinforcement stored as zero (since the reinforcement is implied through

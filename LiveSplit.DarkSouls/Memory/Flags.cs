@@ -129,6 +129,20 @@ namespace LiveSplit.DarkSouls.Memory
 		WayOfWhite = 1
 	}
 
+	public enum InfusionFlags
+	{
+		Basic = 0,
+		Chaos = 9,
+		Crystal = 1,
+		Divine = 6,
+		Enchanted = 5,
+		Fire = 8,
+		Lightning = 2,
+		Magic = 4,
+		Occult = 7,
+		Raw = 3
+	}
+
 	public enum InventoryFlags
 	{
 		ItemCount = 0x128,
@@ -239,6 +253,20 @@ namespace LiveSplit.DarkSouls.Memory
 			(int)CovenantFlags.Princess,
 			(int)CovenantFlags.Sunlight,
 			(int)CovenantFlags.WayOfWhite
+		};
+
+		public static readonly int[] OrderedInfusions =
+		{
+			(int)InfusionFlags.Basic,
+			(int)InfusionFlags.Chaos,
+			(int)InfusionFlags.Crystal,
+			(int)InfusionFlags.Divine,
+			(int)InfusionFlags.Enchanted,
+			(int)InfusionFlags.Fire,
+			(int)InfusionFlags.Lightning,
+			(int)InfusionFlags.Magic,
+			(int)InfusionFlags.Occult,
+			(int)InfusionFlags.Raw
 		};
 	}
 }
