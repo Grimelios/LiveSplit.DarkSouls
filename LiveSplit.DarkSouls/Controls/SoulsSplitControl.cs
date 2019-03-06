@@ -522,9 +522,16 @@ namespace LiveSplit.DarkSouls.Controls
 			const int FlagIdWidth = 68;
 			const int FlagCriteriaWidth = 78;
 
+			Color unfinishedColor = Color.PaleVioletRed;
+
 			var flagId = GetNumericTextbox(FlagIdWidth, 8, true);
 
-			flagId.TextChanged += (sender, args) => { RefreshFinished(); };
+			flagId.BackColor = unfinishedColor;
+			flagId.TextChanged += (sender, args) =>
+			{
+				flagId.BackColor = flagId.Text.Length == 0 ? unfinishedColor : Color.White;
+				RefreshFinished();
+			};
 
 			var flagCriteria = GetDropdown(new []
 			{

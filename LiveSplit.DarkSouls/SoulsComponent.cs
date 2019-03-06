@@ -26,6 +26,7 @@ namespace LiveSplit.DarkSouls
 		private SoulsMasterControl masterControl;
 		private Dictionary<SplitTypes, Func<int[], bool>> splitFunctions;
 		private Vector3[] covenantLocations;
+		private Vector3[] bonfireLocations;
 		private RunState run;
 
 		private bool preparedForWarp;
@@ -66,7 +67,7 @@ namespace LiveSplit.DarkSouls
 				{ SplitTypes.Item, ProcessItem }
 			};
 
-			// This arrau is used for covenant discovery splits. Discovery occurs when the player is prompted to join a
+			// This array is used for covenant discovery splits. Discovery occurs when the player is prompted to join a
 			// covenant via a yes/no confirmation box. That prompt's appearance can be detected through memory, but
 			// it's shared among all covenants. As such, position is used to narrow down the covenant.
 			covenantLocations = new []
@@ -81,6 +82,18 @@ namespace LiveSplit.DarkSouls
 				new Vector3(285, -3, -105), // Forest (below Alvina) 
 				new Vector3(430, 60, 255), // Darkmoon (just outside Gwyndolin's boss arena)
 				new Vector3(138, -252, 94) // Chaos (in front of the fair lady)
+			};
+
+			// Previously, bonfire resting was determined by reading the last bonfire from memory (i.e. the bonfire to
+			// which the player will warp on death or when using an item). That approach works great for most cases,
+			// but there's a catch in that the last bonfire seems to update a frame after the resting animation is
+			// detected. As a result, it was possible for the autosplitter to split incorrectly if that last bonfire
+			// value is already set to the target (in which case you'd split at any bonfire, not just the target).
+			// There's unfortunately no foolproof solution to this problem using that last bonfire data alone, which is
+			// why position data is used instead.
+			bonfireLocations = new []
+			{
+				new Vector3(0, 0, 0), 
 			};
 		}
 
@@ -242,21 +255,20 @@ namespace LiveSplit.DarkSouls
 			switch (split.Type)
 			{
 				case SplitTypes.Bonfire:
+					int bonfireIndex = data[0];
 					int criteria = data[1];
 
 					bool onRest = criteria == 1;
 					bool onWarp = criteria == 5;
 
-					int bonfire = Flags.OrderedBonfires[data[0]];
-
 					if (onRest || onWarp)
 					{
-						run.Target = bonfire;
-						isBonfireWarpConfirmed = onWarp;
+						run.Target = bonfireIndex;
+						isBonfireWarpSplitActive = onWarp;
 					}
 					else
 					{
-						run.Id = bonfire;
+						run.Id = Flags.OrderedBonfires[bonfireIndex];
 						run.Data = (int)memory.GetBonfireState((BonfireFlags)run.Id);
 						run.Target = Flags.OrderedBonfireStates[data[1]];
 					}
@@ -344,7 +356,9 @@ namespace LiveSplit.DarkSouls
 					break;
 			}
 		}
-		
+
+		private Tuple<int, int> pair = new Tuple<int, int>(-1, -1);
+
 		// Making the phase nullable makes testing easier.
 		public void Refresh(TimerPhase? phase = null) 
 		{
@@ -352,6 +366,18 @@ namespace LiveSplit.DarkSouls
 			{
 				return;
 			}
+
+			int forcedAnimation = memory.GetForcedAnimation();
+			int lastBonfire = memory.GetLastBonfire();
+
+			if (pair.Item1 != forcedAnimation || pair.Item2 != lastBonfire)
+			{
+				pair = new Tuple<int, int>(forcedAnimation, lastBonfire);
+
+				Console.WriteLine($"Pair: [{forcedAnimation}, {(BonfireFlags)lastBonfire}]");
+			}
+
+			return;
 
 			if (phase != null)
 			{
@@ -559,6 +585,10 @@ namespace LiveSplit.DarkSouls
 
 		private bool ProcessBonfire(int[] data)
 		{
+			// The player must be very close to a bonfire in order to rest. The chosen value here is arbitrary and
+			// could be smaller (but it makes no performance difference).
+			const int Radius = 10;
+
 			int criteria = data[1];
 
 			bool onRest = criteria == 1;
@@ -578,14 +608,9 @@ namespace LiveSplit.DarkSouls
 				// This confirms that the player is resting at a bonfire (but not which bonfire).
 				if (restValues.Contains(animation))
 				{
-					int bonfire = memory.GetLastBonfire();
-
-					if (!Enum.IsDefined(typeof(BonfireFlags), bonfire))
-					{
-						return false;
-					}
-
-					bool correctBonfire = bonfire == run.Target;
+					int index = ComputeClosestTarget(bonfireLocations, Radius);
+					
+					bool correctBonfire = index == run.Target;
 
 					if (correctBonfire && onWarp)
 					{
@@ -678,36 +703,19 @@ namespace LiveSplit.DarkSouls
 				{
 					// At this point, the covenant prompt has appeared, but it's unknown to which covenant the prompt
 					// applies (since all covenants use the same prompt).
-					int closestIndex = -1;
-					float closestDistanceSquared = float.MaxValue;
-
-					Vector3 playerPosition = memory.GetPlayerPosition();
-
-					for (int i = 0; i < covenantLocations.Length; i++)
-					{
-						float d = playerPosition.ComputeDistanceSquared(covenantLocations[i]);
-
-						// For any covenant, there's a range of positions from which the player can join (i.e. the
-						// interaction radius).
-						if (d <= Radius * Radius && d < closestDistanceSquared)
-						{
-							closestDistanceSquared = d;
-							closestIndex = i;
-						}
-					}
-
+					int index = ComputeClosestTarget(covenantLocations, Radius);
 					int target = run.Target;
 
 					// Way of White is the only covenant that can be joined from two locations. Conveniently, the first
 					// two locations in the array can both be used for Way of White (since there's no covenant zero).
-					if (closestIndex <= 1)
+					if (index <= 1)
 					{
 						return target == (int)CovenantFlags.WayOfWhite;
 					}
 
 					// Covenant locations are ordered the same as their corresponding covenant ID (ranging from 1
 					// through 9 inclusive).
-					return closestIndex == target;
+					return index == target;
 				}
 			}
 
@@ -835,6 +843,30 @@ namespace LiveSplit.DarkSouls
 			}
 
 			return states.Any(a => a != null && a.Any(s => s.Satisfies(run.ItemTarget)));
+		}
+
+		private int ComputeClosestTarget(Vector3[] targets, int radius)
+		{
+			Vector3 playerPosition = memory.GetPlayerPosition();
+
+			int closestIndex = -1;
+
+			float closestDistance = float.MaxValue;
+			float radiusSquared = radius * radius;
+
+			for (int i = 0; i < targets.Length; i++)
+			{
+				float d = playerPosition.ComputeDistanceSquared(targets[i]);
+
+				// Using distance squared prevents having to do a square root operation.
+				if (d <= radiusSquared && d < closestDistance)
+				{
+					closestDistance = d;
+					closestIndex = i;
+				}
+			}
+
+			return closestIndex;
 		}
 
 		public void Dispose()
