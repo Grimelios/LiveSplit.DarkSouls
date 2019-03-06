@@ -24,12 +24,5 @@ namespace LiveSplit.DarkSouls.Data
 		public int Mods { get; set; }
 		public int Reinforcement { get; set; }
 		public int Count { get; set; }
-
-		public bool Satisfies(ItemState target)
-		{
-			// An item split is considered satisfied if the item count and reinforcement are greater than or equal to
-			// the target (rather than being exactly equal).
-			return Mods == target.Mods && Reinforcement >= target.Reinforcement && Count >= target.Count;
-		}
 	}
 }

@@ -863,7 +863,25 @@ namespace LiveSplit.DarkSouls
 				states[1] = memory.GetItemStates(targetId + 1, run.Data);
 			}
 
-			return states.Any(a => a != null && a.Any(s => s.Satisfies(run.ItemTarget)));
+			ItemState target = run.ItemTarget;
+
+			int count = 0;
+
+			foreach (ItemState[] array in states)
+			{
+				if (array == null)
+				{
+					continue;
+				}
+				
+				// Computing the count in this way allows the target count to be honored even if the target item
+				// doesn't stack (e.g. splitting on three stone greatswords rather than one).
+				count += array
+					.Where(state => state.Mods == target.Mods && state.Reinforcement >= target.Reinforcement)
+					.Sum(state => state.Count);
+			}
+
+			return count >= target.Count;
 		}
 
 		private int ComputeClosestTarget(Vector3[] targets, int radius)
