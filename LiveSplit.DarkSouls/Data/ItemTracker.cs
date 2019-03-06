@@ -53,7 +53,15 @@ namespace LiveSplit.DarkSouls.Data
 
 			// It's simpler to add each list at the start (since each one will become relevant at some point anyway,
 			// assuming the splits are correctly configured).
-			itemIds.ForEach(id => tracker.Add(id, new List<IntPtr>()));
+			itemIds.ForEach(id =>
+			{
+				// It's possible to have multiple splits for the same item (unlikely, but totally allowable). In those
+				// cases, the same collection of item states should be returned when queried.
+				if (!tracker.ContainsKey(id))
+				{
+					tracker.Add(id, new List<IntPtr>());
+				}
+			});
 
 			IntPtr address = itemStart;
 

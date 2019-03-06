@@ -20,6 +20,8 @@ namespace LiveSplit.DarkSouls
 	{
 		public const string DisplayName = "Dark Souls Autosplitter";
 
+		private const int EstusId = 200;
+
 		private TimerModel timer;
 		private SplitCollection splitCollection;
 		private SoulsMemory memory;
@@ -46,6 +48,11 @@ namespace LiveSplit.DarkSouls
 		// or filled) that can be upgraded to a maximum of +7. Internally, though, each separate flask has its own ID
 		// (16 total). Some special code is required to deal with that fact.
 		private bool isEstusSplit;
+
+		// This value is used to bump estus IDs up to their correct value (from the base, unfilled +0 ID). For estus
+		// splits, reinforcement can't be stored in the item target directly because it would mess with state
+		// comparison.
+		private int estusReinforcement;
 
 		// If a particular run doesn't ever split on items, it would be wasteful to track them.
 		private bool itemsEnabled;
@@ -204,7 +211,34 @@ namespace LiveSplit.DarkSouls
 
 					if (itemsEnabled)
 					{
-						memory.SetItems(splits.Select(ComputeItemId).ToList());
+						List<ItemId> items = new List<ItemId>();
+
+						foreach (Split split in splits)
+						{
+							if (split.Type != SplitTypes.Item || !split.IsFinished)
+							{
+								continue;
+							}
+
+							ItemId id = ComputeItemId(split);
+
+							// Given the nature of how estus IDs are stored, both the filled and unfilled versions of
+							// the flask (at the target reinforcement) must be tracked.
+							if (id.BaseId == EstusId)
+							{
+								int reinforcement = split.Data[3];
+
+								id.BaseId += reinforcement * 2;
+
+								ItemId filledId = new ItemId(id.BaseId + 1, id.Category);
+
+								items.Add(filledId);
+							}
+
+							items.Add(id);
+						}
+
+						memory.SetItems(items);
 					}
 
 					splitCollection.OnStart();
@@ -335,14 +369,20 @@ namespace LiveSplit.DarkSouls
 					int count = data[4];
 
 					isItemWarpSplitActive = data[5] == 1;
-
-					// This spans the range of all possible estus IDs (unfilled +0 through unfilled +7).
-					isEstusSplit = baseId >= 200 && baseId <= 214;
+					isEstusSplit = baseId == EstusId;
 
 					// In the layout file, mods and reinforcement are stored as int.MaxValue to simplify split
-					// validation.
+					// validation. 
 					mods = mods == int.MaxValue ? 0 : mods;
 					reinforcement = reinforcement == int.MaxValue ? 0 : reinforcement;
+
+					// Estus splits have their reinforcement stored as zero (since the reinforcement is implied through
+					// ID directly).
+					if (isEstusSplit)
+					{
+						estusReinforcement = reinforcement;
+						reinforcement = 0;
+					}
 
 					// The data field of the run state isn't otherwise used for item splits, so it's used to store item
 					// category (required to differentiate between items with the same ID).
@@ -357,8 +397,6 @@ namespace LiveSplit.DarkSouls
 			}
 		}
 
-		private Tuple<int, int> pair = new Tuple<int, int>(-1, -1);
-
 		// Making the phase nullable makes testing easier.
 		public void Refresh(TimerPhase? phase = null) 
 		{
@@ -366,18 +404,6 @@ namespace LiveSplit.DarkSouls
 			{
 				return;
 			}
-
-			int forcedAnimation = memory.GetForcedAnimation();
-			int lastBonfire = memory.GetLastBonfire();
-
-			if (pair.Item1 != forcedAnimation || pair.Item2 != lastBonfire)
-			{
-				pair = new Tuple<int, int>(forcedAnimation, lastBonfire);
-
-				Console.WriteLine($"Pair: [{forcedAnimation}, {(BonfireFlags)lastBonfire}]");
-			}
-
-			return;
 
 			if (phase != null)
 			{
@@ -500,8 +526,6 @@ namespace LiveSplit.DarkSouls
 
 		private ItemId ComputeItemId(Split split)
 		{
-			const int EstusId = 200;
-
 			int[] data = split.Data;
 			int rawId = ItemFlags.MasterList[data[0]][data[1]];
 			int digit = rawId;
@@ -514,21 +538,10 @@ namespace LiveSplit.DarkSouls
 				divisor *= 10;
 			}
 
-			// Many items have a category of zero.
+			// Many items have a category of zero, but the leading zero would be stripped from normal integers. As
+			// such, nine is used instead (since there's no real category with ID nine).
 			int baseId = rawId % divisor;
 			int category = digit == 9 ? 0 : digit;
-
-			// Each type of estus flask (+0 to +7 and empty or filled) has its own ID in memory (ranging from 200
-			// through 215 inclusive). Since either an empty or filled flask counts as acquiring the item, the empty ID
-			// is stored as the target, then both that and the filled ID (empty ID + 1) are queried each tick.
-			if (baseId == EstusId)
-			{
-				// Note that by the time this function is called, the split is guaranteed to be finished, meaning that
-				// the reinforcement dropdown will always have a valid value.
-				int reinforcement = data[3];
-
-				baseId += reinforcement * 2;
-			}
 
 			return new ItemId(baseId, category);
 		}
@@ -829,6 +842,14 @@ namespace LiveSplit.DarkSouls
 		private bool IsTargetItemSatisfied()
 		{
 			int targetId = run.Id;
+
+			// Estus flasks are a bit unique as far as upgrades. Other reinforceable items (like weapons and pyromancy
+			// flames) store their upgrades by directly modifying the ID in memory. In contrast, estus flasks span a
+			// range of IDs, starting at 200 (for an unfilled +0 flask) up through 215 (a filled +7 flask).
+			if (isEstusSplit)
+			{
+				targetId += estusReinforcement * 2;
+			}
 
 			// This double array felt like the easiest way to handle estus splits, even though literally every item
 			// besides the estus flask will only use a single state array.

@@ -16,7 +16,8 @@ namespace LiveSplit.DarkSouls.Data
 			Category = category;
 		}
 
-		public int BaseId { get; }
+		// Base ID can be set externally when correcting for estus flask splits.
+		public int BaseId { get; set; }
 		public int Category { get; }
 
 		public bool Equals(ItemId other)
