@@ -22,7 +22,7 @@ namespace LiveSplit.DarkSouls.Controls
 
 			DropDownStyle = ComboBoxStyle.DropDownList;
 			DrawMode = DrawMode.OwnerDrawFixed;
-			PreviousIndex = 1;
+			PreviousIndex = -1;
 
 			// When a dropdown is created, it's unfinished by default (because no value is selected).
 			BackColor = UnfinishedColor;
@@ -121,8 +121,6 @@ namespace LiveSplit.DarkSouls.Controls
 				return;
 			}
 
-			base.OnSelectedIndexChanged(e);
-
 			if (SelectedIndex == -1)
 			{
 				PreviousIndex = -1;
@@ -138,6 +136,8 @@ namespace LiveSplit.DarkSouls.Controls
 
 				return;
 			}
+
+			base.OnSelectedIndexChanged(e);
 
 			PreviousIndex = SelectedIndex;
 
