@@ -73,6 +73,16 @@ namespace LiveSplit.DarkSouls {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Clear {
+            get {
+                object obj = ResourceManager.GetObject("Clear", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Delete {
             get {
                 object obj = ResourceManager.GetObject("Delete", resourceCulture);
@@ -103,24 +113,25 @@ namespace LiveSplit.DarkSouls {
         /// <summary>
         ///   Looks up a localized string similar to {
         ///	&quot;Bonfires&quot;: [
-        ///			&quot;Anor Londo - Entrance&quot;,
-        ///			&quot;Anor Londo - Interior&quot;,
-        ///			&quot;Anor Londo - Princess&quot;,
-        ///			&quot;Anor Londo - Tomb&quot;,
-        ///			&quot;Ash Lake - Entrance&quot;,
-        ///			&quot;Ash Lake - Dragon&quot;,
-        ///			&quot;Blighttown - Bridge&quot;,
-        ///			&quot;Blighttown - Swamp&quot;,
-        ///			&quot;Catacombs - Entrance&quot;,
-        ///			&quot;Catacombs - Illusion&quot;,
-        ///			&quot;Chasm of the Abyss (Manus)&quot;,
-        ///			&quot;Crystal Caves (Seath)&quot;,
-        ///			&quot;Darkroot Basin&quot;,
-        ///			&quot;Darkroot Garden&quot;,
-        ///			&quot;Daughter of Chaos&quot;,
-        ///			&quot;Demon Ruins - Central&quot;,
-        ///			&quot;Demon Ruins - Firesage&quot;,
-        ///			&quot;Demon Ruins - Entrance&quot;, [rest of string was truncated]&quot;;.
+        ///		&quot;Anor Londo - Entrance&quot;,
+        ///		&quot;Anor Londo - Interior&quot;,
+        ///		&quot;Anor Londo - Princess&quot;,
+        ///		&quot;Anor Londo - Tomb&quot;,
+        ///		&quot;Ash Lake - Entrance&quot;,
+        ///		&quot;Ash Lake - Dragon&quot;,
+        ///		&quot;Blighttown - Bridge&quot;,
+        ///		&quot;Blighttown - Swamp&quot;,
+        ///		&quot;Catacombs - Entrance&quot;,
+        ///		&quot;Catacombs - Illusion&quot;,
+        ///		&quot;Chasm of the Abyss (Manus)&quot;,
+        ///		&quot;Crystal Caves (Seath)&quot;,
+        ///		&quot;Darkroot Basin&quot;,
+        ///		&quot;Darkroot Garden&quot;,
+        ///		&quot;Daughter of Chaos&quot;,
+        ///		&quot;Demon Ruins - Central&quot;,
+        ///		&quot;Demon Ruins - Firesage&quot;,
+        ///		&quot;Demon Ruins - Entrance&quot;,
+        ///		&quot;Duke&apos;s Archiv [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Splits {
             get {

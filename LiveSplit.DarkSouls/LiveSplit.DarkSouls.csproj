@@ -137,6 +137,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\Add.png" />
+    <Content Include="Resources\Clear.png" />
     <Content Include="Resources\Delete.png" />
     <Content Include="Resources\Drag.png" />
     <Content Include="Resources\Question.png" />
