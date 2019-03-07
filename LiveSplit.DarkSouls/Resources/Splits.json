@@ -16,8 +16,8 @@
 		"Darkroot Garden",
 		"Daughter of Chaos",
 		"Demon Ruins - Central",
-		"Demon Ruins - Firesage",
 		"Demon Ruins - Entrance",
+		"Demon Ruins - Firesage",
 		"Duke's Archives - Balcony",
 		"Duke's Archives - Entrance",
 		"Duke's Archives - Prison",
@@ -40,9 +40,9 @@
 		"Tomb of the Giants - Patches",
 		"Undead Asylum - Courtyard",
 		"Undead Asylum - Interior",
-		"Undead Burg - Entrance",
-		"Undead Burg - Sunlight",
-		"Undead Parish"
+		"Undead Burg",
+		"Undead Parish - Andre",
+		"Undead Parish - Sunlight"
 	],
 
 	"Bosses": [

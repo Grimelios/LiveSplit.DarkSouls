@@ -44,8 +44,8 @@ namespace LiveSplit.DarkSouls.Memory
 		DarkrootGarden = 1201961,
 		DaughterOfChaos = 1401960,
 		DemonRuinsCentral = 1411962,
-		DemonRuinsFiresage = 1411963,
 		DemonRuinsEntrance = 1411961,
+		DemonRuinsFiresage = 1411963,
 		DukesArchivesBalcony = 1701960,
 		DukesArchivesEntrance = 1701962,
 		DukesArchivesPrison = 1701961,
@@ -69,8 +69,8 @@ namespace LiveSplit.DarkSouls.Memory
 		UndeadAsylumCourtyard = 1811960,
 		UndeadAsylumInterior = 1811961,
 		UndeadBurgEntrance = 1011962,
-		UndeadBurgSunlight = 1011961,
-		UndeadParish = 1011964
+		UndeadParishAndre = 1011964,
+		UndeadParishSunlight = 1011961
 	}
 
 	public enum BonfireStates
@@ -171,8 +171,8 @@ namespace LiveSplit.DarkSouls.Memory
 			(int)BonfireFlags.DarkrootGarden,
 			(int)BonfireFlags.DaughterOfChaos,
 			(int)BonfireFlags.DemonRuinsCentral,
-			(int)BonfireFlags.DemonRuinsFiresage,
 			(int)BonfireFlags.DemonRuinsEntrance,
+			(int)BonfireFlags.DemonRuinsFiresage,
 			(int)BonfireFlags.DukesArchivesBalcony,
 			(int)BonfireFlags.DukesArchivesEntrance,
 			(int)BonfireFlags.DukesArchivesPrison,
@@ -196,8 +196,8 @@ namespace LiveSplit.DarkSouls.Memory
 			(int)BonfireFlags.UndeadAsylumCourtyard,
 			(int)BonfireFlags.UndeadAsylumInterior,
 			(int)BonfireFlags.UndeadBurgEntrance,
-			(int)BonfireFlags.UndeadBurgSunlight,
-			(int)BonfireFlags.UndeadParish
+			(int)BonfireFlags.UndeadParishAndre,
+			(int)BonfireFlags.UndeadParishSunlight,
 		};
 
 		public static readonly int[] OrderedBonfireStates =

@@ -98,9 +98,55 @@ namespace LiveSplit.DarkSouls
 			// value is already set to the target (in which case you'd split at any bonfire, not just the target).
 			// There's unfortunately no foolproof solution to this problem using that last bonfire data alone, which is
 			// why position data is used instead.
+			//
+			// Also note that each position is taken from the player standing right next to the bonfire (rounded to the
+			// nearest integer). Positions don't need to be exact (just close enough that, on rest, the target bonfire
+			// will be the closest).
 			bonfireLocations = new []
 			{
-				new Vector3(0, 0, 0), 
+				new Vector3(171, 173, 255), // Anor Londo - Entrance
+				new Vector3(504, 135, 175), // Anor Londo - Interior
+				new Vector3(593, 161, 254), // Anor Londo - Princess
+				new Vector3(391, 70, 255), // Anor Londo - Tomb
+				new Vector3(-388, -408, 156), // Ash Lake - Entrance
+				new Vector3(-700, -414, -323), // Ash Lake - Dragon
+				new Vector3(-277, -137, 73), // Blighttown - Bridge
+				new Vector3(-198, -215, 100), // Blighttown - Swamp
+				new Vector3(44, -119, 204), // Catacombs - Entrance
+				new Vector3(48, -112, 301), // Catacombs - Illusion
+				new Vector3(854, -577, 849), // Chasm of the Abyss
+				new Vector3(96, 134, 864), // Crystal Caves
+				new Vector3(165, -77, -55), // Darkroot Basin
+				new Vector3(257, -3, -12), // Darkroot Garden
+				new Vector3(141, -253, 94), // Daughter of Chaos
+				new Vector3(253, -334, 22), // Demon Ruins - Central
+				new Vector3(194, -267, 130), // Demon Ruins - Entrance
+				new Vector3(118, -357, 139), // Demon Ruins - Firesage
+				new Vector3(349, 278, 594), // Duke's Archives - Balcony
+				new Vector3(230, 200, 481), // Duke's Archives - Entrance
+				new Vector3(378, 270, 552), // Duke's Archives - Prison
+				new Vector3(52, -64, 106), // Firelink Altar
+				new Vector3(-51, -61, 55), // Firelink Shrine
+				new Vector3(-318, -236, 123), // Great Hollow
+				new Vector3(581, -444, 444), // Lost Izalith - Bed of Chaos
+				new Vector3(456, -380, 170), // Lost Izalith - Illusion
+				new Vector3(229, -384, 91), // Lost Izalith - Lava Field
+				new Vector3(972, -314, 583), // Oolacile Sanctuary
+				new Vector3(863, -448, 912), // Oolacile Township - Dungeon
+				new Vector3(1041, -332, 875), // Oolacile Township - Entrance
+				new Vector3(-24, 52, 944), // Painted World
+				new Vector3(897, -329, 452), // Sanctuary Garden
+				new Vector3(73, 60, 301), // Sen's Fortress
+				new Vector3(85, -311, 3), // The Abyss
+				new Vector3(-121, -74, 13), // The Depths
+				new Vector3(77, -214, 45), // Tomb of the Giants - Alcove
+				new Vector3(-159, -265, -34), // Tomb of the Giants - Nito
+				new Vector3(97, -200, 104), // Tomb of the Giants - Patches
+				new Vector3(3, 196, 7), // Undead Asylum - Courtyard
+				new Vector3(34, 193, -26), // Undead Asylum - Interior
+				new Vector3(3, -10, -61), // Undead Burg
+				new Vector3(88, 15, 107), // Undead Parish - Andre
+				new Vector3(24, 10, -23) // Undead Parish - Sunlight
 			};
 		}
 
