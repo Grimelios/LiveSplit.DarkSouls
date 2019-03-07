@@ -27,6 +27,7 @@ namespace LiveSplit.DarkSouls
 		private SoulsMemory memory;
 		private SoulsMasterControl masterControl;
 		private Dictionary<SplitTypes, Func<int[], bool>> splitFunctions;
+		private Dictionary<Zone, Zones> zoneMap;
 		private Vector3[] covenantLocations;
 		private Vector3[] bonfireLocations;
 		private RunState run;
@@ -71,7 +72,8 @@ namespace LiveSplit.DarkSouls
 				{ SplitTypes.Covenant, ProcessCovenant },
 				{ SplitTypes.Event, ProcessEvent },
 				{ SplitTypes.Flag, ProcessFlag },
-				{ SplitTypes.Item, ProcessItem }
+				{ SplitTypes.Item, ProcessItem },
+				{ SplitTypes.Zone, ProcessZone }
 			};
 
 			// This array is used for covenant discovery splits. Discovery occurs when the player is prompted to join a
@@ -147,6 +149,15 @@ namespace LiveSplit.DarkSouls
 				new Vector3(3, -10, -61), // Undead Burg
 				new Vector3(88, 15, 107), // Undead Parish - Andre
 				new Vector3(24, 10, -23) // Undead Parish - Sunlight
+			};
+
+			// Note that Lordran is implied if none of the other zones are matched (since Lordran is huge and it would
+			// be a waste to detail every world/area combination).
+			zoneMap = new Dictionary<Zone, Zones>
+			{
+				{ new Zone(12, 1), Zones.DLC },
+				{ new Zone(11, 0), Zones.PaintedWorld },
+				{ new Zone(18, 1), Zones.UndeadAsylum }
 			};
 		}
 
@@ -434,11 +445,13 @@ namespace LiveSplit.DarkSouls
 					// category (required to differentiate between items with the same ID).
 					run.Id = id.BaseId;
 					run.Data = id.Category;
-					run.ItemTarget = new ItemState(mods, reinforcement, count);
+					run.TargetItem = new ItemState(mods, reinforcement, count);
 
 					break;
 
 				case SplitTypes.Zone:
+					run.Target = data[0];
+
 					break;
 			}
 		}
@@ -909,7 +922,7 @@ namespace LiveSplit.DarkSouls
 				states[1] = memory.GetItemStates(targetId + 1, run.Data);
 			}
 
-			ItemState target = run.ItemTarget;
+			ItemState target = run.TargetItem;
 
 			int count = 0;
 
@@ -928,6 +941,31 @@ namespace LiveSplit.DarkSouls
 			}
 
 			return count >= target.Count;
+		}
+
+		private bool ProcessZone(int[] data)
+		{
+			int world = memory.GetWorld();
+			int area = memory.GetArea();
+
+			// Both world and area are set to 255 on load screens and the main menu.
+			if (world == byte.MaxValue)
+			{
+				return false;
+			}
+
+			int target = run.Target;
+
+			Zone zone = new Zone(world, area);
+
+			if (zoneMap.TryGetValue(zone, out Zones result))
+			{
+				// Note that this splits whenever the player is within the target zone (rather than strictly when th
+				// player moves between zones).
+				return (int)result == target;
+			}
+
+			return target == (int)Zones.Lordran;
 		}
 
 		private int ComputeClosestTarget(Vector3[] targets, int radius)

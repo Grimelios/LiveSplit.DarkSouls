@@ -22,4 +22,13 @@ namespace LiveSplit.DarkSouls
 		DarkLord = 5,
 		LinkTheFire = 6
 	}
+
+	public enum Zones
+	{
+		// Like other enumerations, these values are listed in the same order as the dropdown (i.e. alphabetically).
+		DLC,
+		Lordran,
+		PaintedWorld,
+		UndeadAsylum
+	}
 }

@@ -171,6 +171,19 @@ namespace LiveSplit.DarkSouls.Memory
 			return MemoryTools.ReadByte(handle, (IntPtr)0x12E33E0);
 		}
 
+		// In this context, "World" (and "Area" below) refer to large geographic locations within the world. The two
+		// values together can be used to roughly determine where you are (although not with the precision of
+		// individual named zones).
+		public byte GetWorld()
+		{
+			return MemoryTools.ReadByte(handle, pointers.Zone + 0xA13);
+		}
+
+		public byte GetArea()
+		{
+			return MemoryTools.ReadByte(handle, pointers.Zone + 0xA12);
+		}
+
 		public bool IsLoadScreenVisible()
 		{
 			return MemoryTools.ReadBoolean(handle, pointers.WorldState - 0x37EF4);

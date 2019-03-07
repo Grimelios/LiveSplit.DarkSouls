@@ -82,6 +82,7 @@
     <Compile Include="Data\ItemState.cs" />
     <Compile Include="Data\ItemTracker.cs" />
     <Compile Include="Data\Vector3.cs" />
+    <Compile Include="Data\Zone.cs" />
     <Compile Include="Memory\Flags.cs" />
     <Compile Include="Data\ItemLists.cs" />
     <Compile Include="Data\RunState.cs" />

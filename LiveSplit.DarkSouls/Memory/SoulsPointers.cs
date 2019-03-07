@@ -23,6 +23,7 @@ namespace LiveSplit.DarkSouls.Memory
 		public IntPtr CharacterPosition { get; private set; }
 		public IntPtr Inventory { get; private set; }
 		public IntPtr WorldState { get; private set; }
+		public IntPtr Zone { get; private set; }
 
 		public void Refresh()
 		{
@@ -43,6 +44,7 @@ namespace LiveSplit.DarkSouls.Memory
 			Inventory = inventory + 0x1B8;
 
 			WorldState = (IntPtr)MemoryTools.ReadInt(handle, (IntPtr)0x13784A0);
+			Zone = (IntPtr)MemoryTools.ReadInt(handle, (IntPtr)0x137E204);
 		}
 	}
 }
