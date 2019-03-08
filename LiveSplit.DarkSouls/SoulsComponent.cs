@@ -463,14 +463,32 @@ namespace LiveSplit.DarkSouls
 			{
 				return;
 			}
-
+			
 			if (phase != null)
 			{
-				TimerPhase value = phase.Value;
-
-				if (value == TimerPhase.NotRunning || value == TimerPhase.Ended)
+				switch (phase.Value)
 				{
-					return;
+					case TimerPhase.Ended: return;
+					case TimerPhase.NotRunning:
+						// When game time is in use, the timer starts automatically on the first IGT frame (just past
+						// the opening cutscene).
+						if (!masterControl.UseGameTime)
+						{
+							return;
+						}
+
+						int time = memory.GetGameTimeInMilliseconds();
+						
+						// Dark Souls generally runs at 30 fps, which makes each frame about 32 milliseconds. Checking
+						// game time in this way ensures that the time autostarts on a new game, but not EVERY time you
+						// load into a file. Note that even with an unlocked framerate using DSFix, this solution
+						// should still work.
+						if (run.GameTime == 0 && time > 0 && time < 40)
+						{
+							timer.Start();
+						}
+
+						break;
 				}
 			}
 			
@@ -640,6 +658,13 @@ namespace LiveSplit.DarkSouls
 			{
 				isBonfireWarpConfirmed = false;
 
+				return true;
+			}
+
+			// Dying counts as a warp (since you do actually warp on death), but only if the death text was previously
+			// visible. This allows players to perform a fall control quitout without triggering a warp.
+			if (memory.IsDeathTextVisible())
+			{
 				return true;
 			}
 
