@@ -18,7 +18,7 @@ The two checkboxes at the top re-implement behavior from the existing IGT tool. 
 
 The next two buttons are pretty self-explanatory. "Add Split" appends a new, empty split to the bottom of your current list. "Clear Splits" empties the list following a confirmation prompt (note that the prompt doesn't appear when there's only one split in total). As you add and remove splits, the split count is updated and displayed beside these buttons. There's also a second count of unfinished splits (i.e. splits that require additional values to be set).
 
-### Splits
+## Splits
 
 Next up is the splits themselves. There are currently seven split types available. Each line is split into "Type" (a single dropdown) and "Details" (a collection of controls that update based on the chosen split type). As these controls change, they're tinted with a red background when the control is unfinished and requires attention. If you save your layout with unfinished splits, everything will save correctly, but all unfinished splits are treated as manual during an actual run (so if you notice that an expected autosplit fails to trigger, check this first).
 
@@ -91,5 +91,7 @@ Almost done. The last note is about warping. Apart from bonfires, all "On warp" 
 + Dying (assuming you didn't perform a successful fall control quitout)
 
 In all cases, the actual split occurs **when the loading screen appears** (following the fadeout to black). This behavior is intended to mimic the way many Dark Souls runners split manually. The goal in implementing warp splits in this way is that, if you choose to adopt this autosplitter, you shouldn't have to remake your splits (since the autosplitter will be quite accurate to what you were already doing).
+
+## Good luck!
 
 That's it. My contact information is above (both Twitter and Discord) if you have any questions or concerns. Otherwise, enjoy your runs and good luck! :)
