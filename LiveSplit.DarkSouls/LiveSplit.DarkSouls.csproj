@@ -92,7 +92,7 @@
     <Compile Include="Enums.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Memory\ItemFlags.cs" />
-    <Compile Include="Memory\Kernel.cs" />
+    <Compile Include="Memory\MemoryScanner.cs" />
     <Compile Include="Memory\MemoryTools.cs" />
     <Compile Include="Memory\SoulsPointers.cs" />
     <Compile Include="Memory\SoulsMemory.cs" />

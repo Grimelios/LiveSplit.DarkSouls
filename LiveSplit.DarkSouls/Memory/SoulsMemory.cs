@@ -9,9 +9,6 @@ using IntPtr = System.IntPtr;
 
 namespace LiveSplit.DarkSouls.Memory
 {
-	/**
-	 * Adapted from CapitaineToinon's repositories.
-	 */
 	public class SoulsMemory
 	{
 		private Process process;
@@ -55,16 +52,7 @@ namespace LiveSplit.DarkSouls.Memory
 
 				// Item trackers are created below (or left as null if not needed).
 				handle = process.Handle;
-				pointers = new SoulsPointers(handle);
-
-				// TODO: Remove.
-				keyTracker = new ItemTracker(pointers, handle, (int)InventoryFlags.KeyStart,
-					(int)InventoryFlags.KeyCount, new List<ItemId>());
-
-				// TODO: Remove.
-				itemTracker = new ItemTracker(pointers, handle, (int)InventoryFlags.ItemStart,
-					(int)InventoryFlags.ItemCount, new List<ItemId>());
-
+				pointers = new SoulsPointers(process);
 				ProcessHooked = true;
 			}
 
@@ -137,6 +125,37 @@ namespace LiveSplit.DarkSouls.Memory
 			ItemTracker tracker = Enum.IsDefined(typeof(KeyFlags), baseId) ? keyTracker : itemTracker;
 
 			return tracker.GetItemStates(baseId, category);
+		}
+
+		public void ResetEquipmentIndexes()
+		{
+			int[] slots =
+			{
+				0x0, // Slot 7
+				0x4, // Slot 0
+				0x8, // Slot 8
+				0xC, // Slot 1
+				0x10, // Slot 9
+				0x10 + 0x8, // Slot 10
+				0x14, // Slot 11
+				0x14 + 0x8, // Slot 12
+				0x20, // Slot 14
+				0x20 + 0x4, // Slot 15
+				0x20 + 0x8, // Slot 16
+				0x20 + 0xC, // Slot 17
+				0x34, // Slot 18
+				0x34 + 0x4, // Slot 19
+				0x3C, // Slot 2
+				0x3C + 0x4, // Slot 3
+				0x3C + 0x8, // Slot 4
+				0x3C + 0xC, // Slot 5
+				0x3C + 0x10, // Slot 6
+			};
+
+			foreach (int slot in slots)
+			{
+				MemoryTools.Write(handle, pointers.Equipment + slot, uint.MaxValue);
+			}
 		}
 
 		public int GetGameTimeInMilliseconds()

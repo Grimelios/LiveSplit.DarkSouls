@@ -260,47 +260,7 @@ namespace LiveSplit.DarkSouls
 				timer = new TimerModel();
 				timer.CurrentState = state;
 
-				state.OnStart += (sender, args) =>
-				{
-					var splits = splitCollection.Splits;
-
-					itemsEnabled = splits.Any(s => s.Type == SplitTypes.Item);
-
-					if (itemsEnabled)
-					{
-						List<ItemId> items = new List<ItemId>();
-
-						foreach (Split split in splits)
-						{
-							if (split.Type != SplitTypes.Item || !split.IsFinished)
-							{
-								continue;
-							}
-
-							ItemId id = ComputeItemId(split);
-
-							// Given the nature of how estus IDs are stored, both the filled and unfilled versions of
-							// the flask (at the target reinforcement) must be tracked.
-							if (id.BaseId == EstusId)
-							{
-								int reinforcement = split.Data[3];
-
-								id.BaseId += reinforcement * 2;
-
-								ItemId filledId = new ItemId(id.BaseId + 1, id.Category);
-
-								items.Add(filledId);
-							}
-
-							items.Add(id);
-						}
-
-						memory.SetItems(items);
-					}
-
-					splitCollection.OnStart();
-					UpdateRunState();
-				};
+				state.OnStart += (sender, args) => { OnStart(); };
 
 				state.OnSplit += (sender, args) =>
 				{
@@ -320,10 +280,62 @@ namespace LiveSplit.DarkSouls
 					UpdateRunState();
 				};
 
-				state.OnReset += (sender, value) => { splitCollection.OnReset(); };
+				state.OnReset += (sender, value) => { OnReset(); };
 			}
 
 			Refresh(state.CurrentPhase);
+		}
+
+		private void OnStart()
+		{
+			var splits = splitCollection.Splits;
+
+			itemsEnabled = splits.Any(s => s.Type == SplitTypes.Item);
+
+			if (itemsEnabled)
+			{
+				List<ItemId> items = new List<ItemId>();
+
+				foreach (Split split in splits)
+				{
+					if (split.Type != SplitTypes.Item || !split.IsFinished)
+					{
+						continue;
+					}
+
+					ItemId id = ComputeItemId(split);
+
+					// Given the nature of how estus IDs are stored, both the filled and unfilled versions of
+					// the flask (at the target reinforcement) must be tracked.
+					if (id.BaseId == EstusId)
+					{
+						int reinforcement = split.Data[3];
+
+						id.BaseId += reinforcement * 2;
+
+						ItemId filledId = new ItemId(id.BaseId + 1, id.Category);
+
+						items.Add(filledId);
+					}
+
+					items.Add(id);
+				}
+
+				memory.SetItems(items);
+			}
+
+			splitCollection.OnStart();
+			UpdateRunState();
+		}
+
+		private void OnReset()
+		{
+			if (memory.ProcessHooked && masterControl.ResetEquipmentIndexes)
+			{
+				memory.ResetEquipmentIndexes();
+			}
+
+			splitCollection.OnReset();
 		}
 
 		private void UpdateRunState()
