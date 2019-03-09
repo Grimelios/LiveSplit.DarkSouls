@@ -1,7 +1,7 @@
 # LiveSplit.DarkSouls
 This project is a configurable autosplitter for Dark Souls: Prepare To Die edition on PC. It does *not* work with the Remastered version. The autosplitter is designed to be usable for any Dark Souls speedrun, with a variety of split options available. In addition, the autosplitter can optionally serve as a full replacement for the existing IGT tool commonly used by the community to accurately display in-game time.
 
-Created by [@Grimelios](https://twitter.com/Grimelios). Feel free to ping me in Discord (Grimelios#2045) with any feedback or concerns. Big shoutout to the work done by existing Souls community members in tracking down memory locations, many of which I used in this project.
+Created by [@Grimelios](https://twitter.com/Grimelios). Feel free to ping me on Twitter or Discord (Grimelios#2045) with any questions, concerns, or feedback. Big shoutout to the work done by existing Souls community members in tracking down memory locations, many of which I used in this project.
 
 ## Installation
 The autosplitter is a LiveSplit component (a DLL file). To install, download the latest release from the [Releases](https://github.com/Grimelios/LiveSplit.DarkSouls/releases) section and place the DLL in your LiveSplit/Components folder (you should see a bunch of DLLs in there already). From there, simply launch LiveSplit, edit layout, and add the autosplitter (under the Control category).
