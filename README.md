@@ -7,19 +7,19 @@ Created by [@Grimelios](https://twitter.com/Grimelios). Feel free to ping me on 
 The autosplitter is a LiveSplit component (a DLL file). To install, download the latest release from the [Releases](https://github.com/Grimelios/LiveSplit.DarkSouls/releases) section and place the DLL in your LiveSplit/Components folder (you should see a bunch of DLLs in there already). From there, simply launch LiveSplit, edit layout, and add the autosplitter (under the Control category).
 
 ## Configuration
-
 Once you've added the autosplitter to your layout, double-click on the autosplitter to open its configuration tab. The tool was designed to be as intuitive as possible, but I'll run through the options anyway, starting from the top.
 
-![Checkboxes image](https://i.imgur.com/Gs5ofiL.png)
+![Checkboxes image](https://i.imgur.com/QgdEwHH.png)
 
-The two checkboxes at the top re-implement behavior from the existing IGT tool. "Use game time" causes the LiveSplit timer to be updated based on the game's internal IGT counter (meaning the timer will pause automatically on quitouts). Make sure your LiveSplit timer is set to display Game Time (rather than Real Time) for this to work. "Reset equipment indexes" does exactly what it describes, by resetting equipment index values to their default state when the LiveSplit timer resets. Without using this setting, your menuing can change unexpectedly on consecutive runs.
+The first two checkboxes here re-implement behavior from the existing IGT tool. "Use game time" causes the LiveSplit timer to be updated based on the game's internal IGT counter (meaning the timer will pause automatically on quitouts). Make sure your LiveSplit timer is set to display Game Time (rather than Real Time) for this to work. "Reset equipment indexes" does exactly what it describes, by resetting equipment index values to their default state when the LiveSplit timer resets. Without using this setting, your menuing can change unexpectedly on consecutive runs.
+
+The third checkbox allows the timer to start automatically when you begin a new game. Specifically, the timer autostarts after the opening cinematic (as the camera begins to crawl through the asylum).
 
 ![Buttons image](https://i.imgur.com/z3fHE9T.png)
 
 The next two buttons are pretty self-explanatory. "Add Split" appends a new, empty split to the bottom of your current list. "Clear Splits" empties the list following a confirmation prompt (note that the prompt doesn't appear when there's only one split in total). As you add and remove splits, the split count is updated and displayed beside these buttons. There's also a second count of unfinished splits (i.e. splits that require additional values to be set).
 
 ## Splits
-
 Next up is the splits themselves. There are currently seven split types available. Each line is split into "Type" (a single dropdown) and "Details" (a collection of controls that update based on the chosen split type). As these controls change, they're tinted with a red background when the control is unfinished and requires attention. If you save your layout with unfinished splits, everything will save correctly, but all unfinished splits are treated as manual during an actual run (so if you notice that an expected autosplit fails to trigger, check this first).
 
 You can delete individual splits by clicking the red X on the right side of the split. Splits can be re-ordered by clicking and dragging on the left side.
@@ -93,5 +93,4 @@ Almost done. The last note is about warping. Apart from bonfires, all "On warp" 
 In all cases, the actual split occurs **when the loading screen appears** (following the fadeout to black). This behavior is intended to mimic the way many Dark Souls runners split manually. The goal in implementing warp splits in this way is that, if you choose to adopt this autosplitter, you shouldn't have to remake your splits (since the autosplitter will be quite accurate to what you were already doing).
 
 ## Good luck!
-
-That's it. My contact information is above (both Twitter and Discord) if you have any questions or concerns. Otherwise, enjoy your runs and good luck! :)
+That's it! My contact information is above (both Twitter and Discord) if you have any questions or concerns. Otherwise, enjoy your runs and good luck! :)
