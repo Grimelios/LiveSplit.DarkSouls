@@ -90,7 +90,7 @@ Almost done. The last note is about warping. Apart from bonfires, all "On warp" 
 + Warping from a bonfire
 + Dying (assuming you didn't perform a successful fall control quitout)
 
-In all cases, the actual split occurs **when the loading screen appears** (following the fadeout to black). This behavior is intended to mimic the way many Dark Souls runners split manually. The goal in implementing warp splits in this way is that, if you choose to adopt this autosplitter, you shouldn't have to remake your splits (since the autosplitter will be quite accurate to what you were already doing).
+In all cases, the actual split occurs **when the loading screen appears** (following the fadeout to black). This behavior is intended to mimic the way many current Dark Souls runners split manually. The goal in implementing warp splits in this way is that, if you choose to adopt this autosplitter, you shouldn't have to remake your splits (since the autosplitter will be quite accurate to what you were already doing).
 
 ## Good luck!
 That's it! My contact information is above (both Twitter and Discord) if you have any questions or concerns. Otherwise, enjoy your runs and good luck! :)
