@@ -488,7 +488,7 @@ namespace LiveSplit.DarkSouls.Controls
 				"- Endings -",
 				"Dark Lord",
 				"Link the Fire"
-			}, "Ending", EventListWidth);
+			}, "Event", EventListWidth);
 			
 			eventList.SelectedIndexChanged += (sender, args) =>
 			{

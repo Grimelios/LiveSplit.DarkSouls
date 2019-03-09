@@ -28,16 +28,11 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.CollectionControl = new LiveSplit.DarkSouls.Controls.SoulsSplitCollectionControl();
 			this.igtCheckbox = new System.Windows.Forms.CheckBox();
+			this.resetCheckbox = new System.Windows.Forms.CheckBox();
+			this.collectionControl = new LiveSplit.DarkSouls.Controls.SoulsSplitCollectionControl();
+			this.startCheckbox = new System.Windows.Forms.CheckBox();
 			this.SuspendLayout();
-			// 
-			// splitCollection
-			// 
-			this.CollectionControl.Location = new System.Drawing.Point(1, 37);
-			this.CollectionControl.Name = "CollectionControl";
-			this.CollectionControl.Size = new System.Drawing.Size(461, 520);
-			this.CollectionControl.TabIndex = 0;
 			// 
 			// igtCheckbox
 			// 
@@ -51,12 +46,47 @@
 			this.igtCheckbox.Text = "Use game time";
 			this.igtCheckbox.UseVisualStyleBackColor = true;
 			// 
+			// resetCheckbox
+			// 
+			this.resetCheckbox.AutoSize = true;
+			this.resetCheckbox.Checked = true;
+			this.resetCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.resetCheckbox.Location = new System.Drawing.Point(116, 16);
+			this.resetCheckbox.Name = "resetCheckbox";
+			this.resetCheckbox.Size = new System.Drawing.Size(145, 17);
+			this.resetCheckbox.TabIndex = 2;
+			this.resetCheckbox.Text = "Reset equipment indexes";
+			this.resetCheckbox.UseVisualStyleBackColor = true;
+			// 
+			// collectionControl
+			// 
+			this.collectionControl.BackColor = System.Drawing.SystemColors.Control;
+			this.collectionControl.Location = new System.Drawing.Point(1, 37);
+			this.collectionControl.Name = "collectionControl";
+			this.collectionControl.Size = new System.Drawing.Size(461, 520);
+			this.collectionControl.TabIndex = 0;
+			this.collectionControl.UnfinishedCount = 0;
+			// 
+			// startCheckbox
+			// 
+			this.startCheckbox.AutoSize = true;
+			this.startCheckbox.Checked = true;
+			this.startCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.startCheckbox.Location = new System.Drawing.Point(267, 16);
+			this.startCheckbox.Name = "startCheckbox";
+			this.startCheckbox.Size = new System.Drawing.Size(137, 17);
+			this.startCheckbox.TabIndex = 3;
+			this.startCheckbox.Text = "Start timer automatically";
+			this.startCheckbox.UseVisualStyleBackColor = true;
+			// 
 			// SoulsMasterControl
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.Controls.Add(this.startCheckbox);
+			this.Controls.Add(this.resetCheckbox);
 			this.Controls.Add(this.igtCheckbox);
-			this.Controls.Add(this.CollectionControl);
+			this.Controls.Add(this.collectionControl);
 			this.Name = "SoulsMasterControl";
 			this.Size = new System.Drawing.Size(468, 524);
 			this.ResumeLayout(false);
@@ -66,6 +96,9 @@
 
 		#endregion
 
+		private SoulsSplitCollectionControl collectionControl;
 		private System.Windows.Forms.CheckBox igtCheckbox;
+		private System.Windows.Forms.CheckBox resetCheckbox;
+		private System.Windows.Forms.CheckBox startCheckbox;
 	}
 }

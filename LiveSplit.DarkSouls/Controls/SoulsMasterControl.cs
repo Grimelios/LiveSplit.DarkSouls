@@ -19,8 +19,10 @@ namespace LiveSplit.DarkSouls.Controls
 		}
 
 		public bool UseGameTime => igtCheckbox.Checked;
+		public bool ResetEquipmentIndexes => resetCheckbox.Checked;
+		public bool StartTimerAutomatically => startCheckbox.Checked;
 
-		public SoulsSplitCollectionControl CollectionControl { get; private set; }
+		public SoulsSplitCollectionControl CollectionControl => collectionControl;
 
 		public void Refresh(Split[] splits, bool useGameTime)
 		{

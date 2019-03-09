@@ -470,9 +470,9 @@ namespace LiveSplit.DarkSouls
 				{
 					case TimerPhase.Ended: return;
 					case TimerPhase.NotRunning:
-						// When game time is in use, the timer starts automatically on the first IGT frame (just past
-						// the opening cutscene).
-						if (!masterControl.UseGameTime)
+						// Someone might want to disable this feature if using real time and starting their timer from
+						// the menu (or other reasons, probably).
+						if (!masterControl.StartTimerAutomatically)
 						{
 							return;
 						}
