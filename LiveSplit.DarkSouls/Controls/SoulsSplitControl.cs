@@ -403,6 +403,7 @@ namespace LiveSplit.DarkSouls.Controls
 			{
 				"On light",
 				"On rest",
+				"On leave",
 				"On kindle (first)",
 				"On kindle (second)",
 				"On kindle (third)",

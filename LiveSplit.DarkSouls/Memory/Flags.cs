@@ -14,9 +14,9 @@ namespace LiveSplit.DarkSouls.Memory
 		BonfireLeave3 = 7722,
 
 		// These three flags correspond to all possible sitting styles the player can take when resting at a bonfire.
-		BonfireSit1 = 7700,
-		BonfireSit2 = 7710,
-		BonfireSit3 = 7720,
+		BonfireRest1 = 7700,
+		BonfireRest2 = 7710,
+		BonfireRest3 = 7720,
 		BonfireWarp = 7725
 	}
 

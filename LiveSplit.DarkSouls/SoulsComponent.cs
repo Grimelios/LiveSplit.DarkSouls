@@ -362,9 +362,10 @@ namespace LiveSplit.DarkSouls
 					int criteria = data[1];
 
 					bool onRest = criteria == 1;
-					bool onWarp = criteria == 5;
+					bool onLeave = criteria == 2;
+					bool onWarp = criteria == 6;
 
-					if (onRest || onWarp)
+					if (onRest || onLeave || onWarp)
 					{
 						run.Target = bonfireIndex;
 						isBonfireWarpSplitActive = onWarp;
@@ -462,6 +463,7 @@ namespace LiveSplit.DarkSouls
 					break;
 
 				case SplitTypes.Zone:
+					run.Data = ComputeZone();
 					run.Target = data[0];
 
 					break;
@@ -701,21 +703,38 @@ namespace LiveSplit.DarkSouls
 			int criteria = data[1];
 
 			bool onRest = criteria == 1;
-			bool onWarp = criteria == 5;
+			bool onLeave = criteria == 2;
+			bool onWarp = criteria == 6;
 
-			if (onRest || onWarp)
+			if (onRest || onLeave || onWarp)
 			{
-				int[] restValues =
+				int[] animationValues;
+
+				if (onLeave)
 				{
-					(int)AnimationFlags.BonfireSit1,
-					(int)AnimationFlags.BonfireSit2,
-					(int)AnimationFlags.BonfireSit3
-				};
+					animationValues = new[]
+					{
+						(int)AnimationFlags.BonfireLeave1,
+						(int)AnimationFlags.BonfireLeave2,
+						(int)AnimationFlags.BonfireLeave3
+					};
+				}
+				// Both rest and warp splits need to check resting animation values.
+				else
+				{
+					animationValues = new[]
+					{
+						(int)AnimationFlags.BonfireRest1,
+						(int)AnimationFlags.BonfireRest2,
+						(int)AnimationFlags.BonfireRest3
+					};
+				}
 
 				int animation = memory.GetForcedAnimation();
 
-				// This confirms that the player is resting at a bonfire (but not which bonfire).
-				if (restValues.Contains(animation))
+				// This confirms that the player is the correct bonfire animation (either resting or leaving, as
+				// appropriate), but not which bonfire.
+				if (animationValues.Contains(animation))
 				{
 					int index = ComputeClosestTarget(bonfireLocations, Radius);
 					
@@ -982,27 +1001,38 @@ namespace LiveSplit.DarkSouls
 
 		private bool ProcessZone(int[] data)
 		{
+			int zone = ComputeZone();
+
+			// Similar to other splits, zone splits only trigger when the player moves between zones.
+			if (zone != run.Data && zone != -1)
+			{
+				run.Data = zone;
+
+				return zone == run.Target;
+			}
+
+			return false;
+		}
+
+		private int ComputeZone()
+		{
 			int world = memory.GetWorld();
 			int area = memory.GetArea();
 
 			// Both world and area are set to 255 on load screens and the main menu.
 			if (world == byte.MaxValue)
 			{
-				return false;
+				return -1;
 			}
-
-			int target = run.Target;
 
 			Zone zone = new Zone(world, area);
 
 			if (zoneMap.TryGetValue(zone, out Zones result))
 			{
-				// Note that this splits whenever the player is within the target zone (rather than strictly when th
-				// player moves between zones).
-				return (int)result == target;
+				return (int)result;
 			}
 
-			return target == (int)Zones.Lordran;
+			return (int)Zones.Lordran;
 		}
 
 		private int ComputeClosestTarget(Vector3[] targets, int radius)
