@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace LiveSplit.DarkSouls.Memory
 {
-	public class MemoryScanner
+	public static class MemoryScanner
 	{
 		[DllImport("kernel32.dll")]
 		private static extern uint VirtualQueryEx(IntPtr hProcess, IntPtr lpAddress, out MemoryRegion lpBuffer,

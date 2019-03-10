@@ -22,6 +22,13 @@ namespace LiveSplit.DarkSouls.Memory
 		{
 			handle = process.Handle;
 
+			/*
+			 * Inventory + 0xEA40 (0x20 step)
+			 * For each slot, the first three bytes are ID
+			 * The 4th byte is category
+			 * The 8th byte is count
+			 */
+
 			// Unlike other pointers, the equipment pointer (used to reset equipment indexes on timer reset) is only
 			// scanned once when the process is hooked.
 			Equipment = MemoryScanner.Scan(process, equipmentBytes, 0x24);

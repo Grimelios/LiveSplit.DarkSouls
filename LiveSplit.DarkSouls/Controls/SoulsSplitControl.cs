@@ -906,7 +906,11 @@ namespace LiveSplit.DarkSouls.Controls
 			// See https://stackoverflow.com/q/463299/7281613.
 			textbox.KeyPress += (sender, args) =>
 			{
-				if (!char.IsDigit(args.KeyChar) && args.KeyChar != (char)Keys.Back)
+				char c = args.KeyChar;
+
+				// See http://www.asciitable.com/ as well. The idea here is to accept all control keys (such as Ctrl +
+				// V) while still excluding letters and punctuation.
+				if (c >= '!' && c <= '~' && !char.IsDigit(args.KeyChar))
 				{
 					args.Handled = true;
 				}
@@ -914,15 +918,37 @@ namespace LiveSplit.DarkSouls.Controls
 
 			textbox.KeyDown += (sender, args) =>
 			{
+				// Pressing escape removes focus from the textbox.
 				if (args.KeyCode == Keys.Escape)
 				{
 					ParentForm.Controls[0].Focus();
 				}
 			};
 
-			textbox.GotFocus += (sender, args) =>
+			textbox.TextChanged += (sender, args) =>
 			{
-				textbox.SelectAll();
+				string text = textbox.Text;
+
+				if (text.Length == 0 || int.TryParse(text, out int result))
+				{
+					return;
+				}
+
+				// It's possible to paste a non-integer into the textbox (like something with letters, for example). If
+				// the above check fails, then, all non-digits are stripped from the pasted value.
+				StringBuilder builder = new StringBuilder();
+
+				foreach (char c in text)
+				{
+					if (char.IsDigit(c))
+					{
+						builder.Append(c);
+					}
+				}
+
+				// This actually causes the TextChanged event to be triggered again, but the function returns
+				// immediately due to the checks above.
+				textbox.Text = builder.ToString();
 			};
 
 			textbox.Enter += (sender, args) =>
