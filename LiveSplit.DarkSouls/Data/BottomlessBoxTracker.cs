@@ -20,7 +20,7 @@ namespace LiveSplit.DarkSouls.Data
 		private const int DefaultSlots = 50;
 
 		public BottomlessBoxTracker(IntPtr inventory, IntPtr handle) :
-			base(handle, inventory + (int)InventoryFlags.BottomlessBox, Step, 0x8, "Bottomless Box")
+			base(handle, inventory + (int)InventoryFlags.BottomlessBox, Step, 0x8, "Box")
 		{
 		}
 
@@ -29,6 +29,11 @@ namespace LiveSplit.DarkSouls.Data
 			SetItems(itemIds, DefaultSlots, DefaultSlots);
 
 			IntPtr address = Start + (DefaultSlots - 1) * Step;
+
+			if (OpenSlots.Count == 0)
+			{
+				return;
+			}
 
 			// Since the item count above isn't accurate (just a default value large enough to reasonably accommodate
 			// most scenarios), fake slots at the end of the list must be removed in order for the initial state to be
@@ -50,18 +55,43 @@ namespace LiveSplit.DarkSouls.Data
 				}
 			}
 
-			Console.WriteLine($"[Bottomless Box] Slots (trimmed): {TotalSlots}");
+			Console.WriteLine($"[Box] Slots (trimmed): {TotalSlots}");
 			Console.WriteLine();
 		}
 
 		protected override ItemId ComputeItemId(IntPtr address)
 		{
-			return null;
+			// Data is stored in the bottomless box a little differently than the main inventory. In the main
+			// inventory, raw ID is stored as an integer (four bytes), with category as a single byte at a different
+			// address. In contrast, the bottomless box stores both raw ID and category in a single integer, with three
+			// bytes devoted to the ID and the fourth representing category.
+			byte[] bytes = MemoryTools.ReadBytes(Handle, address, 4);
+
+			int category = bytes[3];
+
+			// This means that the slot is empty.
+			if (category == byte.MaxValue)
+			{
+				return null;
+			}
+
+			byte[] idBytes = new byte[4];
+
+			for (int i = 0; i < 3; i++)
+			{
+				idBytes[i] = bytes[i];
+			}
+
+			int rawId = BitConverter.ToInt32(idBytes, 0);
+			
+			return ComputeItemId(rawId, category);
 		}
 
 		public override void Refresh()
 		{
-			int value = MemoryTools.ReadInt(Handle, NextSlot);
+			IntPtr nextSlot = Start + (OpenSlots.Count > 0 ? OpenSlots.First.Value : TotalSlots) * Step;
+
+			int value = MemoryTools.ReadInt(Handle, nextSlot);
 
 			// Unlike the main inventory, there's no memory location that directly stores the number of items in the
 			// bottomless box (or at least I wasn't able to find one). As such, item addition/removal must be detected
@@ -70,6 +100,33 @@ namespace LiveSplit.DarkSouls.Data
 			if (value != -1)
 			{
 				AddItems(1);
+
+				return;
+			}
+
+			LinkedListNode<int> slot = OpenSlots.First;
+
+			// Since the bottomless box can't track count directly, all non-empty slots must be scanned each tick in
+			// order to detect when one of them becomes empty.
+			for (int i = 0; i < TotalSlots; i++)
+			{
+				if (slot != null && i == slot.Value)
+				{
+					slot = slot.Next;
+
+					continue;
+				}
+
+				IntPtr address = Start + i * Step;
+
+				value = MemoryTools.ReadInt(Handle, address);
+
+				if (value == -1)
+				{
+					RemoveItems(1, address);
+
+					return;
+				}
 			}
 		}
 	}

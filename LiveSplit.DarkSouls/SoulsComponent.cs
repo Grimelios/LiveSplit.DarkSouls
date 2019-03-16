@@ -483,7 +483,8 @@ namespace LiveSplit.DarkSouls
 			if (first)
 			{
 				List<ItemId> list = new List<ItemId>();
-				list.Add(new ItemId(Utilities.StripHighestDigit((int)RingFlags.BlueTearstoneRing, out int digit), 0x4));
+				list.Add(new ItemId(Utilities.StripHighestDigit((int)RingFlags.BlueTearstoneRing, out int digit1), 0x2));
+				list.Add(new ItemId(Utilities.StripHighestDigit((int)EmberFlags.ChaosFlameEmber, out int digit2), 0x4));
 
 				memory.SetItems(list);
 				first = false;

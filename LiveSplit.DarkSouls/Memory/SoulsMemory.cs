@@ -118,8 +118,6 @@ namespace LiveSplit.DarkSouls.Memory
 				? new BottomlessBoxTracker(inventory, handle)
 				: null;
 
-			bottomlessBoxTracker = null;
-
 			keyTracker?.SetItems(keys);
 			itemTracker?.SetItems(items);
 			bottomlessBoxTracker?.SetItems(items);
@@ -131,6 +129,7 @@ namespace LiveSplit.DarkSouls.Memory
 		{
 			keyTracker?.Refresh();
 			itemTracker?.Refresh();
+			bottomlessBoxTracker?.Refresh();
 		}
 
 		public ItemState[] GetItemStates(int baseId, int category)

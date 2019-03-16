@@ -38,6 +38,16 @@ namespace LiveSplit.DarkSouls.Memory
 			return bytes[0];
 		}
 
+		public static byte[] ReadBytes(IntPtr handle, IntPtr address, int count)
+		{
+			int bytesRead = 0;
+			byte[] bytes = new byte[count];
+
+			ReadProcessMemory(handle, address, bytes, bytes.Length, ref bytesRead);
+
+			return bytes;
+		}
+
 		public static int ReadInt(IntPtr handle, IntPtr address)
 		{
 			int bytesRead = 0;

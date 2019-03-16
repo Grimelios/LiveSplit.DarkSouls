@@ -46,11 +46,7 @@ namespace LiveSplit.DarkSouls.Data
 		// instead. Tracking open slots as total item count changes allows new items to be checked more efficiently
 		// (rather than looping through the full item list).
 		protected LinkedList<int> OpenSlots { get; }
-
-		// This is used by the bottomless box to determine when a new item is put into the box (since there's no direct
-		// item count for the bottomless box).
-		protected IntPtr NextSlot => Start + (OpenSlots.Count > 0 ? OpenSlots.First.Value : TotalSlots) * step;
-
+		
 		// This function is called only once per tracker at the start of a run (or when the process is hooked if the
 		// timer already running). The list of item IDs is pulled from the UI.
 		public abstract void SetItems(List<ItemId> itemIds);
@@ -77,19 +73,18 @@ namespace LiveSplit.DarkSouls.Data
 			{
 				ItemId id = ComputeItemId(address);
 
-				int index = itemIds.IndexOf(id);
+				int index = id != null ? itemIds.IndexOf(id) : -1;
 
 				// If this function is called, it's assumed that at least one ID is given (rather than an empty list).
 				if (index >= 0)
 				{
-					Console.WriteLine($"[{name}] Slot {i}: [baseId: {id.BaseId}, category: {id.Category}] (tracked)");
+					Console.WriteLine($"[{name}] Slot {slot}: [baseId: {id.BaseId}, category: {id.Category}] (tracked)");
 
 					tracker[id].Add(address);
-					itemIds.RemoveAt(index);
 				}
-				else if (id.BaseId == -1)
+				else if (id == null || id.BaseId == -1)
 				{
-					Console.WriteLine($"[{name}] Slot {i}: [empty]");
+					Console.WriteLine($"[{name}] Slot {slot}: [empty]");
 
 					OpenSlots.AddLast(slot);
 
@@ -98,7 +93,7 @@ namespace LiveSplit.DarkSouls.Data
 				}
 				else
 				{
-					Console.WriteLine($"[{name}] Slot {i}: [baseId: {id.BaseId}, category: {id.Category}]");
+					Console.WriteLine($"[{name}] Slot {slot}: [baseId: {id.BaseId}, category: {id.Category}]");
 				}
 
 				address += step;
@@ -114,7 +109,11 @@ namespace LiveSplit.DarkSouls.Data
 			TotalSlots = slot;
 
 			Console.WriteLine($"[{name}] Slots: {slot}");
-			Console.WriteLine();
+
+			if (name != "Box")
+			{
+				Console.WriteLine();
+			}
 		}
 
 		protected void AddItems(int count)
@@ -140,7 +139,7 @@ namespace LiveSplit.DarkSouls.Data
 				IntPtr address = Start + itemIndex * step;
 				ItemId id = ComputeItemId(address);
 
-				Console.Write($"[{name}] Item added [baseId: {id.BaseId}, category: {id.Category}]");
+				Console.Write($"[{name}] Item added [baseId: {id.BaseId}, category: {id.Category}, slot: {itemIndex}]");
 
 				// Items not in the current set of splits are irrelevant for tracking purposes.
 				if (!tracker.TryGetValue(id, out List<IntPtr> list))
@@ -152,23 +151,29 @@ namespace LiveSplit.DarkSouls.Data
 
 				Console.WriteLine(" (tracked)");
 
+				if (itemIndex == TotalSlots - 1)
+				{
+					Console.WriteLine($"[{name}] Slots increased: {TotalSlots}");
+				}
+
 				list.Add(address);
 			}
 		}
 
-		protected void RemoveItems(int count)
+		// Item trackers only know when their count changes (i.e. how many items were dropped). Since the bottomless
+		// box scans its list in advance, the address of the removed item can be given directly.
+		protected void RemoveItems(int count, IntPtr? knownAddress = null)
 		{
-			// See the comment below (with regards to looping backwards).
-			int itemIndex = TotalSlots - 1;
-
+			// Looping backwards allows the total slots to be decreased correctly if items were dropped
+			// from the end of the array.
+			int itemIndex = knownAddress != null ? ((int)knownAddress.Value - (int)Start) / step : TotalSlots - 1;
+			
 			IntPtr address = Start + itemIndex * step;
-
+			
 			for (int i = 0; i < count; i++)
 			{
 				LinkedListNode<int> openNode = OpenSlots.Last;
 
-				// Looping backwards allows the total slots to be decreased correctly if items were dropped
-				// from the end of the array.
 				while (itemIndex >= 0)
 				{
 					int rawId = MemoryTools.ReadInt(Handle, address);
@@ -207,6 +212,8 @@ namespace LiveSplit.DarkSouls.Data
 						{
 							TotalSlots--;
 
+							Console.WriteLine($"[{name}] Item removed [slot: {TotalSlots}]");
+
 							// This loop allows the tracked inventory to shrink as much as possible if there
 							// are a series of open slots at the end.
 							while (OpenSlots.Count > 0 && OpenSlots.Last.Value == TotalSlots - 1)
@@ -214,12 +221,14 @@ namespace LiveSplit.DarkSouls.Data
 								OpenSlots.RemoveLast();
 								TotalSlots--;
 							}
+
+							Console.WriteLine($"[{name}] Slots decreased: {TotalSlots}");
 						}
 						else
 						{
 							OpenSlots.InsertSorted(itemIndex + 1);
 
-							Console.WriteLine($"[{name}] Item removed [slot: {itemIndex - 2}]");
+							Console.WriteLine($"[{name}] Item removed [slot: {itemIndex + 1}]");
 						}
 
 						break;
