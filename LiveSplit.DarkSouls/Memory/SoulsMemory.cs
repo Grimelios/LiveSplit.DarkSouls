@@ -19,6 +19,7 @@ namespace LiveSplit.DarkSouls.Memory
 		// than the main component class.
 		private ItemTracker keyTracker;
 		private ItemTracker itemTracker;
+		private BottomlessBoxTracker bottomlessBoxTracker;
 
 		public bool ProcessHooked { get; private set; }
 
@@ -34,7 +35,7 @@ namespace LiveSplit.DarkSouls.Memory
 					return false;
 				}
 
-				pointers.Refresh();
+				pointers.Refresh(process);
 
 				return true;
 			}
@@ -65,6 +66,7 @@ namespace LiveSplit.DarkSouls.Memory
 			{
 				keyTracker = null;
 				itemTracker = null;
+				bottomlessBoxTracker = null;
 
 				return;
 			}
@@ -84,8 +86,7 @@ namespace LiveSplit.DarkSouls.Memory
 
 			for (int i = 0; i < keyIds.Count; i++)
 			{
-				// This strips the category from each ID (since every key flag is five digits long).
-				keyIds[i] %= 10000;
+				keyIds[i] = Utilities.StripHighestDigit(keyIds[i], out int digit);
 			}
 
 			foreach (ItemId id in itemIds)
@@ -100,14 +101,28 @@ namespace LiveSplit.DarkSouls.Memory
 				}
 			}
 
+			IntPtr inventory = pointers.Inventory;
+
 			// Both trackers are nullified if no splits would require using them.
 			keyTracker = keys.Count > 0
-				? new ItemTracker(pointers, handle, (int)InventoryFlags.KeyStart, (int)InventoryFlags.KeyCount, keys)
+				? new ItemTracker(inventory, handle, (int)InventoryFlags.KeyStart, (int)InventoryFlags.KeyCount)
 				: null;
 
 			itemTracker = items.Count > 0
-				? new ItemTracker(pointers, handle, (int)InventoryFlags.ItemStart, (int)InventoryFlags.ItemCount, items)
+				? new ItemTracker(inventory, handle, (int)InventoryFlags.ItemStart, (int)InventoryFlags.ItemCount)
 				: null;
+
+			// Key items can't be put in the box, meaning that the bottomless box only needs to be tracked if items
+			// themselves are tracked.
+			bottomlessBoxTracker = items.Count > 0
+				? new BottomlessBoxTracker(inventory, handle)
+				: null;
+
+			bottomlessBoxTracker = null;
+
+			keyTracker?.SetItems(keys);
+			itemTracker?.SetItems(items);
+			bottomlessBoxTracker?.SetItems(items);
 		}
 
 		// This function is called once per update tick if item splits are in use (regardless of whether an item split
@@ -122,9 +137,18 @@ namespace LiveSplit.DarkSouls.Memory
 		{
 			// Key items don't share IDs with any other items (except for a few mystery items, but those aren't
 			// included in the autosplitter UI).
-			ItemTracker tracker = Enum.IsDefined(typeof(KeyFlags), baseId) ? keyTracker : itemTracker;
+			bool isKey = Enum.IsDefined(typeof(KeyFlags), baseId);
 
-			return tracker.GetItemStates(baseId, category);
+			if (isKey)
+			{
+				return keyTracker.GetItemStates(baseId, category);
+			}
+
+			List<ItemState> states = new List<ItemState>();
+			states.AddRange(itemTracker.GetItemStates(baseId, category));
+			states.AddRange(bottomlessBoxTracker.GetItemStates(baseId, category));
+
+			return states.ToArray();
 		}
 
 		public void ResetEquipmentIndexes()
@@ -229,6 +253,11 @@ namespace LiveSplit.DarkSouls.Memory
 			}
 
 			return MemoryTools.ReadInt(handle, pointer + 0x3C);
+		}
+
+		public byte GetOverlay()
+		{
+			return MemoryTools.ReadByte(handle, pointers.Overlay);
 		}
 
 		public Vector3 GetPlayerPosition()

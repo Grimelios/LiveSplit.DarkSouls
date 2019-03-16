@@ -145,6 +145,7 @@ namespace LiveSplit.DarkSouls.Memory
 
 	public enum InventoryFlags
 	{
+		BottomlessBox = 0xEA40,
 		ItemCount = 0x128,
 		ItemStart = 0xA24,
 		KeyCount = 0x12C,

@@ -470,6 +470,8 @@ namespace LiveSplit.DarkSouls
 			}
 		}
 
+		private bool first = true;
+
 		// Making the phase nullable makes testing easier.
 		public void Refresh(TimerPhase? phase = null) 
 		{
@@ -477,6 +479,19 @@ namespace LiveSplit.DarkSouls
 			{
 				return;
 			}
+
+			if (first)
+			{
+				List<ItemId> list = new List<ItemId>();
+				list.Add(new ItemId(Utilities.StripHighestDigit((int)RingFlags.BlueTearstoneRing, out int digit), 0x4));
+
+				memory.SetItems(list);
+				first = false;
+			}
+
+			memory.RefreshItems();
+
+			return;
 			
 			if (phase != null)
 			{
@@ -619,19 +634,10 @@ namespace LiveSplit.DarkSouls
 		{
 			int[] data = split.Data;
 			int rawId = ItemFlags.MasterList[data[0]][data[1]];
-			int digit = rawId;
-			int divisor = 1;
-
-			// See https://stackoverflow.com/a/701355/7281613.
-			while (digit > 10)
-			{
-				digit /= 10;
-				divisor *= 10;
-			}
+			int baseId = Utilities.StripHighestDigit(rawId, out int digit);
 
 			// Many items have a category of zero, but the leading zero would be stripped from normal integers. As
 			// such, nine is used instead (since there's no real category with ID nine).
-			int baseId = rawId % divisor;
 			int category = digit == 9 ? 0 : digit;
 
 			return new ItemId(baseId, category);

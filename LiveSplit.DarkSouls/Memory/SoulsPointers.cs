@@ -31,8 +31,8 @@ namespace LiveSplit.DarkSouls.Memory
 
 			// Unlike other pointers, the equipment pointer (used to reset equipment indexes on timer reset) is only
 			// scanned once when the process is hooked.
-			Equipment = MemoryScanner.Scan(process, equipmentBytes, 0x24);
-			Refresh();
+			//Equipment = MemoryScanner.Scan(process, equipmentBytes, 0x24);
+			Refresh(process);
 		}
 
 		public IntPtr Character { get; private set; }
@@ -41,10 +41,11 @@ namespace LiveSplit.DarkSouls.Memory
 		public IntPtr CharacterPosition { get; private set; }
 		public IntPtr Equipment { get; }
 		public IntPtr Inventory { get; private set; }
+		public IntPtr Overlay { get; private set; }
 		public IntPtr WorldState { get; private set; }
 		public IntPtr Zone { get; private set; }
 
-		public void Refresh()
+		public void Refresh(Process process)
 		{
 			IntPtr character = (IntPtr)MemoryTools.ReadInt(handle, (IntPtr)0x137DC70);
 			character = (IntPtr)MemoryTools.ReadInt(handle, character + 0x4);
@@ -61,6 +62,11 @@ namespace LiveSplit.DarkSouls.Memory
 			IntPtr inventory = (IntPtr)MemoryTools.ReadInt(handle, (IntPtr)0x1378700);
 			inventory = (IntPtr)MemoryTools.ReadInt(handle, inventory + 0x8);
 			Inventory = inventory + 0x1B8;
+			
+			IntPtr overlay = (IntPtr)MemoryTools.ReadInt(handle, process.MainModule.BaseAddress + 0x0F78568);
+			overlay = (IntPtr)MemoryTools.ReadInt(handle, overlay + 0x4);
+			overlay = (IntPtr)MemoryTools.ReadInt(handle, overlay + 0x54);
+			Overlay = overlay + 0xA4;
 
 			WorldState = (IntPtr)MemoryTools.ReadInt(handle, (IntPtr)0x13784A0);
 			Zone = (IntPtr)MemoryTools.ReadInt(handle, (IntPtr)0x137E204);
