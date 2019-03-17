@@ -82,9 +82,9 @@ No settings to configure here. This split is manual. Useful for cases when you'v
 
 ![Zone split image](https://i.imgur.com/UVI8x3R.png)
 
-Select the target zone. That's it. In this context, "zone" refers to a named area of the world that acts as an entrance or exit between larger, interconnected areas. For example, the player is dropped into Firelink Shrine when you exit the Undead Asylum (but these areas aren't physically connected). This split type can be useful for detecting transitions (via cutscenes) following the completion of various milestones (such as reaching Anor Londo after defeating the Iron Golem, or entering the DLC by touching the portal in Darkroot Basin) that might otherwise be difficult to categorize.
+Select the target zone. That's it. In this context, "zone" refers to a named area of the world that acts as an entrance or exit between larger, interconnected chunks of the world. For example, the player is dropped into Firelink Shrine when you exit the Undead Asylum, but these areas aren't physically connected. Similarly, touching the painting in Anor Londo warps the player to the Painted World (another zone physically disconnected from the rest of Lordran).
 
-Note that zone splits only occur when the player moves *between* physically disconnected areas (rather than simply being *within* the named zone). For example, an "Anor Londo" zone split won't trigger when running backwards from the Duke's Archives (since those two areas are physically connected). It will *only* occur when entering Anor Londo via a cutscene warp (i.e. being carried by gargoyles from the top of Sen's Fortress or falling out of the Painted World).
+This split type, then, can be useful for detecting those transitions (which would otherwise be difficult to track). Note that zone splits only occur when the player moves *between* physically disconnected areas (rather than simply being *within* the target zone already). For example, an "Anor Londo" split won't trigger when running backwards from the Duke's Archives. It will *only* occur when landing in Anor Londo via a cutscene warp (i.e. being carried by gargoyles from the top of Sen's Fortress or falling out of the Painted World). The split is triggered following the cutscene.
 
 ### Warping
 
