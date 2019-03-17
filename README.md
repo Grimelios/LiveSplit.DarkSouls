@@ -28,7 +28,7 @@ You can delete individual splits by clicking the red X on the right side of the 
 
 ![Bonfire split image](https://i.imgur.com/h8sdXC1.png)
 
-Select the target bonfire, then select split criteria. "On rest" is self-explanatory. Bonfire states (lit or kindled to various levels) split when the target bonfire *reaches* that state (rather than already *being* in that state). Finally, "On warp" splits when you warp *from* the target bonfire (not *to* it).
+Select the target bonfire, then select split criteria. "On rest" is self-explanatory. "On leave" is the opposite (split when you leave the target bonfire). Bonfire states (lit or kindled to various levels) split when the target bonfire *reaches* that state (rather than already *being* in that state). Finally, "On warp" splits when you warp *from* the target bonfire (not *to* it).
 
 ### Boss splits
 
@@ -68,7 +68,9 @@ Note that the Estus Flask (under Consumables) can also be reinforced.
 
 The small textbox to the right of the Reinforcement list is item count. Count defaults to one, but can be set to any value up to 999 inclusive. Similar to reinforcement, item count is considered satisfied if you've acquired *at least* that number of the target item (rather than *exactly* that amount).
 
-Finally, selecting "On acquisition" from the criteria box splits when you acquire the target item(s) (assuming the infusion, reinforcement, and count have also been met). "On warp" follows the usual warp rules (detailed below), but with the added restriction that the target item(s) must *still* be in your inventory when you warp.
+Selecting "On acquisition" from the criteria box splits when you acquire the target item(s) (assuming the infusion, reinforcement, and count have also been met). "On warp" follows the usual warp rules (detailed below), but with the added restriction that the target item(s) must *still* be in your inventory when you warp.
+
+Finally, a note about the Bottomless Box: from the perspective of the autosplitter, the Bottomless Box is treated exactly the same as the main inventory. In other words, having an item in storage will trigger splits as if you had picked up the item normally. The primary reason for this design is to accomodate item duplication through quantity storage.
 
 ### Manual splits
 
@@ -80,7 +82,7 @@ No settings to configure here. This split is manual. Useful for cases when you'v
 
 ![Zone split image](https://i.imgur.com/UVI8x3R.png)
 
-Select the target zone. That's it. In this context, "zone" refers to a large-scale, interconnected area of the world (such as the Painted World or all of Lordran). This split type can be useful for detecting when you've entered or finished an entire area (such as completing the Undead Asylum by entering Firelink). The actual split occurs whenever the player is within any part of the target zone (rather than strictly when you move *between* zones).
+Select the target zone. That's it. In this context, "zone" refers to a large-scale, interconnected area of the world (such as the Painted World or all of Lordran). This split type can be useful for detecting when you've entered or finished an entire area (such as completing the Undead Asylum by entering Firelink). Note that this split type only occurs when the player moves *between* zones (rather than simply being in the target zone already).
 
 ### Warping
 
