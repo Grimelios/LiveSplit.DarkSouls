@@ -65,19 +65,19 @@ namespace LiveSplit.DarkSouls.Memory
 
 			do
 			{
-				MemoryRegion data = new MemoryRegion();
-				queryResult = VirtualQueryEx(process.Handle, regionAddress, out data, (uint)Marshal.SizeOf(data));
+				MemoryRegion region = new MemoryRegion();
+				queryResult = VirtualQueryEx(process.Handle, regionAddress, out region, (uint)Marshal.SizeOf(region));
 
 				if (queryResult != 0)
 				{
-					if ((data.State & MEM_COMMIT) != 0 &&
-					    (data.Protect & PAGE_GUARD) == 0 &&
-					    (data.Protect & PAGE_EXECUTE_ANY) != 0)
+					if ((region.State & MEM_COMMIT) != 0 &&
+					    (region.Protect & PAGE_GUARD) == 0 &&
+					    (region.Protect & PAGE_EXECUTE_ANY) != 0)
 					{
-						regions.Add(data);
+						regions.Add(region);
 					}
 
-					regionAddress = (IntPtr)((ulong)data.BaseAddress.ToInt64() + data.RegionSize);
+					regionAddress = (IntPtr)((ulong)region.BaseAddress.ToInt64() + region.RegionSize);
 				}
 			}
 			while (queryResult != 0 && regionAddress.ToInt64() < mainModuleEnd.ToInt64());

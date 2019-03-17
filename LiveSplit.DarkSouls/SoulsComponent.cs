@@ -471,8 +471,14 @@ namespace LiveSplit.DarkSouls
 		}
 		
 		// Making the phase nullable makes testing easier.
-		public void Refresh(TimerPhase? phase = null) 
+		public void Refresh(TimerPhase? phase = null)
 		{
+			// In theory, the first IGT frame of a run should have a time value of about 32 milliseconds (i.e. one
+			// frame at 30 fps). In practice, though, the first non-zero time value tends to be a bit bigger than that.
+			// This threshold is arbitrary, but is meant to be big enough to cover that variation in start time, but
+			// small enough that later loads into a file don't autostart the timer.
+			const int TimerAutostartThreshold = 150;
+
 			if (!Hook())
 			{
 				return;
@@ -493,11 +499,11 @@ namespace LiveSplit.DarkSouls
 
 						int time = memory.GetGameTimeInMilliseconds();
 						
-						// Dark Souls generally runs at 30 fps, which makes each frame about 32 milliseconds. Checking
-						// game time in this way ensures that the time autostarts on a new game, but not EVERY time you
-						// load into a file. Note that even with an unlocked framerate using DSFix, this solution
-						// should still work.
-						if (run.GameTime == 0 && time > 0 && time < 40)
+						// The timer should autostart on a new game, but not every time you load into a file. Note that
+						// if someone resets their timer manually immediately as the run begins, the timer may
+						// autostart again if game time is still less than the threshold value. This is fixable, but
+						// likely not worth the effort.
+						if (run.GameTime == 0 && time > 0 && time < TimerAutostartThreshold)
 						{
 							timer.Start();
 						}
