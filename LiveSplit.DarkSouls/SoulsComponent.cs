@@ -621,7 +621,7 @@ namespace LiveSplit.DarkSouls
 			// Setting this value to always be true prevents a weird timer creep from LiveSplit. I don't know why.
 			state.IsGameTimePaused = true;
 
-			TimerPhase phase = state.CurrentPhase;
+			TimerPhase phase = timer.CurrentState.CurrentPhase;
 
 			int gameTime = memory.GetGameTimeInMilliseconds();
 			int previousTime = run.GameTime;
@@ -639,7 +639,11 @@ namespace LiveSplit.DarkSouls
 
 			int max = Math.Max(gameTime, run.MaxGameTime);
 
-			state.SetGameTime(TimeSpan.FromMilliseconds(max));
+			if (phase != TimerPhase.Paused)
+			{
+				state.SetGameTime(TimeSpan.FromMilliseconds(max));
+			}
+
 			run.GameTime = gameTime;
 			run.MaxGameTime = max;
 		}
