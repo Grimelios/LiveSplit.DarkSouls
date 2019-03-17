@@ -960,9 +960,13 @@
 	},
 
 	"Zones": [
-		"DLC",
-		"Lordran",
+		"Anor Londo",
+		"Firelink Altar + Kiln",
+		"Firelink Shrine",
 		"Painted World",
+		"Sanctuary Garden",
+		"Sen's Fortress Roof",
+		"The Abyss",
 		"Undead Asylum"
 	]
 }

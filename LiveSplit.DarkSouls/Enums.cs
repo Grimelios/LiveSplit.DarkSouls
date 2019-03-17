@@ -26,9 +26,13 @@ namespace LiveSplit.DarkSouls
 	public enum Zones
 	{
 		// Like other enumerations, these values are listed in the same order as the dropdown (i.e. alphabetically).
-		DLC,
-		Lordran,
+		AnorLondo,
+		FirelinkAltar,
+		FirelinkShrine,
 		PaintedWorld,
+		SanctuaryGarden,
+		SensFortressRoof,
+		TheAbyss,
 		UndeadAsylum
 	}
 }

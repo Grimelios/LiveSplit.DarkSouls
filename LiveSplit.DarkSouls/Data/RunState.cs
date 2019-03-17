@@ -8,8 +8,10 @@ namespace LiveSplit.DarkSouls.Data
 {
 	public class RunState
 	{
-		// Item splits are more complex than other splits, so they use a special data object for easier tracking.
+		// Item splits are more complex than other splits, so they use a special data object for easier tracking. Same
+		// is true for zones (although zones are way simpler).
 		public ItemState TargetItem { get; set; }
+		public Zone Zone { get; set; }
 
 		public int GameTime { get; set; }
 		public int MaxGameTime { get; set; }

@@ -27,7 +27,7 @@ namespace LiveSplit.DarkSouls
 		private SoulsMemory memory;
 		private SoulsMasterControl masterControl;
 		private Dictionary<SplitTypes, Func<int[], bool>> splitFunctions;
-		private Dictionary<Zone, Zones> zoneMap;
+		private Dictionary<Zones, List<Zone>> zoneMap;
 		private Vector3[] covenantLocations;
 		private Vector3[] bonfireLocations;
 		private RunState run;
@@ -151,13 +151,29 @@ namespace LiveSplit.DarkSouls
 				new Vector3(24, 10, -23) // Undead Parish - Sunlight
 			};
 
-			// Note that Lordran is implied if none of the other zones are matched (since Lordran is huge and it would
-			// be a waste to detail every world/area combination).
-			zoneMap = new Dictionary<Zone, Zones>
+			Zone abyss = new Zone(16, 0);
+			Zone anorLondo = new Zone(15, 1);
+			Zone asylum = new Zone(18, 1);
+			Zone basin = new Zone(12, 0);
+			Zone firelinkAltar = new Zone(18, 0);
+			Zone firelinkShrine = new Zone(10, 2);
+			Zone paintedWorld = new Zone(11, 0);
+			Zone sanctuaryGarden = new Zone(12, 1);
+			Zone sensRoof = new Zone(15, 0);
+
+			// Since zones are designed to capture transitions between distinct areas, each zone (from the enumeration)
+			// maps to both its associated zone (the first item in the list) and a list of neighboring zones (the
+			// remaining items).
+			zoneMap = new Dictionary<Zones, List<Zone>>
 			{
-				{ new Zone(12, 1), Zones.DLC },
-				{ new Zone(11, 0), Zones.PaintedWorld },
-				{ new Zone(18, 1), Zones.UndeadAsylum }
+				{ Zones.AnorLondo, new List<Zone> { anorLondo, paintedWorld, sensRoof }},
+				{ Zones.FirelinkAltar, new List<Zone> { firelinkAltar, abyss, firelinkShrine }},
+				{ Zones.FirelinkShrine, new List<Zone> { firelinkShrine, asylum, firelinkAltar }},
+				{ Zones.PaintedWorld, new List<Zone> { paintedWorld, anorLondo }},
+				{ Zones.SanctuaryGarden, new List<Zone> { sanctuaryGarden, basin }},
+				{ Zones.SensFortressRoof, new List<Zone> { sensRoof, anorLondo }},
+				{ Zones.TheAbyss, new List<Zone> { abyss, firelinkAltar }},
+				{ Zones.UndeadAsylum, new List<Zone> { asylum, firelinkShrine }}
 			};
 		}
 
@@ -480,7 +496,7 @@ namespace LiveSplit.DarkSouls
 					break;
 
 				case SplitTypes.Zone:
-					run.Data = ComputeZone();
+					run.Zone = GetZone();
 					run.Target = data[0];
 
 					break;
@@ -1025,38 +1041,39 @@ namespace LiveSplit.DarkSouls
 
 		private bool ProcessZone(int[] data)
 		{
-			int zone = ComputeZone();
+			Zone zone = GetZone();
+			Zone previousZone = run.Zone;
 
-			// Similar to other splits, zone splits only trigger when the player moves between zones.
-			if (zone != run.Data && zone != -1)
+			List<Zone> list = zoneMap[(Zones)run.Target];
+
+			run.Zone = zone;
+
+			// The first zone in the list is the target zone (the actual data object, not the enum value).
+			if (!list[0].Equals(zone))
 			{
-				run.Data = zone;
+				return false;
+			}
 
-				return zone == run.Target;
+			// The remaining items in the list are zones from which you can travel to the target zone.
+			for (int i = 1; i < list.Count; i++)
+			{
+				if (list[i].Equals(previousZone))
+				{
+					return true;
+				}
 			}
 
 			return false;
 		}
 
-		private int ComputeZone()
+		// Note that null is returned when no zone is active (i.e. you're on the title screen).
+		private Zone GetZone()
 		{
 			int world = memory.GetWorld();
 			int area = memory.GetArea();
 
 			// Both world and area are set to 255 on load screens and the main menu.
-			if (world == byte.MaxValue)
-			{
-				return -1;
-			}
-
-			Zone zone = new Zone(world, area);
-
-			if (zoneMap.TryGetValue(zone, out Zones result))
-			{
-				return (int)result;
-			}
-
-			return (int)Zones.Lordran;
+			return world == byte.MaxValue ? null : new Zone(world, area);
 		}
 
 		private int ComputeClosestTarget(Vector3[] targets, int radius)
