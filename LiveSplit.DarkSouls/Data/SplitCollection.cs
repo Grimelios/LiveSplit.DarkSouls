@@ -20,7 +20,7 @@ namespace LiveSplit.DarkSouls.Data
 
 		public void OnSplit()
 		{
-			if (Splits.Length == 0)
+			if (Splits != null && Splits.Length == 0)
 			{
 				return;
 			}
@@ -30,7 +30,7 @@ namespace LiveSplit.DarkSouls.Data
 
 		public void OnUndoSplit()
 		{
-			if (Splits.Length == 0)
+			if (Splits != null && Splits.Length == 0)
 			{
 				return;
 			}
@@ -40,7 +40,7 @@ namespace LiveSplit.DarkSouls.Data
 
 		public void OnSkipSplit()
 		{
-			if (Splits.Length == 0)
+			if (Splits != null && Splits.Length == 0)
 			{
 				return;
 			}
@@ -55,7 +55,7 @@ namespace LiveSplit.DarkSouls.Data
 
 		public void OnReset()
 		{
-			if (Splits.Length == 0)
+			if (Splits != null && Splits.Length == 0)
 			{
 				return;
 			}

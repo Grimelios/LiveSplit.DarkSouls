@@ -192,6 +192,10 @@ namespace LiveSplit.DarkSouls
 			XmlElement root = document.CreateElement("Settings");
 			XmlElement igtElement =
 				document.CreateElementWithInnerText("UseGameTime", masterControl.UseGameTime.ToString());
+			XmlElement resetElement =
+				document.CreateElementWithInnerText("ResetEquipment", masterControl.ResetEquipmentIndexes.ToString());
+			XmlElement autostartElement =
+				document.CreateElementWithInnerText("TimerAutostart", masterControl.StartTimerAutomatically.ToString());
 			XmlElement splitsElement = document.CreateElement("Splits");
 
 			var splits = masterControl.CollectionControl.ExtractSplits();
@@ -213,6 +217,8 @@ namespace LiveSplit.DarkSouls
 			}
 
 			root.AppendChild(igtElement);
+			root.AppendChild(resetElement);
+			root.AppendChild(autostartElement);
 			root.AppendChild(splitsElement);
 
 			return root;
@@ -220,8 +226,6 @@ namespace LiveSplit.DarkSouls
 
 		public void SetSettings(XmlNode settings)
 		{
-			bool useGameTime = bool.Parse(settings["UseGameTime"].InnerText);
-
 			XmlNodeList splitNodes = settings["Splits"].GetElementsByTagName("Split");
 			Split[] splits = new Split[splitNodes.Count];
 
@@ -250,7 +254,15 @@ namespace LiveSplit.DarkSouls
 			}
 
 			splitCollection.Splits = splits;
-			masterControl.Refresh(splits, useGameTime);
+
+			bool useGameTime = bool.Parse(settings["UseGameTime"].InnerText);
+			bool resetEquipment = bool.Parse(settings["ResetEquipment"].InnerText);
+			bool autostart = bool.Parse(settings["TimerAutostart"].InnerText);
+
+			masterControl.UseGameTime = useGameTime;
+			masterControl.ResetEquipmentIndexes = resetEquipment;
+			masterControl.StartTimerAutomatically = autostart;
+			masterControl.Refresh(splits);
 		}
 
 		public void Update(IInvalidator invalidator, LiveSplitState state, float width, float height, LayoutMode mode)
@@ -334,6 +346,11 @@ namespace LiveSplit.DarkSouls
 			{
 				memory.ResetEquipmentIndexes();
 			}
+
+			// Other run state values don't need to be reset (since they're always properly set before becoming
+			// relevant).
+			run.GameTime = 0;
+			run.MaxGameTime = 0;
 
 			splitCollection.OnReset();
 		}
@@ -511,7 +528,14 @@ namespace LiveSplit.DarkSouls
 						break;
 				}
 			}
-			
+
+			// The timer is intentionally updated before an autosplit occurs (to ensure the split time is as accurate
+			// as possible).
+			if (masterControl.UseGameTime)
+			{
+				UpdateGameTime();
+			}
+
 			Split split = splitCollection.CurrentSplit;
 
 			// It's possible for the current split to be null if no splits were configured at all.
@@ -519,41 +543,6 @@ namespace LiveSplit.DarkSouls
 			{
 				return;
 			}
-
-			/*
-			// The timer is intentionally updated before an autosplit occurs (to ensure the split time is as accurate
-			// as possible).
-			if (masterControl.UseGameTime)
-			{
-				int gameTime = memory.GetGameTimeInMilliseconds();
-				int previousTime = run.GameTime;
-				int previousTime = run.GameTime;
-
-				run.GameTime = gameTime;
-
-				// This condition is only possible during a run when game time isn't increasing (game time resets to
-				// zero on the main menu).
-				bool pause = gameTime == 0 && previousTime > 0;
-				bool unpause = previousTime == 0 && gameTime > 0;
-
-				if (pause && phase == TimerPhase.Running)
-				{
-					timer.Pause();
-					state.IsGameTimePaused = true;
-				}
-				else if (unpause && phase == TimerPhase.Paused)
-				{
-					timer.UndoAllPauses();
-					state.IsGameTimePaused = false;
-				}
-
-				int max = Math.Max(gameTime, runTime);
-
-				state.SetGameTime(TimeSpan.FromMilliseconds(max));
-				run.GameTime = gameTime;
-				run.MaxGameTime = max;
-			}
-			*/
 
 			// This is called each tick regardless of whether the current split is an item split (to ensure that the
 			// inventory state is accurate by the time an item split crops up).
@@ -619,6 +608,40 @@ namespace LiveSplit.DarkSouls
 			}
 
 			return memory.ProcessHooked;
+		}
+
+		private void UpdateGameTime()
+		{
+			// When the player quits the game, the IGT clock keeps ticking for 18 extra frames. Those frames are
+			// removed from the timer on quitout. This is largely done to keep parity with the existing IGT tool.
+			const int QuitoutCorrection = 594;
+
+			LiveSplitState state = timer.CurrentState;
+
+			// Setting this value to always be true prevents a weird timer creep from LiveSplit. I don't know why.
+			state.IsGameTimePaused = true;
+
+			TimerPhase phase = state.CurrentPhase;
+
+			int gameTime = memory.GetGameTimeInMilliseconds();
+			int previousTime = run.GameTime;
+
+			// This condition is only possible during a run when game time isn't increasing (game time resets to
+			// zero on the main menu).
+			bool quitout = gameTime == 0 && previousTime > 0;
+
+			// Previously, the timer was actually paused and unpaused here (rather than just putting game time in
+			// stasis temporarily). I found that constant pausing and unpausing distracting, so I removed it.
+			if (quitout && phase == TimerPhase.Running)
+			{
+				run.MaxGameTime -= QuitoutCorrection;
+			}
+
+			int max = Math.Max(gameTime, run.MaxGameTime);
+
+			state.SetGameTime(TimeSpan.FromMilliseconds(max));
+			run.GameTime = gameTime;
+			run.MaxGameTime = max;
 		}
 
 		private ItemId ComputeItemId(Split split)
