@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
+using LiveSplit.DarkSouls.Data;
 
 namespace LiveSplit.DarkSouls
 {

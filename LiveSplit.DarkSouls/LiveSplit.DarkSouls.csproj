@@ -38,9 +38,6 @@
     <Reference Include="LiveSplit.Core">
       <HintPath>C:\LiveSplit_1.7.6\LiveSplit.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
@@ -125,8 +122,6 @@
       <DependentUpon>SoulsForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="app.config" />
-    <None Include="packages.config" />
-    <None Include="Resources\Splits.json" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Controls\SoulsMasterControl.resx">
@@ -145,7 +140,11 @@
     <Content Include="Resources\Delete.png" />
     <Content Include="Resources\Drag.png" />
     <Content Include="Resources\Question.png" />
+    <Content Include="Resources\Splits.txt" />
     <Content Include="Updates.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Components\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

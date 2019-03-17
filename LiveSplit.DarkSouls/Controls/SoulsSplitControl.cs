@@ -10,7 +10,6 @@ using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 using System.Xml;
 using LiveSplit.DarkSouls.Data;
-using Newtonsoft.Json;
 
 namespace LiveSplit.DarkSouls.Controls
 {
@@ -44,7 +43,7 @@ namespace LiveSplit.DarkSouls.Controls
 				{ "Raw", 5 }
 			};
 
-			lists = JsonConvert.DeserializeObject<SplitLists>(Resources.Splits);
+			lists = SplitLists.Load();
 
 			var items = lists.Items;
 

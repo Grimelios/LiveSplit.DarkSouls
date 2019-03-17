@@ -111,27 +111,31 @@ namespace LiveSplit.DarkSouls {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {
-        ///	&quot;Bonfires&quot;: [
-        ///		&quot;Anor Londo - Entrance&quot;,
-        ///		&quot;Anor Londo - Interior&quot;,
-        ///		&quot;Anor Londo - Princess&quot;,
-        ///		&quot;Anor Londo - Tomb&quot;,
-        ///		&quot;Ash Lake - Entrance&quot;,
-        ///		&quot;Ash Lake - Dragon&quot;,
-        ///		&quot;Blighttown - Bridge&quot;,
-        ///		&quot;Blighttown - Swamp&quot;,
-        ///		&quot;Catacombs - Entrance&quot;,
-        ///		&quot;Catacombs - Illusion&quot;,
-        ///		&quot;Chasm of the Abyss (Manus)&quot;,
-        ///		&quot;Crystal Caves (Seath)&quot;,
-        ///		&quot;Darkroot Basin&quot;,
-        ///		&quot;Darkroot Garden&quot;,
-        ///		&quot;Daughter of Chaos&quot;,
-        ///		&quot;Demon Ruins - Central&quot;,
-        ///		&quot;Demon Ruins - Firesage&quot;,
-        ///		&quot;Demon Ruins - Entrance&quot;,
-        ///		&quot;Duke&apos;s Archiv [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to Bonfires
+        ///Anor Londo - Entrance
+        ///Anor Londo - Interior
+        ///Anor Londo - Princess
+        ///Anor Londo - Tomb
+        ///Ash Lake - Entrance
+        ///Ash Lake - Dragon
+        ///Blighttown - Bridge
+        ///Blighttown - Swamp
+        ///Catacombs - Entrance
+        ///Catacombs - Illusion
+        ///Chasm of the Abyss (Manus)
+        ///Crystal Caves (Seath)
+        ///Darkroot Basin
+        ///Darkroot Garden
+        ///Daughter of Chaos
+        ///Demon Ruins - Central
+        ///Demon Ruins - Entrance
+        ///Demon Ruins - Firesage
+        ///Duke&apos;s Archives - Balcony
+        ///Duke&apos;s Archives - Entrance
+        ///Duke&apos;s Archives - Prison
+        ///Firelink Altar
+        ///Firelink Shrine
+        ///G [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Splits {
             get {
