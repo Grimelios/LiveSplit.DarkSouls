@@ -30,6 +30,7 @@ namespace LiveSplit.DarkSouls
 		{
 			string hex = value.ToString("X");
 
+			// This function is used to compute categories (so you only need the first hex digit).
 			return int.Parse(hex[0].ToString());
 		}
 	}

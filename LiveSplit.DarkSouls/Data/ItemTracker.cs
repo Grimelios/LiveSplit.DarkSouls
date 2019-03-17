@@ -17,7 +17,7 @@ namespace LiveSplit.DarkSouls.Data
 		private int totalItems;
 
 		public ItemTracker(IntPtr inventory, IntPtr handle, int start, int count) :
-			base(handle, inventory + start, Step, 0x4, start == (int)InventoryFlags.ItemStart ? "Items" : "Keys")
+			base(handle, inventory + start, Step, 0x4)
 		{
 			itemCount = inventory + count;
 		}
@@ -59,10 +59,15 @@ namespace LiveSplit.DarkSouls.Data
 
 		protected override ItemId ComputeItemId(IntPtr address)
 		{
-			int rawId = MemoryTools.ReadInt(Handle, address);
+			int rawId = ComputeRawId(address);
 			int category = rawId != -1 ? GetCategory(address) : -1;
 
 			return ComputeItemId(rawId, category);
+		}
+
+		protected override int ComputeRawId(IntPtr address)
+		{
+			return MemoryTools.ReadInt(Handle, address);
 		}
 
 		private int GetCategory(IntPtr address)

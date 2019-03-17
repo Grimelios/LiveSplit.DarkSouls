@@ -469,9 +469,7 @@ namespace LiveSplit.DarkSouls
 					break;
 			}
 		}
-
-		private bool first = true;
-
+		
 		// Making the phase nullable makes testing easier.
 		public void Refresh(TimerPhase? phase = null) 
 		{
@@ -479,20 +477,6 @@ namespace LiveSplit.DarkSouls
 			{
 				return;
 			}
-
-			if (first)
-			{
-				List<ItemId> list = new List<ItemId>();
-				list.Add(new ItemId(Utilities.StripHighestDigit((int)RingFlags.BlueTearstoneRing, out int digit1), 0x2));
-				list.Add(new ItemId(Utilities.StripHighestDigit((int)EmberFlags.ChaosFlameEmber, out int digit2), 0x4));
-
-				memory.SetItems(list);
-				first = false;
-			}
-
-			memory.RefreshItems();
-
-			return;
 			
 			if (phase != null)
 			{

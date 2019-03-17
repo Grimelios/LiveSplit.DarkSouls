@@ -20,7 +20,7 @@ namespace LiveSplit.DarkSouls.Data
 		private const int DefaultSlots = 50;
 
 		public BottomlessBoxTracker(IntPtr inventory, IntPtr handle) :
-			base(handle, inventory + (int)InventoryFlags.BottomlessBox, Step, 0x8, "Box")
+			base(handle, inventory + (int)InventoryFlags.BottomlessBox, Step, 0x8)
 		{
 		}
 
@@ -54,9 +54,6 @@ namespace LiveSplit.DarkSouls.Data
 					break;
 				}
 			}
-
-			Console.WriteLine($"[Box] Slots (trimmed): {TotalSlots}");
-			Console.WriteLine();
 		}
 
 		protected override ItemId ComputeItemId(IntPtr address)
@@ -75,6 +72,24 @@ namespace LiveSplit.DarkSouls.Data
 				return null;
 			}
 
+			int rawId = TrimLastByte(bytes);
+			
+			return ComputeItemId(rawId, Utilities.ToHex(category));
+		}
+
+		protected override int ComputeRawId(IntPtr address)
+		{
+			// Data is stored in the bottomless box a little differently than the main inventory. In the main
+			// inventory, raw ID is stored as an integer (four bytes), with category as a single byte at a different
+			// address. In contrast, the bottomless box stores both raw ID and category in a single integer, with three
+			// bytes devoted to the ID and the fourth representing category.
+			byte[] bytes = MemoryTools.ReadBytes(Handle, address, 4);
+
+			return TrimLastByte(bytes);
+		}
+
+		private int TrimLastByte(byte[] bytes)
+		{
 			byte[] idBytes = new byte[4];
 
 			for (int i = 0; i < 3; i++)
@@ -82,9 +97,7 @@ namespace LiveSplit.DarkSouls.Data
 				idBytes[i] = bytes[i];
 			}
 
-			int rawId = BitConverter.ToInt32(idBytes, 0);
-			
-			return ComputeItemId(rawId, category);
+			return BitConverter.ToInt32(idBytes, 0);
 		}
 
 		public override void Refresh()
