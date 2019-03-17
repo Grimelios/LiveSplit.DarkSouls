@@ -666,9 +666,9 @@ namespace LiveSplit.DarkSouls
 				return true;
 			}
 
-			// Dying counts as a warp (since you do actually warp on death), but only if the death text was previously
-			// visible. This allows players to perform a fall control quitout without triggering a warp.
-			if (memory.IsDeathTextVisible())
+			// Dying counts as a warp (since you do actually warp on death). The exception here is fall control
+			// quitouts, but thankfully a successful fall control quitout causes the player's HP to stay intact.
+			if (memory.GetPlayerHP() == 0)
 			{
 				return true;
 			}

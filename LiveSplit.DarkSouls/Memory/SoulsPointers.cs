@@ -41,7 +41,6 @@ namespace LiveSplit.DarkSouls.Memory
 		public IntPtr CharacterPosition { get; private set; }
 		public IntPtr Equipment { get; }
 		public IntPtr Inventory { get; private set; }
-		public IntPtr Overlay { get; private set; }
 		public IntPtr WorldState { get; private set; }
 		public IntPtr Zone { get; private set; }
 
@@ -63,10 +62,12 @@ namespace LiveSplit.DarkSouls.Memory
 			inventory = (IntPtr)MemoryTools.ReadInt(handle, inventory + 0x8);
 			Inventory = inventory + 0x1B8;
 			
+			/*
 			IntPtr overlay = (IntPtr)MemoryTools.ReadInt(handle, process.MainModule.BaseAddress + 0x0F78568);
 			overlay = (IntPtr)MemoryTools.ReadInt(handle, overlay + 0x4);
 			overlay = (IntPtr)MemoryTools.ReadInt(handle, overlay + 0x54);
 			Overlay = overlay + 0xA4;
+			*/
 
 			WorldState = (IntPtr)MemoryTools.ReadInt(handle, (IntPtr)0x13784A0);
 			Zone = (IntPtr)MemoryTools.ReadInt(handle, (IntPtr)0x137E204);

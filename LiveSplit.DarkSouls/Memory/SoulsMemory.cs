@@ -231,12 +231,6 @@ namespace LiveSplit.DarkSouls.Memory
 			return MemoryTools.ReadBoolean(handle, pointers.WorldState - 0x37EF4);
 		}
 
-		// This flag is set to true when the "YOU DIED" text appears, and remains true until the load screen appears.
-		public bool IsDeathTextVisible()
-		{
-			return false;
-		}
-
 		public bool IsPlayerLoaded()
 		{
 			return MemoryTools.ReadInt(handle, (IntPtr)0x137DC70) != 0;
@@ -254,9 +248,9 @@ namespace LiveSplit.DarkSouls.Memory
 			return MemoryTools.ReadInt(handle, pointer + 0x3C);
 		}
 
-		public byte GetOverlay()
+		public int GetPlayerHP()
 		{
-			return MemoryTools.ReadByte(handle, pointers.Overlay);
+			return MemoryTools.ReadInt(handle, pointers.CharacterStats + 0xC);
 		}
 
 		public Vector3 GetPlayerPosition()
