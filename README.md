@@ -6,6 +6,8 @@ Created by [@Grimelios](https://twitter.com/Grimelios). Feel free to ping me on 
 ## Installation
 The autosplitter is a LiveSplit component (a DLL file). To install, download the latest release from the [Releases](https://github.com/Grimelios/LiveSplit.DarkSouls/releases) section and place the DLL in your LiveSplit/Components folder (you should see a bunch of DLLs in there already). From there, simply launch LiveSplit, edit your layout, and add the autosplitter (under the Control category).
 
+Once the DLL is in place (and added to your layout), you'll be prompted with any updates automatically each time you launch LiveSplit.
+
 ## Configuration
 Once you've added the autosplitter to your layout, double-click on the autosplitter to open its configuration tab. The tool was designed to be as intuitive as possible, but I'll run through the options anyway, starting from the top.
 
