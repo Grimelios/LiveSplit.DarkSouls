@@ -142,7 +142,7 @@
     <Content Include="Resources\Drag.png" />
     <Content Include="Resources\Question.png" />
     <Content Include="Resources\Splits.txt" />
-    <Content Include="Updates.xml" />
+    <Content Include="Components\Updates.xml" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
