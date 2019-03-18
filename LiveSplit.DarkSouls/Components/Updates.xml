@@ -1,4 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 
 <updates>
+	<update version="1.0.1">
+		<files>
+			<file path="Components/LiveSplit.DarkSouls.dll" status="changed" />
+		</files>
+		<changelog>
+			<change>Testing automatic updates through LiveSplit.</change>
+		</changelog>
+	</update>
 </updates>
