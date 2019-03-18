@@ -135,6 +135,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Components\LiveSplit.DarkSouls.dll" />
     <Content Include="Resources\Add.png" />
     <Content Include="Resources\Clear.png" />
     <Content Include="Resources\Delete.png" />
@@ -143,8 +144,6 @@
     <Content Include="Resources\Splits.txt" />
     <Content Include="Updates.xml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Components\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
