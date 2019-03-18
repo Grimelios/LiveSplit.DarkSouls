@@ -16,7 +16,7 @@ namespace LiveSplit.DarkSouls
 			"Configurable autosplitter and IGT tool for Dark Souls: Prepare To Die Edition. Does not work for the remaster.";
 
 		public string UpdateName => ComponentName;
-		public string XMLURL => UpdateURL + "Updates.xml";
+		public string XMLURL => UpdateURL + "Components/Updates.xml";
 		public string UpdateURL => "https://raw.githubusercontent.com/Grimelios/LiveSplit.DarkSouls/master/";
 
 		public ComponentCategory Category => ComponentCategory.Control;
