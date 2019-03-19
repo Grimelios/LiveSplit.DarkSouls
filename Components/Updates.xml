@@ -1,4 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 
 <updates>
+	<update version="1.1.0">
+		<files>
+			<file path="Components/LiveSplit.TheEndIsNigh.dll" status="changed" />
+		</files>
+		<changelog>
+			<change>Added Quitout splits (and "On quitout" variations to many existing splits).</change>
+		</changelog>
+	</update>
 </updates>

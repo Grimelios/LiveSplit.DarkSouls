@@ -274,7 +274,10 @@ namespace LiveSplit.DarkSouls
 				splits[i] = new Split(type, data);
 			}
 
-			string fileVersion = settings["Version"].InnerText;
+			var versionElement = settings["Version"];
+
+			// The version element itself wasn't present in the original 1.0.0 release.
+			string fileVersion = versionElement == null ? "1.0.0" : settings["Version"].InnerText;
 
 			if (Utilities.GetVersion() != Version.Parse(fileVersion))
 			{
