@@ -432,18 +432,19 @@ namespace LiveSplit.DarkSouls
 					break;
 
 				case SplitTypes.Covenant:
-					// The first and third options involve discovery, while the second and fourth involve joining.
-					bool onDiscover = data[1] % 2 == 0;
+					bool onDiscover = data[1] == 0;
+
+					int target = Flags.OrderedCovenants[data[0]];
 
 					if (onDiscover)
 					{
 						run.Data = memory.GetPromptedMenu();
-						run.Target = Flags.OrderedCovenants[data[0]];
+						run.Target = target;
 					}
 					else
 					{
 						run.Data = (int)memory.GetCovenant();
-						run.Target = Flags.OrderedCovenants[data[0]];
+						run.Target = target;
 					}
 
 					break;
@@ -484,7 +485,7 @@ namespace LiveSplit.DarkSouls
 					int reinforcement = data[3];
 					int count = data[4];
 
-					isItemWarpSplitActive = data[5] == 1;
+					isItemWarpSplitActive = data[5] == 2;
 					isEstusSplit = baseId == EstusId;
 
 					// In the layout file, mods and reinforcement are stored as int.MaxValue to simplify split
@@ -856,19 +857,7 @@ namespace LiveSplit.DarkSouls
 			{
 				run.Flag = true;
 
-				switch (data[1])
-				{
-					// On victory message
-					case 0: return true;
-
-					// On quitout
-					case 1: waitingOnQuitout = true;
-						return false;
-
-					// On warp
-					case 2: PrepareWarp();
-						return false;
-				}
+				return CheckDefaultTimingOptions(data[1]);
 			}
 
 			return false;
@@ -878,24 +867,10 @@ namespace LiveSplit.DarkSouls
 		{
 			int criteria = data[1];
 
-			bool onDiscovery = criteria % 2 == 0;
-			bool preWarpSatisfied = onDiscovery ? CheckCovenantDiscovery() : CheckCovenantJoin();
+			bool onDiscover = criteria == 0;
+			bool criteriaSatisfied = onDiscover ? CheckCovenantDiscovery() : CheckCovenantJoin();
 
-			if (preWarpSatisfied)
-			{
-				bool onWarp = criteria >= 2;
-
-				if (onWarp)
-				{
-					PrepareWarp();
-
-					return false;
-				}
-
-				return true;
-			}
-
-			return false;
+			return criteriaSatisfied && CheckDefaultTimingOptions(data[2]);
 		}
 
 		private bool CheckCovenantDiscovery()
@@ -965,14 +940,7 @@ namespace LiveSplit.DarkSouls
 			{
 				run.Flag = true;
 
-				bool onRing = data[1] == 0;
-
-				if (onRing)
-				{
-					return true;
-				}
-
-				PrepareWarp();
+				return CheckDefaultTimingOptions(data[1]);
 			}
 
 			return false;
@@ -1002,17 +970,9 @@ namespace LiveSplit.DarkSouls
 
 			if (!run.Flag && memory.CheckFlag(flag))
 			{
-				bool onWarp = data[1] == 1;
+				run.Flag = true;
 
-				// The alternative here is "On trigger" (i.e. split immediately when the flag is toggled to true).
-				if (onWarp)
-				{
-					PrepareWarp();
-
-					return false;
-				}
-
-				return true;
+				return CheckDefaultTimingOptions(data[1]);
 			}
 
 			return false;
@@ -1020,22 +980,7 @@ namespace LiveSplit.DarkSouls
 
 		private bool ProcessItem(int[] data)
 		{
-			if (IsTargetItemSatisfied())
-			{
-				bool onWarp = data[5] == 1;
-
-				// The alternative to "On warp" is "On acquisition".
-				if (onWarp)
-				{
-					PrepareWarp();
-
-					return false;
-				}
-
-				return true;
-			}
-
-			return false;
+			return IsTargetItemSatisfied() && CheckDefaultTimingOptions(data[5]);
 		}
 
 		// This check is done from two places (processing item splits and verifying that an item wasn't dropped while
@@ -1137,6 +1082,28 @@ namespace LiveSplit.DarkSouls
 				}
 			}
 
+			return false;
+		}
+
+		// Most splits with timing options available use the same set of options (on trigger, on quitout, and on warp).
+		// The specific wording of "On trigger" can change based on split type, but the idea is to split immediately
+		// regardless.
+		private bool CheckDefaultTimingOptions(int index)
+		{
+			switch (index)
+			{
+				// Immediate
+				case 0: return true;
+
+				// On quitout
+				case 1: waitingOnQuitout = true;
+					return false;
+
+				case 2: PrepareWarp();
+					return false;
+			}
+
+			// This case should never occur.
 			return false;
 		}
 
