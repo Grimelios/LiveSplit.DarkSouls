@@ -81,7 +81,7 @@ namespace LiveSplit.DarkSouls.Memory
 		KindledOnce = 20,
 		KindledTwice = 30,
 		KindledThrice = 40,
-		Undiscovered,
+		Undiscovered = -1,
 		Unlit = 0
 	}
 
@@ -203,8 +203,9 @@ namespace LiveSplit.DarkSouls.Memory
 
 		public static readonly int[] OrderedBonfireStates =
 		{
-			// The placeholder -1 is required to line up with the bonfire state dropdown.
+			// The placeholder -1s are required to line up with the bonfire state dropdown.
 			(int)BonfireStates.Lit,
+			-1,
 			-1,
 			(int)BonfireStates.KindledOnce,
 			(int)BonfireStates.KindledTwice,

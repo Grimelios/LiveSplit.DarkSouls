@@ -10,4 +10,14 @@
 			<change>Added an internal version converter (allowing you to safely open layout files from earlier versions of the autosplitter).</change>
 		</changelog>
 	</update>
+	<!--
+	<update version="1.1.1">
+		<files>
+			<file path="Components/LiveSplit.DarkSouls.dll" status="changed" />
+		</files>
+		<changelog>
+			<change>Fixed bonfire state-based splits ("On light" and kindling).</change>
+		</changelog>
+	</update>
+	-->
 </updates>

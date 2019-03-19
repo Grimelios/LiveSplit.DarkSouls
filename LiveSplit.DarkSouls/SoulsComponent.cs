@@ -427,7 +427,7 @@ namespace LiveSplit.DarkSouls
 					{
 						run.Id = Flags.OrderedBonfires[bonfireIndex];
 						run.Data = (int)memory.GetBonfireState((BonfireFlags)run.Id);
-						run.Target = Flags.OrderedBonfireStates[data[1]];
+						run.Target = Flags.OrderedBonfireStates[criteria];
 					}
 
 					break;
@@ -876,7 +876,7 @@ namespace LiveSplit.DarkSouls
 
 			// Increasing bonfires states (unlit, lit, then the different levels of kindling) always increase the state
 			// value.
-			if (run.Data > state)
+			if (state > run.Data)
 			{
 				run.Data = state;
 
