@@ -35,6 +35,8 @@ namespace LiveSplit.DarkSouls
 		private bool preparedForWarp;
 		private bool isLoadScreenVisible;
 		private bool waitingOnQuitout;
+		private bool waitingOnUnload;
+		private bool waitingOnReload;
 
 		// This variable tracks whether the player confirmed a warp from a bonfire prompt. The data used to detect this
 		// state (beginning a bonfire warp) doesn't persist up to the loading screen's appearance, so it needs to be
@@ -397,6 +399,8 @@ namespace LiveSplit.DarkSouls
 
 			preparedForWarp = false;
 			waitingOnQuitout = false;
+			waitingOnUnload = false;
+			waitingOnReload = false;
 			isBonfireWarpConfirmed = false;
 			isBonfireWarpSplitActive = false;
 			isItemWarpSplitActive = false;
@@ -646,6 +650,36 @@ namespace LiveSplit.DarkSouls
 				// Game time is reset to zero on the title screen, but not on regular loading screens.
 				if (newGameTime == 0 && previousGameTime > 0)
 				{
+					// On quitout splits, the actual split occurs on the loading screen following a reload
+					// (specifically when the player is loaded). This is done to account for any potential IGT drift
+					// between quitout and reload. In theory, this drift shouldn't exist, but it seems to happen anyway
+					// in practice.
+					waitingOnUnload = true;
+					waitingOnQuitout = false;
+				}
+
+				return;
+			}
+
+			if (waitingOnUnload)
+			{
+				// When the load screen appears following a quitout, the player isn't unloaded instantly.
+				if (!memory.IsPlayerLoaded())
+				{
+					waitingOnUnload = false;
+					waitingOnReload = true;
+				}
+
+				return;
+			}
+
+			if (waitingOnReload)
+			{
+				// By the time this point in the code is reached, the player must already be unloaded (due to quitting
+				// to the title screen).
+				if (memory.IsPlayerLoaded())
+				{
+					waitingOnReload = false;
 					timer.Split();
 				}
 

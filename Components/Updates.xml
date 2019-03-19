@@ -7,6 +7,7 @@
 		</files>
 		<changelog>
 			<change>Added Quitout splits (and "On quitout" variations to many existing splits).</change>
+			<change>Added an internal version converter (allowing you to safely open layout files from earlier versions of the autosplitter).</change>
 		</changelog>
 	</update>
 </updates>
