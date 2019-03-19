@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -32,6 +33,13 @@ namespace LiveSplit.DarkSouls
 
 			// This function is used to compute categories (so you only need the first hex digit).
 			return int.Parse(hex[0].ToString());
+		}
+
+		public static Version GetVersion()
+		{
+			Version version = Assembly.GetExecutingAssembly().GetName().Version;
+
+			return Version.Parse($"{version.Major}.{version.Minor}.{version.Build}");
 		}
 	}
 }

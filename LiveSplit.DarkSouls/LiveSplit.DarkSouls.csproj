@@ -112,6 +112,7 @@
     <Compile Include="SoulsTester.cs" />
     <Compile Include="Data\SplitLists.cs" />
     <Compile Include="Utilities.cs" />
+    <Compile Include="VersionHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources.resx">

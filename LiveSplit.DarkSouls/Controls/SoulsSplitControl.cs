@@ -202,7 +202,8 @@ namespace LiveSplit.DarkSouls.Controls
 			}
 
 			// For non-manual splits, the finished state will already have been refreshed (as dropdowns are set).
-			if (type == SplitTypes.Manual)
+			// Quitouts are also finished by default (since they use no additional controls).
+			if (type == SplitTypes.Manual || type == SplitTypes.Quitout)
 			{
 				RefreshFinished(true);
 			}
@@ -234,6 +235,7 @@ namespace LiveSplit.DarkSouls.Controls
 			switch (type)
 			{
 				case SplitTypes.Manual: return true;
+				case SplitTypes.Quitout: return true;
 				case SplitTypes.Unassigned: return false;
 			}
 
@@ -315,8 +317,9 @@ namespace LiveSplit.DarkSouls.Controls
 		private void OnSplitTypeChange(SplitTypes splitType)
 		{
 			bool previouslyFinished = IsFinished;
+			bool refreshControls = splitType != SplitTypes.Manual && splitType != SplitTypes.Quitout;
 
-			Control[] controls = splitType != SplitTypes.Manual ? functionMap[splitType]() : null;
+			Control[] controls = refreshControls ? functionMap[splitType]() : null;
 			ControlCollection panelControls = splitDetailsPanel.Controls;
 			panelControls.Clear();
 
@@ -384,7 +387,7 @@ namespace LiveSplit.DarkSouls.Controls
 					IsFinished = false;
 				}
 			}
-			else if (splitType == SplitTypes.Manual)
+			else if (splitType == SplitTypes.Manual || splitType == SplitTypes.Quitout)
 			{
 				parent.UnfinishedCount--;
 				IsFinished = true;
@@ -425,39 +428,51 @@ namespace LiveSplit.DarkSouls.Controls
 		private Control[] GetBossControls()
 		{
 			const int BossListWidth = 131;
-			const int BossCriteriaWidth = 122;
+			const int BossTimingWidth = 122;
 
-			var bossCriteria = GetDropdown(new []
+			var bossTiming = GetDropdown(new []
 			{
 				"On victory message",
+				"On quitout",
 				"On warp"
-			}, "Criteria", BossCriteriaWidth, false);
+			}, "Timing", BossTimingWidth, false);
 
 			var bossList = GetDropdown(lists.Bosses, "Bosses", BossListWidth);
 			bossList.SelectedIndexChanged += (sender, args) =>
 			{
-				bossCriteria.Enabled = true;
+				bossTiming.Enabled = true;
 			};
 
 			return new Control[]
 			{
 				bossList,
-				bossCriteria
+				bossTiming
 			};
 		}
 
 		private Control[] GetCovenantControls()
 		{
 			const int CovenantListWidth = 139;
-			const int CovenantCriteriaWidth = 166;
+			const int CovenantCriteriaWidth = 86;
+			const int CovenantTimingWidth = 78;
+
+			var covenantTiming = GetDropdown(new []
+			{
+				"On trigger",
+				"On quitout",
+				"On warp"
+			}, "Timing", CovenantTimingWidth, false);
 
 			var covenantCriteria = GetDropdown(new []
 			{
 				"On discover",
-				"On join",
-				"On warp (following discovery)",
-				"On warp (following join)"
+				"On join"
 			}, "Criteria", CovenantCriteriaWidth, false);
+
+			covenantCriteria.SelectedIndexChanged += (sender, args) =>
+			{
+				covenantTiming.Enabled = true;
+			};
 
 			var covenantList = GetDropdown(lists.Covenants, "Covenants", CovenantListWidth);
 			covenantList.SelectedIndexChanged += (sender, args) =>
@@ -468,17 +483,18 @@ namespace LiveSplit.DarkSouls.Controls
 			return new Control[]
 			{
 				covenantList,
-				covenantCriteria
+				covenantCriteria,
+				covenantTiming
 			};
 		}
 
 		private Control[] GetEventControls()
 		{
 			const int EventListWidth = 88;
-			const int EventCriteriaWidth = 80;
+			const int EventTimingWidth = 78;
 
 			// Criteria items are added below as needed.
-			var eventCriteria = GetDropdown(null, "Criteria", EventCriteriaWidth, false);
+			var eventTiming = GetDropdown(null, "Timing", EventTimingWidth, false);
 			var eventList = GetDropdown(new []
 			{
 				"- Bells -",
@@ -492,35 +508,38 @@ namespace LiveSplit.DarkSouls.Controls
 			
 			eventList.SelectedIndexChanged += (sender, args) =>
 			{
-				if (eventList.SelectedIndex <= 2)
+				bool isBell = eventList.SelectedIndex <= 2;
+
+				if (isBell)
 				{
-					if (eventCriteria.SelectedIndex == -1)
+					if (eventTiming.SelectedIndex == -1)
 					{
-						eventCriteria.RefreshPrompt("Criteria", true);
-						eventCriteria.Items.AddRange(new []
+						eventTiming.RefreshPrompt("Timing", true);
+						eventTiming.Items.AddRange(new []
 						{
 							"On ring",
+							"On quitout",
 							"On warp"
 						});
 					}
 				}
 				else
 				{
-					eventCriteria.RefreshPrompt("N/A");
+					eventTiming.RefreshPrompt("N/A");
 				}
 			};
 
 			return new Control[]
 			{
 				eventList,
-				eventCriteria
+				eventTiming
 			};
 		}
 
 		private Control[] GetFlagControls()
 		{
 			const int FlagIdWidth = 68;
-			const int FlagCriteriaWidth = 78;
+			const int FlagTimingWidth = 78;
 
 			Color unfinishedColor = Color.PaleVioletRed;
 
@@ -533,16 +552,17 @@ namespace LiveSplit.DarkSouls.Controls
 				RefreshFinished();
 			};
 
-			var flagCriteria = GetDropdown(new []
+			var flagTiming = GetDropdown(new []
 			{
 				"On trigger",
+				"On quitout",
 				"On warp"
-			}, "Criteria", FlagCriteriaWidth);
+			}, "Timing", FlagTimingWidth);
 
 			return new Control[]
 			{
 				flagId,
-				flagCriteria
+				flagTiming
 			};
 		}
 
@@ -619,16 +639,17 @@ namespace LiveSplit.DarkSouls.Controls
 			const int ItemModificationWidth = 81;
 			const int ItemReinforcementWidth = 100;
 			const int ItemCountWidth = 32;
-			const int ItemCriteriaWidth = 96;
+			const int ItemTimingWidth = 96;
 
 			// Mods and reinforcements are updated based on item type.
 			var itemModifications = GetDropdown(null, "Infusions", ItemModificationWidth, false);
 			var itemReinforcements = GetDropdown(null, "Reinforcement", ItemReinforcementWidth, false);
-			var itemCriteria = GetDropdown(new[]
+			var itemTiming = GetDropdown(new[]
 			{
 				"On acquisition",
+				"On quitout",
 				"On warp"
-			}, "Criteria", ItemCriteriaWidth);
+			}, "Timing", ItemTimingWidth);
 
 			// The item count textbox was originally on line one, but it was moved down to accomodate extra width
 			// needed for the item list.
@@ -648,7 +669,7 @@ namespace LiveSplit.DarkSouls.Controls
 				itemModifications,
 				itemReinforcements,
 				itemCount,
-				itemCriteria
+				itemTiming
 			};
 		}
 

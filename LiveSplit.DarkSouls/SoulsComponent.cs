@@ -34,6 +34,7 @@ namespace LiveSplit.DarkSouls
 
 		private bool preparedForWarp;
 		private bool isLoadScreenVisible;
+		private bool waitingOnQuitout;
 
 		// This variable tracks whether the player confirmed a warp from a bonfire prompt. The data used to detect this
 		// state (beginning a bonfire warp) doesn't persist up to the loading screen's appearance, so it needs to be
@@ -73,6 +74,7 @@ namespace LiveSplit.DarkSouls
 				{ SplitTypes.Event, ProcessEvent },
 				{ SplitTypes.Flag, ProcessFlag },
 				{ SplitTypes.Item, ProcessItem },
+				{ SplitTypes.Quitout, ProcessQuitout },
 				{ SplitTypes.Zone, ProcessZone }
 			};
 
@@ -206,6 +208,8 @@ namespace LiveSplit.DarkSouls
 		public XmlNode GetSettings(XmlDocument document)
 		{
 			XmlElement root = document.CreateElement("Settings");
+			XmlElement versionElement =
+				document.CreateElementWithInnerText("Version", Utilities.GetVersion().ToString());
 			XmlElement igtElement =
 				document.CreateElementWithInnerText("UseGameTime", masterControl.UseGameTime.ToString());
 			XmlElement resetElement =
@@ -232,6 +236,7 @@ namespace LiveSplit.DarkSouls
 				}
 			}
 
+			root.AppendChild(versionElement);
 			root.AppendChild(igtElement);
 			root.AppendChild(resetElement);
 			root.AppendChild(autostartElement);
@@ -267,6 +272,13 @@ namespace LiveSplit.DarkSouls
 				}
 
 				splits[i] = new Split(type, data);
+			}
+
+			string fileVersion = settings["Version"].InnerText;
+
+			if (Utilities.GetVersion() != Version.Parse(fileVersion))
+			{
+				VersionHelper.Convert(splits, fileVersion);
 			}
 
 			splitCollection.Splits = splits;
@@ -381,6 +393,7 @@ namespace LiveSplit.DarkSouls
 			}
 
 			preparedForWarp = false;
+			waitingOnQuitout = false;
 			isBonfireWarpConfirmed = false;
 			isBonfireWarpSplitActive = false;
 			isItemWarpSplitActive = false;
@@ -495,6 +508,11 @@ namespace LiveSplit.DarkSouls
 
 					break;
 
+				case SplitTypes.Quitout:
+					waitingOnQuitout = true;
+
+					break;
+
 				case SplitTypes.Zone:
 					run.Zone = GetZone();
 					run.Target = data[0];
@@ -502,7 +520,7 @@ namespace LiveSplit.DarkSouls
 					break;
 			}
 		}
-		
+
 		// Making the phase nullable makes testing easier.
 		public void Refresh(TimerPhase? phase = null)
 		{
@@ -516,7 +534,7 @@ namespace LiveSplit.DarkSouls
 			{
 				return;
 			}
-			
+
 			if (phase != null)
 			{
 				switch (phase.Value)
@@ -545,11 +563,22 @@ namespace LiveSplit.DarkSouls
 				}
 			}
 
+			// Quitout splits (below) are detected using game time (specifically, when IGT is reset back to zero). As
+			// such, the current IGT value needs to be stored here before it's reset while updating game time.
+			int previousGameTime = run.GameTime;
+			int newGameTime = memory.GetGameTimeInMilliseconds();
+
 			// The timer is intentionally updated before an autosplit occurs (to ensure the split time is as accurate
 			// as possible).
 			if (masterControl.UseGameTime)
 			{
-				UpdateGameTime();
+				UpdateGameTime(newGameTime);
+			}
+			else
+			{
+				// Game time must be tracked even if "Use game time" is disabled (in order to accomodate quitout
+				// splits.
+				run.GameTime = newGameTime;
 			}
 
 			Split split = splitCollection.CurrentSplit;
@@ -606,6 +635,19 @@ namespace LiveSplit.DarkSouls
 				return;
 			}
 
+			// Similar to warping, this covers all splits with quitouts as a timing option (and Quitout splits
+			// themselves, of course).
+			if (waitingOnQuitout)
+			{
+				// Game time is reset to zero on the title screen, but not on regular loading screens.
+				if (newGameTime == 0 && previousGameTime > 0)
+				{
+					timer.Split();
+				}
+
+				return;
+			}
+
 			if (splitFunctions[split.Type](split.Data))
 			{
 				timer?.Split();
@@ -626,7 +668,7 @@ namespace LiveSplit.DarkSouls
 			return memory.ProcessHooked;
 		}
 
-		private void UpdateGameTime()
+		private void UpdateGameTime(int newGameTime)
 		{
 			// When the player quits the game, the IGT clock keeps ticking for 18 extra frames. Those frames are
 			// removed from the timer on quitout. This is largely done to keep parity with the existing IGT tool.
@@ -638,13 +680,12 @@ namespace LiveSplit.DarkSouls
 			state.IsGameTimePaused = true;
 
 			TimerPhase phase = timer.CurrentState.CurrentPhase;
-
-			int gameTime = memory.GetGameTimeInMilliseconds();
+			
 			int previousTime = run.GameTime;
 
 			// This condition is only possible during a run when game time isn't increasing (game time resets to
 			// zero on the main menu).
-			bool quitout = gameTime == 0 && previousTime > 0;
+			bool quitout = newGameTime == 0 && previousTime > 0;
 
 			// Previously, the timer was actually paused and unpaused here (rather than just putting game time in
 			// stasis temporarily). I found that constant pausing and unpausing distracting, so I removed it.
@@ -653,14 +694,14 @@ namespace LiveSplit.DarkSouls
 				run.MaxGameTime -= QuitoutCorrection;
 			}
 
-			int max = Math.Max(gameTime, run.MaxGameTime);
+			int max = Math.Max(newGameTime, run.MaxGameTime);
 
 			if (phase != TimerPhase.Paused)
 			{
 				state.SetGameTime(TimeSpan.FromMilliseconds(max));
 			}
 
-			run.GameTime = gameTime;
+			run.GameTime = newGameTime;
 			run.MaxGameTime = max;
 		}
 
@@ -815,14 +856,19 @@ namespace LiveSplit.DarkSouls
 			{
 				run.Flag = true;
 
-				bool onVictory = data[1] == 0;
-
-				if (onVictory)
+				switch (data[1])
 				{
-					return true;
-				}
+					// On victory message
+					case 0: return true;
 
-				PrepareWarp();
+					// On quitout
+					case 1: waitingOnQuitout = true;
+						return false;
+
+					// On warp
+					case 2: PrepareWarp();
+						return false;
+				}
 			}
 
 			return false;
@@ -1074,6 +1120,24 @@ namespace LiveSplit.DarkSouls
 
 			// Both world and area are set to 255 on load screens and the main menu.
 			return world == byte.MaxValue ? null : new Zone(world, area);
+		}
+
+		private bool ProcessQuitout(int[] data)
+		{
+			bool loaded = memory.IsPlayerLoaded();
+
+			if (loaded != run.Flag)
+			{
+				run.Flag = loaded;
+
+				// This means that the player returned to the title screen (i.e. quit the game).
+				if (!loaded)
+				{
+					return true;
+				}
+			}
+
+			return false;
 		}
 
 		private int ComputeClosestTarget(Vector3[] targets, int radius)

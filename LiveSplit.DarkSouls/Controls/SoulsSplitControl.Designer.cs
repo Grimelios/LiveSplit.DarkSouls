@@ -78,6 +78,7 @@
 			"Flag",
             "Item",
             "Manual",
+			"Quitout",
             "Zone"});
 			this.splitTypeComboBox.Location = new System.Drawing.Point(12, 4);
 			this.splitTypeComboBox.Name = "splitTypeComboBox";

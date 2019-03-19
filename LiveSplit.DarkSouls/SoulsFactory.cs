@@ -21,15 +21,7 @@ namespace LiveSplit.DarkSouls
 
 		public ComponentCategory Category => ComponentCategory.Control;
 
-		public Version Version
-		{
-			get
-			{
-				Version version = Assembly.GetExecutingAssembly().GetName().Version;
-
-				return Version.Parse($"{version.Major}.{version.Minor}.{version.Build}");
-			}
-		}
+		public Version Version => Utilities.GetVersion();
 
 		public IComponent Create(LiveSplitState state)
 		{
