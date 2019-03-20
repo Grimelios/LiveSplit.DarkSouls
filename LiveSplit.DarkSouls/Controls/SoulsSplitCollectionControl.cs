@@ -268,6 +268,7 @@ namespace LiveSplit.DarkSouls.Controls
 			}
 
 			UpdateSplitCount();
+			splitsPanel.ScrollControlIntoView(control);
 		}
 
 		public void RemoveSplit(int index)
