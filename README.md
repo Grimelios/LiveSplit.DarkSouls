@@ -102,9 +102,9 @@ This split type, then, can be useful for detecting those transitions (which woul
 
 Many splits mentioned above have associated timing options. These options generally fall into three categories:
 
-1. Immediate. The specific wording here can change as appropriate (such as "On trigger" for flags or "On ring" for bells), but the idea is the same (split immediately when an event occur).
-2. On quitout. This splits on the first quitout following the relevant criteria being satisfied. Specifically, the split occurs during the loading screen after reloading your file (in order to ensure that IGT is accurate).
-3. On warp (see the paragraph below)
+1. **Immediate**. The specific wording here can change as appropriate (such as "On trigger" for flags or "On ring" for bells), but the idea is the same (split immediately when an event occur).
+2. **On quitout**. This splits on the first quitout following the relevant criteria being satisfied. Specifically, the split occurs during the loading screen after reloading your file (in order to ensure that IGT is accurate).
+3. **On warp** (see the paragraph below)
 
 Warping is a bit more complicated than the others, and warrants its own quick paragraph. Apart from bonfires, all "On warp" splits behave the same way (by triggering the split after a player has warped away from an objective, rather than when the objective itself is completed). The following types of warps are accounted for:
 
