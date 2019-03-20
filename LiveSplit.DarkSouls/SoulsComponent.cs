@@ -32,6 +32,10 @@ namespace LiveSplit.DarkSouls
 		private Vector3[] bonfireLocations;
 		private RunState run;
 
+		// In terms of memory, "key items" refers to more than just keys. Tracking the full list of items categorized
+		// as key items simplifies a few checks later on.
+		private int[] keyItems;
+
 		private bool preparedForWarp;
 		private bool isLoadScreenVisible;
 		private bool waitingOnQuitout;
@@ -180,6 +184,24 @@ namespace LiveSplit.DarkSouls
 				{ Zones.TheAbyss, new List<Zone> { abyss, firelinkAltar }},
 				{ Zones.UndeadAsylum, new List<Zone> { asylum, firelinkShrine }}
 			};
+
+			// This list was previously used in the memory class when setting items. It makes more sense to store it
+			// here instead.
+			List<int> keys = new List<int>();
+			keys.AddRange(ItemFlags.OrderedKeys);
+			keys.AddRange(ItemFlags.OrderedEmbers);
+			keys.AddRange(ItemFlags.OrderedBonfireItems);
+			keys.Add((int)SoulFlags.BequeathedLordSoulShardFourKings);
+			keys.Add((int)SoulFlags.BequeathedLordSoulShardSeath);
+			keys.Add((int)SoulFlags.LordSoulBedOfChaos);
+			keys.Add((int)SoulFlags.LordSoulNito);
+
+			for (int i = 0; i < keys.Count; i++)
+			{
+				keys[i] = Utilities.StripHighestDigit(keys[i], out int digit);
+			}
+
+			keyItems = keys.ToArray();
 		}
 
 		public string ComponentName => DisplayName;
@@ -367,7 +389,7 @@ namespace LiveSplit.DarkSouls
 					items.Add(id);
 				}
 
-				memory.SetItems(items);
+				memory.SetItems(items, keyItems);
 			}
 
 			splitCollection.OnStart();
@@ -1053,16 +1075,18 @@ namespace LiveSplit.DarkSouls
 				targetId += estusReinforcement * 2;
 			}
 
+			bool isKey = keyItems.Contains(targetId);
+
 			// This double array felt like the easiest way to handle estus splits, even though literally every item
 			// besides the estus flask will only use a single state array.
 			ItemState[][] states = new ItemState[2][];
-			states[0] = memory.GetItemStates(targetId, run.Data);
+			states[0] = memory.GetItemStates(targetId, run.Data, isKey);
 
 			if (isEstusSplit)
 			{
 				// For estus splits, the unfilled ID (at the target reinforement) is stored. Adding one brings you to
 				// the filled ID for that same reinforcement level.
-				states[1] = memory.GetItemStates(targetId + 1, run.Data);
+				states[1] = memory.GetItemStates(targetId + 1, run.Data, false);
 			}
 
 			ItemState target = run.TargetItem;

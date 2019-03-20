@@ -20,7 +20,6 @@
 			<change>Game time now properly resets to zero when the timer is reset in-game.</change>
 		</changelog>
 	</update>
-	<!--
 	<update version="1.1.2">
 		<files>
 			<file path="Components/LiveSplit.DarkSouls.dll" status="changed" />
@@ -28,7 +27,7 @@
 		<changelog>
 			<change>The main splits window in the UI now automatically scrolls to newly-added splits.</change>
 			<change>Scroll wheel no longer affects dropdowns.</change>
+			<change>"Key item" splits (including keys, embers, bonfire items, and key boss souls) now work.</change>
 		</changelog>
 	</update>
-	-->
 </updates>

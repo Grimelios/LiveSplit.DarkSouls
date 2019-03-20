@@ -60,7 +60,7 @@ namespace LiveSplit.DarkSouls.Memory
 			return ProcessHooked;
 		}
 
-		public void SetItems(List<ItemId> itemIds)
+		public void SetItems(List<ItemId> itemIds, int[] keyItems)
 		{
 			if (itemIds == null)
 			{
@@ -74,24 +74,9 @@ namespace LiveSplit.DarkSouls.Memory
 			List<ItemId> keys = new List<ItemId>();
 			List<ItemId> items = new List<ItemId>();
 
-			// In terms of memory layout, "key items" refer to bonfire items, key boss souls, embers, and actual keys.
-			List<int> keyIds = new List<int>();
-			keyIds.AddRange(ItemFlags.OrderedKeys);
-			keyIds.AddRange(ItemFlags.OrderedEmbers);
-			keyIds.AddRange(ItemFlags.OrderedBonfireItems);
-			keyIds.Add((int)SoulFlags.BequeathedLordSoulShardFourKings);
-			keyIds.Add((int)SoulFlags.BequeathedLordSoulShardSeath);
-			keyIds.Add((int)SoulFlags.LordSoulBedOfChaos);
-			keyIds.Add((int)SoulFlags.LordSoulNito);
-
-			for (int i = 0; i < keyIds.Count; i++)
-			{
-				keyIds[i] = Utilities.StripHighestDigit(keyIds[i], out int digit);
-			}
-
 			foreach (ItemId id in itemIds)
 			{
-				if (keyIds.Contains(id.BaseId))
+				if (keyItems.Contains(id.BaseId))
 				{
 					keys.Add(id);
 				}
@@ -132,12 +117,10 @@ namespace LiveSplit.DarkSouls.Memory
 			bottomlessBoxTracker?.Refresh();
 		}
 
-		public ItemState[] GetItemStates(int baseId, int category)
+		public ItemState[] GetItemStates(int baseId, int category, bool isKey)
 		{
 			// Key items don't share IDs with any other items (except for a few mystery items, but those aren't
 			// included in the autosplitter UI).
-			bool isKey = Enum.IsDefined(typeof(KeyFlags), baseId);
-
 			if (isKey)
 			{
 				return keyTracker.GetItemStates(baseId, category);
