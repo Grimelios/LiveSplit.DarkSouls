@@ -902,6 +902,15 @@ namespace LiveSplit.DarkSouls.Controls
 				box.Items.AddRange(items);
 			}
 
+			// See https://stackoverflow.com/a/1883072/7281613.
+			box.MouseWheel += (sender, args) =>
+			{
+				if (!box.DroppedDown)
+				{
+					((HandledMouseEventArgs)args).Handled = true;
+				}
+			};
+
 			return box;
 		}
 

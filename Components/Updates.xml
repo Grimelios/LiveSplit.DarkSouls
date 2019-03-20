@@ -27,6 +27,7 @@
 		</files>
 		<changelog>
 			<change>The main splits window in the UI now automatically scrolls to newly-added splits.</change>
+			<change>Scroll wheel no longer affects dropdowns.</change>
 		</changelog>
 	</update>
 	-->
