@@ -25,7 +25,7 @@ namespace LiveSplit.DarkSouls.Memory
 
 			// Unlike other pointers, the equipment pointer (used to reset equipment indexes on timer reset) is only
 			// scanned once when the process is hooked.
-			Equipment = MemoryScanner.Scan(process, equipmentBytes, 0x24);
+			//Equipment = MemoryScanner.Scan(process, equipmentBytes, 0x24);
 			Refresh(process);
 		}
 

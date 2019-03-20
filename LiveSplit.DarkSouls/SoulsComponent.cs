@@ -37,6 +37,7 @@ namespace LiveSplit.DarkSouls
 		private bool waitingOnQuitout;
 		private bool waitingOnUnload;
 		private bool waitingOnReload;
+		private bool waitingOnCredits;
 
 		// This variable tracks whether the player confirmed a warp from a bonfire prompt. The data used to detect this
 		// state (beginning a bonfire warp) doesn't persist up to the loading screen's appearance, so it needs to be
@@ -401,6 +402,7 @@ namespace LiveSplit.DarkSouls
 			waitingOnQuitout = false;
 			waitingOnUnload = false;
 			waitingOnReload = false;
+			waitingOnCredits = false;
 			isBonfireWarpConfirmed = false;
 			isBonfireWarpSplitActive = false;
 			isItemWarpSplitActive = false;
@@ -530,7 +532,7 @@ namespace LiveSplit.DarkSouls
 		}
 
 		// Making the phase nullable makes testing easier.
-		public void Refresh(TimerPhase? phase = null)
+		public void Refresh(TimerPhase? nullablePhase = null)
 		{
 			// In theory, the first IGT frame of a run should have a time value of about 32 milliseconds (i.e. one
 			// frame at 30 fps). In practice, though, the first non-zero time value tends to be a bit bigger than that.
@@ -543,31 +545,27 @@ namespace LiveSplit.DarkSouls
 				return;
 			}
 
-			if (phase != null)
+			// This will only be true while testing (through a console program).
+			if (nullablePhase == null)
 			{
-				switch (phase.Value)
+				return;
+			}
+
+			TimerPhase phase = nullablePhase.Value;
+
+			// Someone might want to disable timer autostart if using real time and starting their timer from the main
+			// menu (or some other reason).
+			if (phase == TimerPhase.NotRunning && masterControl.StartTimerAutomatically)
+			{
+				int time = memory.GetGameTimeInMilliseconds();
+				
+				// The timer should autostart on a new game, but not every time you load into a file. Note that
+				// if someone resets their timer manually immediately as the run begins, the timer may
+				// autostart again if game time is still less than the threshold value. This is fixable, but
+				// likely not worth the effort.
+				if (run.GameTime == 0 && time > 0 && time < TimerAutostartThreshold)
 				{
-					case TimerPhase.Ended: return;
-					case TimerPhase.NotRunning:
-						// Someone might want to disable this feature if using real time and starting their timer from
-						// the menu (or other reasons, probably).
-						if (!masterControl.StartTimerAutomatically)
-						{
-							return;
-						}
-
-						int time = memory.GetGameTimeInMilliseconds();
-						
-						// The timer should autostart on a new game, but not every time you load into a file. Note that
-						// if someone resets their timer manually immediately as the run begins, the timer may
-						// autostart again if game time is still less than the threshold value. This is fixable, but
-						// likely not worth the effort.
-						if (run.GameTime == 0 && time > 0 && time < TimerAutostartThreshold)
-						{
-							timer.Start();
-						}
-
-						break;
+					timer.Start();
 				}
 			}
 
@@ -585,8 +583,23 @@ namespace LiveSplit.DarkSouls
 			else
 			{
 				// Game time must be tracked even if "Use game time" is disabled (in order to accomodate quitout
-				// splits.
+				// splits).
 				run.GameTime = newGameTime;
+			}
+
+			// This is called each tick regardless of whether the current split is an item split (to ensure that the
+			// inventory state is accurate by the time an item split crops up).
+			if (itemsEnabled)
+			{
+				memory.RefreshItems();
+			}
+
+			// This check is intentionally done relatively far down in the function. The reason is that an ended timer
+			// can be undone, and if that happens, I'd like all splits to continue working properly. Specifically, that
+			// means that items and IGT (if applicable) are tracked even when the timer has ended.
+			if (phase == TimerPhase.Ended)
+			{
+				return;
 			}
 
 			Split split = splitCollection.CurrentSplit;
@@ -595,13 +608,6 @@ namespace LiveSplit.DarkSouls
 			if (split == null || split.Type == SplitTypes.Manual || !split.IsFinished)
 			{
 				return;
-			}
-
-			// This is called each tick regardless of whether the current split is an item split (to ensure that the
-			// inventory state is accurate by the time an item split crops up).
-			if (itemsEnabled)
-			{
-				memory.RefreshItems();
 			}
 
 			// This condition covers all split types with warping as an option.
@@ -636,8 +642,7 @@ namespace LiveSplit.DarkSouls
 
 				if (CheckWarp())
 				{
-					// Timer is null when testing the program from the testing class.
-					timer?.Split();
+					timer.Split();
 				}
 
 				return;
@@ -688,7 +693,7 @@ namespace LiveSplit.DarkSouls
 
 			if (splitFunctions[split.Type](split.Data))
 			{
-				timer?.Split();
+				timer.Split();
 			}
 		}
 
@@ -727,9 +732,16 @@ namespace LiveSplit.DarkSouls
 
 			// Previously, the timer was actually paused and unpaused here (rather than just putting game time in
 			// stasis temporarily). I found that constant pausing and unpausing distracting, so I removed it.
-			if (quitout && phase == TimerPhase.Running)
+			if (quitout)
 			{
-				run.MaxGameTime -= QuitoutCorrection;
+				switch (phase)
+				{
+					case TimerPhase.Running: run.MaxGameTime -= QuitoutCorrection;
+						break;
+
+					case TimerPhase.NotRunning: run.MaxGameTime = 0;
+						break;
+				}
 			}
 
 			int max = Math.Max(newGameTime, run.MaxGameTime);
@@ -995,10 +1007,17 @@ namespace LiveSplit.DarkSouls
 				bool isDarkLord = memory.GetPlayerX() > 415;
 				bool isDarkLordTarget = data[0] == 5;
 
-				return isDarkLord == isDarkLordTarget;
+				if (isDarkLord == isDarkLordTarget)
+				{
+					// Ending splits split when the credits appear, not when the ending itself occurs.
+					waitingOnCredits = true;
+
+					return false;
+				}
 			}
 
-			return false;
+			// The player is unloaded just as the credits start.
+			return waitingOnCredits && !memory.IsPlayerLoaded();
 		}
 
 		private bool ProcessFlag(int[] data)

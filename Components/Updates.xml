@@ -10,14 +10,14 @@
 			<change>Added an internal version converter (allowing you to safely open layout files from earlier versions of the autosplitter).</change>
 		</changelog>
 	</update>
-	<!--
 	<update version="1.1.1">
 		<files>
 			<file path="Components/LiveSplit.DarkSouls.dll" status="changed" />
 		</files>
 		<changelog>
 			<change>Fixed bonfire state-based splits ("On light" and kindling).</change>
+			<change>Ending splits now split on credits (rather than when the cutscene begins).</change>
+			<change>Game time now properly resets to zero when the timer is reset in-game.</change>
 		</changelog>
 	</update>
-	-->
 </updates>
