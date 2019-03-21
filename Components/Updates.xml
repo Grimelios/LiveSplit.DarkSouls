@@ -30,4 +30,12 @@
 			<change>"Key item" splits (including keys, embers, bonfire items, and key boss souls) now work. This should fix other item splits as well.</change>
 		</changelog>
 	</update>
+	<update version="1.1.3">
+		<files>
+			<file path="Components/LiveSplit.DarkSouls.dll" status="changed" />
+		</files>
+		<changelog>
+			<change>Added Lloyd's Talisman to item splits (under Consumables).</change>
+		</changelog>
+	</update>
 </updates>

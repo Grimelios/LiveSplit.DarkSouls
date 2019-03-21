@@ -14,28 +14,47 @@ namespace LiveSplit.DarkSouls
 	// version differences.
 	public static class VersionHelper
 	{
-		private static Dictionary<string, Action<Split>> functionMap;
+		private static Version[] versions;
+		private static Action<Split>[] functions;
 
 		static VersionHelper()
 		{
-			functionMap = new Dictionary<string, Action<Split>>
+			versions = new []
 			{
-				{ "1.0.0", From100 }
+				new Version(1, 0, 1),
+				new Version(1, 1, 3), 
+			};
+
+			functions = new Action<Split>[]
+			{
+				To101,
+				To103
 			};
 		}
 
-		public static void Convert(Split[] splits, string fileVersion)
+		public static void Convert(Split[] splits, Version fileVersion)
 		{
-			var function = functionMap[fileVersion];
-
-			// The splits array is assumed non-null if this function is called.
-			foreach (Split split in splits)
+			// As the autosplitter version grows, the list of required conversions grows as well. Rather than
+			// converting all file versions directly to current (e.g. 1.0.0 to 1.0.3), conversions are applied in order
+			// as needed (e.g. 1.0.0 is converted to 1.0.1, then 1.0.1 is updated to 1.0.3). Using this approach, each
+			// new conversion function only needs to account for exactly what that version changed.
+			for (int i = 0; i < versions.Length; i++)
 			{
-				function(split);
+				if (fileVersion >= versions[i])
+				{
+					continue;
+				}
+
+				var function = functions[i];
+
+				foreach (Split split in splits)
+				{
+					function(split);
+				}
 			}
 		}
 
-		private static void From100(Split split)
+		private static void To101(Split split)
 		{
 			int[] data = split.Data;
 
@@ -77,6 +96,27 @@ namespace LiveSplit.DarkSouls
 			}
 
 			split.Data = data;
+		}
+
+		private static void To103(Split split)
+		{
+			const int ConsumablesIndex = 16;
+			const int LloydsTalismanIndex = 11;
+
+			// In 1.0.3, Lloyd's Talismans were added (they had been accidentally missed before). Nothing else changed
+			// as far as conversions.
+			if (split.Type != SplitTypes.Item)
+			{
+				return;
+			}
+
+			int[] data = split.Data;
+
+			if (data[0] == ConsumablesIndex && data[1] >= LloydsTalismanIndex)
+			{
+				data[1]++;
+				split.Data = data;
+			}
 		}
 
 		// This function is useful for when new data fields are added (rather than just updating indexes in the

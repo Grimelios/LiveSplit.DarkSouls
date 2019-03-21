@@ -272,6 +272,31 @@ namespace LiveSplit.DarkSouls
 
 		public void SetSettings(XmlNode settings)
 		{
+			bool useGameTime = bool.Parse(settings["UseGameTime"].InnerText);
+			bool resetEquipment = bool.Parse(settings["ResetEquipment"].InnerText);
+			bool autostart = bool.Parse(settings["TimerAutostart"].InnerText);
+
+			masterControl.UseGameTime = useGameTime;
+			masterControl.ResetEquipmentIndexes = resetEquipment;
+			masterControl.StartTimerAutomatically = autostart;
+
+			var versionElement = settings["Version"];
+
+			// The version element itself wasn't present in the original 1.0.0 release.
+			string rawFileVersion = versionElement == null ? "1.0.0" : settings["Version"].InnerText;
+
+			Version currentVersion = Utilities.GetVersion();
+			Version fileVersion = Version.Parse(rawFileVersion);
+
+			// For the time being, downgrading layout files (e.g. trying to load a 1.0.2 layout file on the 1.0.1
+			// autosplitter) isn't supported. To ensure no weird errors crop up, the splits are simply emptied instead.
+			if (fileVersion > currentVersion)
+			{
+				splitCollection.Splits = null;
+
+				return;
+			}
+
 			XmlNodeList splitNodes = settings["Splits"].GetElementsByTagName("Split");
 			Split[] splits = new Split[splitNodes.Count];
 
@@ -299,25 +324,12 @@ namespace LiveSplit.DarkSouls
 				splits[i] = new Split(type, data);
 			}
 
-			var versionElement = settings["Version"];
-
-			// The version element itself wasn't present in the original 1.0.0 release.
-			string fileVersion = versionElement == null ? "1.0.0" : settings["Version"].InnerText;
-
-			if (Utilities.GetVersion() != Version.Parse(fileVersion))
+			if (currentVersion > fileVersion)
 			{
 				VersionHelper.Convert(splits, fileVersion);
 			}
 
 			splitCollection.Splits = splits;
-
-			bool useGameTime = bool.Parse(settings["UseGameTime"].InnerText);
-			bool resetEquipment = bool.Parse(settings["ResetEquipment"].InnerText);
-			bool autostart = bool.Parse(settings["TimerAutostart"].InnerText);
-
-			masterControl.UseGameTime = useGameTime;
-			masterControl.ResetEquipmentIndexes = resetEquipment;
-			masterControl.StartTimerAutomatically = autostart;
 			masterControl.Refresh(splits);
 		}
 
@@ -357,6 +369,11 @@ namespace LiveSplit.DarkSouls
 		private void OnStart()
 		{
 			var splits = splitCollection.Splits;
+
+			if (splits == null)
+			{
+				return;
+			}
 
 			itemsEnabled = splits.Any(s => s.Type == SplitTypes.Item);
 

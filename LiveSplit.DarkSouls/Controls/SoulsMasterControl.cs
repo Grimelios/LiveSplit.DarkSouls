@@ -42,6 +42,11 @@ namespace LiveSplit.DarkSouls.Controls
 		{
 			CollectionControl.ClearSplits();
 
+			if (splits == null)
+			{
+				return;
+			}
+
 			foreach (var split in splits)
 			{
 				CollectionControl.AddSplit(split);
