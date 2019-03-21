@@ -558,6 +558,11 @@ namespace LiveSplit.DarkSouls
 					break;
 
 				case SplitTypes.Quitout:
+					// Quitout splits have an associated count (the number of quitouts required to split). The count is
+					// stored in the data field.
+					run.Data = 0;
+					run.Target = data[0];
+
 					waitingOnQuitout = true;
 
 					break;
@@ -694,6 +699,18 @@ namespace LiveSplit.DarkSouls
 				// Game time is reset to zero on the title screen, but not on regular loading screens.
 				if (newGameTime == 0 && previousGameTime > 0)
 				{
+					if (splitCollection.CurrentSplit.Type == SplitTypes.Quitout)
+					{
+						run.Data++;
+
+						// Quitout splits track quitout count. If that target hasn't yet been satisfied, the function
+						// can just return immediately (which leaves the waitingOnQuitout variable intact).
+						if (run.Data < run.Target)
+						{
+							return;
+						}
+					}
+
 					// On quitout splits, the actual split occurs on the loading screen following a reload
 					// (specifically when the player is loaded). This is done to account for any potential IGT drift
 					// between quitout and reload. In theory, this drift shouldn't exist, but it seems to happen anyway

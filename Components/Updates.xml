@@ -36,6 +36,7 @@
 		</files>
 		<changelog>
 			<change>Added Lloyd's Talisman to item splits (under Consumables).</change>
+			<change>Quitout splits now have an associated numeric textbox (defaults to one).</change>
 		</changelog>
 	</update>
 </updates>

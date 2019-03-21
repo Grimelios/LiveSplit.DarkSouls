@@ -118,6 +118,7 @@ namespace LiveSplit.DarkSouls.Controls
 				{ SplitTypes.Event, GetEventControls },
 				{ SplitTypes.Flag, GetFlagControls },
 				{ SplitTypes.Item, GetItemControls },
+				{ SplitTypes.Quitout, GetQuitoutControls },
 				{ SplitTypes.Zone, GetZoneControls }
 			};	
 		}
@@ -143,18 +144,19 @@ namespace LiveSplit.DarkSouls.Controls
 
 				for (int i = 0; i < controls.Count; i++)
 				{
-					// Item and flag splits have a numeric textbox. All other split types use exclusively dropdowns.
-					if ((type == SplitTypes.Item && i == ItemCountIndex) ||
-					    (type == SplitTypes.Flag && i == FlagIdIndex))
+					Control control = controls[i];
+
+					// A few split types use a textbox. All other controls are dropdowns.
+					if (control is TextBox textbox)
 					{
-						string text = ((TextBox)controls[i]).Text;
+						string text = textbox.Text;
 
 						data[i] = text.Length > 0 ? int.Parse(text) : -1;
 
 						continue;
 					}
 
-					var dropdown = (ComboBox)controls[i];
+					var dropdown = (ComboBox)control;
 					int selectedIndex = dropdown.SelectedIndex;
 
 					// -1 as a selected index isn't always invalid (it's valid if the combo box is disabled). Storing a
@@ -185,17 +187,18 @@ namespace LiveSplit.DarkSouls.Controls
 
 			for (int i = 0; i < controls.Count; i++)
 			{
-				if ((type == SplitTypes.Item && i == ItemCountIndex) ||
-				    (type == SplitTypes.Flag && i == FlagIdIndex))
+				Control control = controls[i];
+
+				if (control is TextBox textbox)
 				{
 					int value = data[i];
 
-					((TextBox)controls[i]).Text = value != -1 ? value.ToString() : "";
+					textbox.Text = value != -1 ? value.ToString() : "";
 
 					continue;
 				}
 
-				var dropdown = (ComboBox)controls[i];
+				var dropdown = (ComboBox)control;
 				int index = data[i];
 				
 				dropdown.SelectedIndex = dropdown.Enabled ? index : (index == int.MaxValue ? -1 : index);
@@ -317,9 +320,8 @@ namespace LiveSplit.DarkSouls.Controls
 		private void OnSplitTypeChange(SplitTypes splitType)
 		{
 			bool previouslyFinished = IsFinished;
-			bool refreshControls = splitType != SplitTypes.Manual && splitType != SplitTypes.Quitout;
 
-			Control[] controls = refreshControls ? functionMap[splitType]() : null;
+			Control[] controls = splitType != SplitTypes.Manual ? functionMap[splitType]() : null;
 			ControlCollection panelControls = splitDetailsPanel.Controls;
 			panelControls.Clear();
 
@@ -653,16 +655,7 @@ namespace LiveSplit.DarkSouls.Controls
 
 			// The item count textbox was originally on line one, but it was moved down to accomodate extra width
 			// needed for the item list.
-			var itemCount = GetNumericTextbox(ItemCountWidth, 3, false, 1);
-
-			itemCount.LostFocus += (sender, args) =>
-			{
-				// This ensures that the textbox always ends up with a valid value.
-				if (itemCount.Text.Length == 0)
-				{
-					itemCount.Text = "1";
-				}
-			};
+			var itemCount = GetNumericTextbox(ItemCountWidth, 3, false, 1, 1);
 
 			return new Control[]
 			{
@@ -879,6 +872,18 @@ namespace LiveSplit.DarkSouls.Controls
 			return results;
 		}
 
+		private Control[] GetQuitoutControls()
+		{
+			const int QuitoutCountWidth = 32;
+
+			var quitoutCount = GetNumericTextbox(QuitoutCountWidth, 2, true, 1, 1);
+
+			return new Control[]
+			{
+				quitoutCount
+			};
+		}
+
 		private Control[] GetZoneControls()
 		{
 			const int ZoneListWidth = 152;
@@ -914,7 +919,8 @@ namespace LiveSplit.DarkSouls.Controls
 			return box;
 		}
 
-		private TextBox GetNumericTextbox(int width, int maxLength, bool enabled, int? value = null)
+		private TextBox GetNumericTextbox(int width, int maxLength, bool enabled, int? value = null,
+			int? forcedValue = null)
 		{
 			var textbox = new TextBox
 			{
@@ -987,6 +993,20 @@ namespace LiveSplit.DarkSouls.Controls
 				// is processed.
 				BeginInvoke((Action)textbox.SelectAll);
 			};
+
+			// "Forced value" means that the textbox can never be saved empty (since losing focus while empty fills in
+			// the given value).
+			if (forcedValue.HasValue)
+			{
+				textbox.LostFocus += (sender, args) =>
+				{
+					// This ensures that the textbox always ends up with a valid value.
+					if (textbox.Text.Length == 0)
+					{
+						textbox.Text = forcedValue.Value.ToString();
+					}
+				};
+			}
 
 			return textbox;
 		}

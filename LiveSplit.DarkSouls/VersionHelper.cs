@@ -90,6 +90,7 @@ namespace LiveSplit.DarkSouls
 					break;
 
 				case SplitTypes.Item:
+					// This is another correction due to the addition of quitout splits.
 					data[5] = Convert(data[5], 1, 2);
 
 					break;
@@ -103,20 +104,29 @@ namespace LiveSplit.DarkSouls
 			const int ConsumablesIndex = 16;
 			const int LloydsTalismanIndex = 11;
 
-			// In 1.0.3, Lloyd's Talismans were added (they had been accidentally missed before). Nothing else changed
-			// as far as conversions.
-			if (split.Type != SplitTypes.Item)
-			{
-				return;
-			}
-
 			int[] data = split.Data;
 
-			if (data[0] == ConsumablesIndex && data[1] >= LloydsTalismanIndex)
+			switch (split.Type)
 			{
-				data[1]++;
-				split.Data = data;
+				case SplitTypes.Item:
+					// In 1.0.3, Lloyd's Talismans were added (they had been accidentally missed before).
+					if (data[0] == ConsumablesIndex && data[1] >= LloydsTalismanIndex)
+					{
+						data[1]++;
+					}
+
+					break;
+
+				case SplitTypes.Quitout:
+					// A numeric textbox for quitouts splits (representing quitout count) was also added in this
+					// version. Previously, quitout splits had no data.
+					data = new int[1];
+					data[0] = 1;
+
+					break;
 			}
+
+			split.Data = data;
 		}
 
 		// This function is useful for when new data fields are added (rather than just updating indexes in the
