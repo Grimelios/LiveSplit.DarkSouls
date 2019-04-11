@@ -39,4 +39,13 @@
 			<change>Quitout splits now have an associated numeric textbox (defaults to one).</change>
 		</changelog>
 	</update>
+	<update version="1.1.4">
+		<files>
+			<file path="Components/LiveSplit.DarkSouls.dll" status="changed" />
+		</files>
+		<changelog>
+			<change>Deferred memory checks until the player is loaded for the first time (this should hopefully improve the stability of all splits).</change>
+			<change>Item tracking will now continue to function following a game crash.</change>
+		</changelog>
+	</update>
 </updates>

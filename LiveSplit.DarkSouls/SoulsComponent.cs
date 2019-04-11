@@ -42,6 +42,7 @@ namespace LiveSplit.DarkSouls
 		private bool waitingOnUnload;
 		private bool waitingOnReload;
 		private bool waitingOnCredits;
+		private bool waitingOnFirstLoad;
 
 		// This variable tracks whether the player confirmed a warp from a bonfire prompt. The data used to detect this
 		// state (beginning a bonfire warp) doesn't persist up to the loading screen's appearance, so it needs to be
@@ -368,48 +369,16 @@ namespace LiveSplit.DarkSouls
 
 		private void OnStart()
 		{
-			var splits = splitCollection.Splits;
+			splitCollection.OnStart();
 
-			if (splits == null)
+			if (!memory.IsPlayerLoaded())
 			{
+				waitingOnFirstLoad = true;
+
 				return;
 			}
 
-			itemsEnabled = splits.Any(s => s.Type == SplitTypes.Item);
-
-			if (itemsEnabled)
-			{
-				List<ItemId> items = new List<ItemId>();
-
-				foreach (Split split in splits)
-				{
-					if (split.Type != SplitTypes.Item || !split.IsFinished)
-					{
-						continue;
-					}
-
-					ItemId id = ComputeItemId(split);
-
-					// Given the nature of how estus IDs are stored, both the filled and unfilled versions of
-					// the flask (at the target reinforcement) must be tracked.
-					if (id.BaseId == EstusId)
-					{
-						int reinforcement = split.Data[3];
-
-						id.BaseId += reinforcement * 2;
-
-						ItemId filledId = new ItemId(id.BaseId + 1, id.Category);
-
-						items.Add(filledId);
-					}
-
-					items.Add(id);
-				}
-
-				memory.SetItems(items, keyItems);
-			}
-
-			splitCollection.OnStart();
+			InitializeItems();
 			UpdateRunState();
 		}
 
@@ -426,6 +395,52 @@ namespace LiveSplit.DarkSouls
 			run.MaxGameTime = 0;
 
 			splitCollection.OnReset();
+		}
+
+		private void InitializeItems()
+		{
+			var splits = splitCollection.Splits;
+
+			if (splits == null)
+			{
+				return;
+			}
+
+			itemsEnabled = splits.Any(s => s.Type == SplitTypes.Item);
+
+			if (!itemsEnabled)
+			{
+				return;
+			}
+
+			List<ItemId> items = new List<ItemId>();
+
+			foreach (Split split in splitCollection.Splits)
+			{
+				if (split.Type != SplitTypes.Item || !split.IsFinished)
+				{
+					continue;
+				}
+
+				ItemId id = ComputeItemId(split);
+
+				// Given the nature of how estus IDs are stored, both the filled and unfilled versions of
+				// the flask (at the target reinforcement) must be tracked.
+				if (id.BaseId == EstusId)
+				{
+					int reinforcement = split.Data[3];
+
+					id.BaseId += reinforcement * 2;
+
+					ItemId filledId = new ItemId(id.BaseId + 1, id.Category);
+
+					items.Add(filledId);
+				}
+
+				items.Add(id);
+			}
+
+			memory.SetItems(items, keyItems);
 		}
 
 		private void UpdateRunState()
@@ -595,6 +610,19 @@ namespace LiveSplit.DarkSouls
 				return;
 			}
 
+			if (waitingOnFirstLoad)
+			{
+				if (!memory.IsPlayerLoaded())
+				{
+					return;
+				}
+
+				InitializeItems();
+				UpdateRunState();
+
+				waitingOnFirstLoad = false;
+			}
+
 			TimerPhase phase = nullablePhase.Value;
 
 			// Someone might want to disable timer autostart if using real time and starting their timer from the main
@@ -761,7 +789,7 @@ namespace LiveSplit.DarkSouls
 			// treated as manual until the process is hooked, at which point the run state is updated appropriately.
 			if (memory.Hook() && !previouslyHooked && timer?.CurrentState.CurrentPhase == TimerPhase.Running)
 			{
-				UpdateRunState();
+				waitingOnFirstLoad = true;
 			}
 
 			return memory.ProcessHooked;
