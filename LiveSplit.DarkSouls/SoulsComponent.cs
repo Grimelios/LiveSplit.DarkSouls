@@ -24,7 +24,8 @@ namespace LiveSplit.DarkSouls
 
 		private TimerModel timer;
 		private SplitCollection splitCollection;
-		private SoulsMemory memory;
+        private SoulsMemory memory;
+        private SoulsRemastered _soulsRemastered;
 		private SoulsMasterControl masterControl;
 		private Dictionary<SplitTypes, Func<int[], bool>> splitFunctions;
 		private Dictionary<Zones, List<Zone>> zoneMap;
@@ -71,6 +72,7 @@ namespace LiveSplit.DarkSouls
 		{
 			splitCollection = new SplitCollection();
 			memory = new SoulsMemory();
+            _soulsRemastered = new SoulsRemastered();
 			masterControl = new SoulsMasterControl();
 			run = new RunState();
 
@@ -83,7 +85,8 @@ namespace LiveSplit.DarkSouls
 				{ SplitTypes.Flag, ProcessFlag },
 				{ SplitTypes.Item, ProcessItem },
 				{ SplitTypes.Quitout, ProcessQuitout },
-				{ SplitTypes.Zone, ProcessZone }
+				{ SplitTypes.Zone, ProcessZone },
+				{ SplitTypes.Remastered, ProcessRemastered },
 			};
 
 			// This array is used for covenant discovery splits. Discovery occurs when the player is prompted to join a
@@ -587,6 +590,13 @@ namespace LiveSplit.DarkSouls
 					run.Target = data[0];
 
 					break;
+
+                case SplitTypes.Remastered:
+                    //there is a - bosses - header before the actual list of bosses, hence -1 here.
+                    run.Id = Flags.OrderedBosses[data[0]-1];
+
+
+					break;
 			}
 		}
 
@@ -599,7 +609,7 @@ namespace LiveSplit.DarkSouls
 			// small enough that later loads into a file don't autostart the timer.
 			const int TimerAutostartThreshold = 150;
 
-			if (!Hook())
+			if (!Hook() && !_soulsRemastered.ProcessHooked)
 			{
 				return;
 			}
@@ -612,7 +622,8 @@ namespace LiveSplit.DarkSouls
 
 			if (waitingOnFirstLoad)
 			{
-				if (!memory.IsPlayerLoaded())
+				//TODO REMASTER: implement IsPlayerLoaded
+				if (!memory.IsPlayerLoaded() && !_soulsRemastered.ProcessHooked)
 				{
 					return;
 				}
@@ -645,6 +656,12 @@ namespace LiveSplit.DarkSouls
 			// such, the current IGT value needs to be stored here before it's reset while updating game time.
 			int previousGameTime = run.GameTime;
 			int newGameTime = memory.GetGameTimeInMilliseconds();
+
+            if (_soulsRemastered.ProcessHooked)
+            {
+				//TODO REMASTERED
+                //newGameTime = _soulsRemastered.GetGameTimeInMilliseconds();
+			}
 
 			// The timer is intentionally updated before an autosplit occurs (to ensure the split time is as accurate
 			// as possible).
@@ -1272,6 +1289,23 @@ namespace LiveSplit.DarkSouls
 
 			return closestIndex;
 		}
+
+
+        private bool ProcessRemastered(int[] data)
+        {
+            var bossId = run.Id;
+
+            if (!_soulsRemastered.ProcessHooked)
+            {
+                _soulsRemastered.Hook();//retry hooking
+            }
+            else
+            {
+                return !_soulsRemastered.IsBossAlive((BossFlags)run.Id);
+            }
+            return false;
+        }
+
 
 		public void Dispose()
 		{

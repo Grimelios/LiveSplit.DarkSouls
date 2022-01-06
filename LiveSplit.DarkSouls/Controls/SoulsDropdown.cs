@@ -15,6 +15,10 @@ namespace LiveSplit.DarkSouls.Controls
 
 		private SoulsSplitControl parent;
 
+        public SoulsDropdown() : this(null)
+        {
+        }
+
 		// The parent split is null for split type (which is added directly from the forms editor).
 		public SoulsDropdown(SoulsSplitControl parent = null)
 		{

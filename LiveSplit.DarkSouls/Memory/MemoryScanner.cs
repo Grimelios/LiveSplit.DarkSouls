@@ -11,7 +11,7 @@ namespace LiveSplit.DarkSouls.Memory
 	public static class MemoryScanner
 	{
 		[DllImport("kernel32.dll")]
-		private static extern uint VirtualQueryEx(IntPtr hProcess, IntPtr lpAddress, out MemoryRegion lpBuffer,
+		public static extern uint VirtualQueryEx(IntPtr hProcess, IntPtr lpAddress, out MemoryRegion lpBuffer,
 			uint dwLength);
 
 		public static IntPtr Scan(Process process, byte?[] bytes, int offset)
@@ -44,10 +44,10 @@ namespace LiveSplit.DarkSouls.Memory
 				}
 			}
 
-			return (IntPtr)MemoryTools.ReadInt(process.Handle, results[0] + offset);
+			return (IntPtr)MemoryTools.ReadInt32(process.Handle, results[0] + offset);
 		}
 
-		private static Dictionary<IntPtr, byte[]> GetRegions(Process process)
+		public static Dictionary<IntPtr, byte[]> GetRegions(Process process)
 		{
 			const uint MEM_COMMIT = 0x1000;
 			const uint PAGE_GUARD = 0x100;
@@ -103,7 +103,7 @@ namespace LiveSplit.DarkSouls.Memory
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		private struct MemoryRegion
+		public struct MemoryRegion
 		{
 			public IntPtr BaseAddress;
 			public IntPtr AllocationBase;

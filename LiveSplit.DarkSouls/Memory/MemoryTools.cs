@@ -11,12 +11,10 @@ namespace LiveSplit.DarkSouls.Memory
 	public static class MemoryTools
 	{
 		[DllImport("kernel32.dll", SetLastError = true)]
-		public static extern bool ReadProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, int dwSize,
-			ref int lpNumberOfBytesRead);
+		public static extern bool ReadProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, int dwSize, ref int lpNumberOfBytesRead);
 
 		[DllImport("kernel32.dll")]
-		public static extern bool WriteProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, uint nSize,
-			uint lpNumberOfBytesWritten);
+		public static extern bool WriteProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, uint nSize, uint lpNumberOfBytesWritten);
 
 		public static bool ReadBoolean(IntPtr handle, IntPtr address)
 		{
@@ -43,12 +41,15 @@ namespace LiveSplit.DarkSouls.Memory
 			int bytesRead = 0;
 			byte[] bytes = new byte[count];
 
-			ReadProcessMemory(handle, address, bytes, bytes.Length, ref bytesRead);
+            if (!ReadProcessMemory(handle, address, bytes, bytes.Length, ref bytesRead))
+            {
+                throw new Exception("Read process memory failed.");
+            }
 
 			return bytes;
 		}
 
-		public static int ReadInt(IntPtr handle, IntPtr address)
+		public static int ReadInt32(IntPtr handle, IntPtr address)
 		{
 			int bytesRead = 0;
 			byte[] bytes = new byte[4];
@@ -57,6 +58,16 @@ namespace LiveSplit.DarkSouls.Memory
 
 			return BitConverter.ToInt32(bytes, 0);
 		}
+
+        public static long ReadInt64(IntPtr handle, IntPtr address)
+        {
+            int bytesRead = 0;
+            byte[] bytes = new byte[8];
+
+            ReadProcessMemory(handle, address, bytes, bytes.Length, ref bytesRead);
+
+            return BitConverter.ToInt64(bytes, 0);
+        }
 
 		public static float ReadFloat(IntPtr handle, IntPtr address)
 		{

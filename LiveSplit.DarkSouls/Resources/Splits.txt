@@ -927,3 +927,32 @@ Sanctuary Garden
 Sen's Fortress Roof
 The Abyss
 Undead Asylum
+
+Remastered
+- Bosses -
+Artorias
+Asylum Demon
+Bed of Chaos
+Capra Demon
+Ceaseless Discharge
+Centipede Demon
+Firesage
+Four Kings
+Gaping Dragon
+Gargoyles
+Gwyn
+Gwyndolin
+Iron Golem
+Kalameet
+Manus
+Moonlight Butterfly
+Nito
+Ornstein and Smough
+Pinwheel
+Priscilla
+Quelaag
+Sanctuary Guardian
+Seath
+Sif
+Stray Demon
+Taurus Demon

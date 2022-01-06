@@ -10,7 +10,10 @@ namespace LiveSplit.DarkSouls
 		private const int Tick = 30;
 
 		public static void Main(string[] args)
-		{
+        {
+            new SoulsForm().ShowDialog();
+            return;
+
 			bool formTesting = args.Length > 0;
 
 			if (formTesting)

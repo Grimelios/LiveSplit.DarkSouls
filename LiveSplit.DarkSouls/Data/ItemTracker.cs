@@ -24,14 +24,14 @@ namespace LiveSplit.DarkSouls.Data
 
 		public override void SetItems(List<ItemId> itemIds)
 		{
-			totalItems = MemoryTools.ReadInt(Handle, itemCount);
+			totalItems = MemoryTools.ReadInt32(Handle, itemCount);
 
 			SetItems(itemIds, totalItems);
 		}
 
 		public override void Refresh()
 		{
-			int newTotal = MemoryTools.ReadInt(Handle, itemCount);
+			int newTotal = MemoryTools.ReadInt32(Handle, itemCount);
 
 			if (newTotal != totalItems)
 			{
@@ -67,7 +67,7 @@ namespace LiveSplit.DarkSouls.Data
 
 		protected override int ComputeRawId(IntPtr address)
 		{
-			return MemoryTools.ReadInt(Handle, address);
+			return MemoryTools.ReadInt32(Handle, address);
 		}
 
 		private int GetCategory(IntPtr address)

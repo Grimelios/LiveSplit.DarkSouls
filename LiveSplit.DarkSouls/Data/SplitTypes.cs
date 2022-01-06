@@ -17,6 +17,7 @@ namespace LiveSplit.DarkSouls.Data
 		Manual,
 		Quitout,
 		Zone,
+		Remastered,
 
 		// This value allows splits to be created and always exist for a split line, even if no type/data has been
 		// selected.

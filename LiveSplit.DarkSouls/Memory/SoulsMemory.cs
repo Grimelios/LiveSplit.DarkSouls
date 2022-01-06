@@ -166,9 +166,9 @@ namespace LiveSplit.DarkSouls.Memory
 
 		public int GetGameTimeInMilliseconds()
 		{
-			IntPtr pointer = (IntPtr)MemoryTools.ReadInt(handle, (IntPtr)0x1378700);
+			IntPtr pointer = (IntPtr)MemoryTools.ReadInt32(handle, (IntPtr)0x1378700);
 
-			return MemoryTools.ReadInt(handle, IntPtr.Add(pointer, 0x68));
+			return MemoryTools.ReadInt32(handle, IntPtr.Add(pointer, 0x68));
 		}
 
 		public byte GetActiveAnimation()
@@ -178,14 +178,14 @@ namespace LiveSplit.DarkSouls.Memory
 
 		public int GetForcedAnimation()
 		{
-			return MemoryTools.ReadInt(handle, pointers.Character + 0xFC);
+			return MemoryTools.ReadInt32(handle, pointers.Character + 0xFC);
 		}
 
 		// Every time the player uses an item that requires a yes/no confirmation box, the ID of the item can be
 		// retreived. That ID remains in place until the item's animation is complete.
 		public int GetPromptedItem()
 		{
-			return MemoryTools.ReadInt(handle, pointers.Character + 0x62C);
+			return MemoryTools.ReadInt32(handle, pointers.Character + 0x62C);
 		}
 
 		// "Prompted menu" here refers to the small menu near the bottom of the screen (such as yes/no confirmation
@@ -216,24 +216,24 @@ namespace LiveSplit.DarkSouls.Memory
 
 		public bool IsPlayerLoaded()
 		{
-			return MemoryTools.ReadInt(handle, (IntPtr)0x137DC70) != 0;
+			return MemoryTools.ReadInt32(handle, (IntPtr)0x137DC70) != 0;
 		}
 
 		public int GetClearCount()
 		{
-			IntPtr pointer = (IntPtr)MemoryTools.ReadInt(handle, (IntPtr)0x1378700);
+			IntPtr pointer = (IntPtr)MemoryTools.ReadInt32(handle, (IntPtr)0x1378700);
 
 			if (pointer == IntPtr.Zero)
 			{
 				return -1;
 			}
 
-			return MemoryTools.ReadInt(handle, pointer + 0x3C);
+			return MemoryTools.ReadInt32(handle, pointer + 0x3C);
 		}
 
 		public int GetPlayerHP()
 		{
-			return MemoryTools.ReadInt(handle, pointers.CharacterStats + 0xC);
+			return MemoryTools.ReadInt32(handle, pointers.CharacterStats + 0xC);
 		}
 
 		public Vector3 GetPlayerPosition()
@@ -270,32 +270,32 @@ namespace LiveSplit.DarkSouls.Memory
 		{
 			// For whatever reason, bonfire IDs retrieved in this way need to be corrected by a thousand to match the
 			// bonfire flags array.
-			return MemoryTools.ReadInt(handle, pointers.WorldState + 0xB04) - 1000;
+			return MemoryTools.ReadInt32(handle, pointers.WorldState + 0xB04) - 1000;
 		}
 
 		public BonfireStates GetBonfireState(BonfireFlags bonfire)
 		{
 			IntPtr pointer = (IntPtr)0x137E204;
-			pointer = (IntPtr)MemoryTools.ReadInt(handle, pointer);
-			pointer = (IntPtr)MemoryTools.ReadInt(handle, IntPtr.Add(pointer, 0xB48));
-			pointer = (IntPtr)MemoryTools.ReadInt(handle, IntPtr.Add(pointer, 0x24));
-			pointer = (IntPtr)MemoryTools.ReadInt(handle, pointer);
+			pointer = (IntPtr)MemoryTools.ReadInt32(handle, pointer);
+			pointer = (IntPtr)MemoryTools.ReadInt32(handle, IntPtr.Add(pointer, 0xB48));
+			pointer = (IntPtr)MemoryTools.ReadInt32(handle, IntPtr.Add(pointer, 0x24));
+			pointer = (IntPtr)MemoryTools.ReadInt32(handle, pointer);
 
-			IntPtr bonfirePointer = (IntPtr)MemoryTools.ReadInt(handle, IntPtr.Add(pointer, 0x8));
+			IntPtr bonfirePointer = (IntPtr)MemoryTools.ReadInt32(handle, IntPtr.Add(pointer, 0x8));
 
 			while (bonfirePointer != IntPtr.Zero)
 			{
-				int bonfireId = MemoryTools.ReadInt(handle, IntPtr.Add(bonfirePointer, 0x4));
+				int bonfireId = MemoryTools.ReadInt32(handle, IntPtr.Add(bonfirePointer, 0x4));
 
 				if (bonfireId == (int)bonfire)
 				{
-					int bonfireState = MemoryTools.ReadInt(handle, IntPtr.Add(bonfirePointer, 0x8));
+					int bonfireState = MemoryTools.ReadInt32(handle, IntPtr.Add(bonfirePointer, 0x8));
 
 					return (BonfireStates)bonfireState;
 				}
 
-				pointer = (IntPtr)MemoryTools.ReadInt(handle, pointer);
-				bonfirePointer = (IntPtr)MemoryTools.ReadInt(handle, IntPtr.Add(pointer, 0x8));
+				pointer = (IntPtr)MemoryTools.ReadInt32(handle, pointer);
+				bonfirePointer = (IntPtr)MemoryTools.ReadInt32(handle, IntPtr.Add(pointer, 0x8));
 			}
 
 			return BonfireStates.Undiscovered;
@@ -310,7 +310,7 @@ namespace LiveSplit.DarkSouls.Memory
 		{
 			if (GetEventFlagAddress(id, out int address, out uint mask))
 			{
-				uint flags = (uint)MemoryTools.ReadInt(handle, (IntPtr)address);
+				uint flags = (uint)MemoryTools.ReadInt32(handle, (IntPtr)address);
 
 				return (flags & mask) != 0;
 			}
@@ -367,8 +367,8 @@ namespace LiveSplit.DarkSouls.Memory
 					offset += section * 128;
 					offset += (number - (number % 32)) / 8;
 
-					address = MemoryTools.ReadInt(handle, (IntPtr)0x137D7D4);
-					address = MemoryTools.ReadInt(handle, (IntPtr)address);
+					address = MemoryTools.ReadInt32(handle, (IntPtr)0x137D7D4);
+					address = MemoryTools.ReadInt32(handle, (IntPtr)address);
 					address += offset;
 
 					mask = 0x80000000 >> (number % 32);

@@ -148,7 +148,7 @@ namespace LiveSplit.DarkSouls.Data
 
 				while (itemIndex >= 0)
 				{
-					int rawId = MemoryTools.ReadInt(Handle, address);
+					int rawId = MemoryTools.ReadInt32(Handle, address);
 
 					foreach (var list in tracker.Values)
 					{

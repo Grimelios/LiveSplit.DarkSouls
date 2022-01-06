@@ -40,24 +40,24 @@ namespace LiveSplit.DarkSouls.Memory
 
 		public void Refresh(Process process)
 		{
-			IntPtr character = (IntPtr)MemoryTools.ReadInt(handle, (IntPtr)0x137DC70);
-			character = (IntPtr)MemoryTools.ReadInt(handle, character + 0x4);
-			character = (IntPtr)MemoryTools.ReadInt(handle, character);
+			IntPtr character = (IntPtr)MemoryTools.ReadInt32(handle, (IntPtr)0x137DC70);
+			character = (IntPtr)MemoryTools.ReadInt32(handle, character + 0x4);
+			character = (IntPtr)MemoryTools.ReadInt32(handle, character);
 			Character = character;
 
-			IntPtr characterStats = (IntPtr)MemoryTools.ReadInt(handle, (IntPtr)0x1378700);
-			characterStats = (IntPtr)MemoryTools.ReadInt(handle, characterStats + 0x8);
+			IntPtr characterStats = (IntPtr)MemoryTools.ReadInt32(handle, (IntPtr)0x1378700);
+			characterStats = (IntPtr)MemoryTools.ReadInt32(handle, characterStats + 0x8);
 			CharacterStats = characterStats;
 
-			CharacterMap = (IntPtr)MemoryTools.ReadInt(handle, character + 0x28);
-			CharacterPosition = (IntPtr)MemoryTools.ReadInt(handle, CharacterMap + 0x1C);
+			CharacterMap = (IntPtr)MemoryTools.ReadInt32(handle, character + 0x28);
+			CharacterPosition = (IntPtr)MemoryTools.ReadInt32(handle, CharacterMap + 0x1C);
 
-			IntPtr inventory = (IntPtr)MemoryTools.ReadInt(handle, (IntPtr)0x1378700);
-			inventory = (IntPtr)MemoryTools.ReadInt(handle, inventory + 0x8);
+			IntPtr inventory = (IntPtr)MemoryTools.ReadInt32(handle, (IntPtr)0x1378700);
+			inventory = (IntPtr)MemoryTools.ReadInt32(handle, inventory + 0x8);
 			Inventory = inventory + 0x1B8;
 
-			WorldState = (IntPtr)MemoryTools.ReadInt(handle, (IntPtr)0x13784A0);
-			Zone = (IntPtr)MemoryTools.ReadInt(handle, (IntPtr)0x137E204);
+			WorldState = (IntPtr)MemoryTools.ReadInt32(handle, (IntPtr)0x13784A0);
+			Zone = (IntPtr)MemoryTools.ReadInt32(handle, (IntPtr)0x137E204);
 		}
 	}
 }

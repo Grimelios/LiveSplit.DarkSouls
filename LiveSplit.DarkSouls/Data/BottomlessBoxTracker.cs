@@ -40,7 +40,7 @@ namespace LiveSplit.DarkSouls.Data
 			// correct.
 			for (int i = 0; i < DefaultSlots; i++)
 			{
-				int rawId = MemoryTools.ReadInt(Handle, address);
+				int rawId = MemoryTools.ReadInt32(Handle, address);
 
 				address -= Step;
 
@@ -104,7 +104,7 @@ namespace LiveSplit.DarkSouls.Data
 		{
 			IntPtr nextSlot = Start + (OpenSlots.Count > 0 ? OpenSlots.First.Value : TotalSlots) * Step;
 
-			int value = MemoryTools.ReadInt(Handle, nextSlot);
+			int value = MemoryTools.ReadInt32(Handle, nextSlot);
 
 			// Unlike the main inventory, there's no memory location that directly stores the number of items in the
 			// bottomless box (or at least I wasn't able to find one). As such, item addition/removal must be detected
@@ -132,7 +132,7 @@ namespace LiveSplit.DarkSouls.Data
 
 				IntPtr address = Start + i * Step;
 
-				value = MemoryTools.ReadInt(Handle, address);
+				value = MemoryTools.ReadInt32(Handle, address);
 
 				if (value == -1)
 				{

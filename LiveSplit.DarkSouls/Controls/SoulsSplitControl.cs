@@ -119,7 +119,8 @@ namespace LiveSplit.DarkSouls.Controls
 				{ SplitTypes.Flag, GetFlagControls },
 				{ SplitTypes.Item, GetItemControls },
 				{ SplitTypes.Quitout, GetQuitoutControls },
-				{ SplitTypes.Zone, GetZoneControls }
+				{ SplitTypes.Zone, GetZoneControls },
+				{ SplitTypes.Remastered, GetRemasteredControls },
 			};	
 		}
 
@@ -665,6 +666,26 @@ namespace LiveSplit.DarkSouls.Controls
 				itemTiming
 			};
 		}
+
+
+        private Control[] GetRemasteredControls()
+        {
+            const int BossListWidth = 131;
+
+            var bossList = GetDropdown(lists.RemasteredBosses, "Bosses", BossListWidth);
+            //bossList.SelectedIndexChanged += (sender, args) =>
+            //{
+            //    bossTiming.Enabled = true;
+            //};
+
+            return new Control[]
+            {
+                bossList,
+               // bossTiming
+            };
+        }
+
+
 
 		private void LinkItemLines(Control[] line1, Control[] line2)
 		{
