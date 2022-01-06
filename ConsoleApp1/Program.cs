@@ -60,8 +60,17 @@ namespace ConsoleApp1
 
         static void Main(string[] args)
         {
-            SoulsTester.Main(args);
+            SoulsRemastered s = new LiveSplit.DarkSouls.Memory.SoulsRemastered();
+            while (true)
+            {
+                var d = s.IsBossAlive(BossFlags.AsylumDemon);
+                var ad = s.IsBossAlive(BossFlags.Firesage);
 
+                Console.Clear();
+                Console.WriteLine(s.GetGameTimeInMilliseconds() + " " + s.IsPlayerLoaded());
+                Thread.Sleep(16);
+            }
+            
 
             var process = Process.GetProcessesByName("DarkSoulsRemastered").FirstOrDefault();
             

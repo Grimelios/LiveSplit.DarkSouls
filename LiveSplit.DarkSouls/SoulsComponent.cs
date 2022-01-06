@@ -1,22 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Runtime.Remoting.Channels;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Xml;
-using LiveSplit.DarkSouls.Controls;
+﻿using LiveSplit.DarkSouls.Controls;
 using LiveSplit.DarkSouls.Data;
 using LiveSplit.DarkSouls.Memory;
 using LiveSplit.Model;
 using LiveSplit.UI;
 using LiveSplit.UI.Components;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Windows.Forms;
+using System.Xml;
 
 namespace LiveSplit.DarkSouls
 {
-	public class SoulsComponent : IComponent
+    public class SoulsComponent : IComponent
 	{
 		public const string DisplayName = "Dark Souls Autosplitter";
 
@@ -69,7 +67,9 @@ namespace LiveSplit.DarkSouls
 		private bool itemsEnabled;
 
 		public SoulsComponent()
-		{
+        {
+            Log("init");
+
 			splitCollection = new SplitCollection();
 			memory = new SoulsMemory();
             _soulsRemastered = new SoulsRemastered();
@@ -339,6 +339,7 @@ namespace LiveSplit.DarkSouls
 
 		public void Update(IInvalidator invalidator, LiveSplitState state, float width, float height, LayoutMode mode)
 		{
+            Log("update");
 			if (timer == null)
 			{
 				timer = new TimerModel();
@@ -374,7 +375,7 @@ namespace LiveSplit.DarkSouls
 		{
 			splitCollection.OnStart();
 
-			if (!memory.IsPlayerLoaded())
+			if (!memory.IsPlayerLoaded() && !_soulsRemastered.IsPlayerLoaded())
 			{
 				waitingOnFirstLoad = true;
 
@@ -387,10 +388,20 @@ namespace LiveSplit.DarkSouls
 
 		private void OnReset()
 		{
-			if (memory.ProcessHooked && masterControl.ResetEquipmentIndexes)
+			if (masterControl.ResetEquipmentIndexes)
 			{
-				memory.ResetEquipmentIndexes();
-			}
+                if (memory.ProcessHooked)
+                {
+                    memory.ResetEquipmentIndexes();
+				}
+
+                if (_soulsRemastered.Hook())
+                {
+					_soulsRemastered.ResetInventoryIndices();
+                }
+            }
+
+
 
 			// Other run state values don't need to be reset (since they're always properly set before becoming
 			// relevant).
@@ -448,6 +459,7 @@ namespace LiveSplit.DarkSouls
 
 		private void UpdateRunState()
 		{
+            Log("UpdateRunState");
 			Split split = splitCollection.CurrentSplit;
 
 			if (split == null || split.Type == SplitTypes.Manual || !split.IsFinished)
@@ -603,13 +615,19 @@ namespace LiveSplit.DarkSouls
 		// Making the phase nullable makes testing easier.
 		public void Refresh(TimerPhase? nullablePhase = null)
 		{
-			// In theory, the first IGT frame of a run should have a time value of about 32 milliseconds (i.e. one
+            // In theory, the first IGT frame of a run should have a time value of about 32 milliseconds (i.e. one
 			// frame at 30 fps). In practice, though, the first non-zero time value tends to be a bit bigger than that.
 			// This threshold is arbitrary, but is meant to be big enough to cover that variation in start time, but
 			// small enough that later loads into a file don't autostart the timer.
 			const int TimerAutostartThreshold = 150;
 
-			if (!Hook() && !_soulsRemastered.ProcessHooked)
+			
+			//moved into temps - is PTDE hook is evaluated first in the if statement, remastered hook might never be called at all, and not get hooked when started later than livesplit
+            var ptdeHooked = Hook();
+            var remasteredHooked = _soulsRemastered.Hook();
+            
+            //If neither game is connected
+			if (!ptdeHooked && !remasteredHooked)
 			{
 				return;
 			}
@@ -622,8 +640,7 @@ namespace LiveSplit.DarkSouls
 
 			if (waitingOnFirstLoad)
 			{
-				//TODO REMASTER: implement IsPlayerLoaded
-				if (!memory.IsPlayerLoaded() && !_soulsRemastered.ProcessHooked)
+				if (!memory.IsPlayerLoaded() && !_soulsRemastered.IsPlayerLoaded())
 				{
 					return;
 				}
@@ -636,17 +653,27 @@ namespace LiveSplit.DarkSouls
 
 			TimerPhase phase = nullablePhase.Value;
 
+            int inGameTime = 0;
+            if (memory.ProcessHooked)
+            {
+                inGameTime = memory.GetGameTimeInMilliseconds();
+            }
+
+            if (_soulsRemastered.Hook())
+            {
+                inGameTime = _soulsRemastered.GetGameTimeInMilliseconds();
+            }
+
+
 			// Someone might want to disable timer autostart if using real time and starting their timer from the main
 			// menu (or some other reason).
 			if (phase == TimerPhase.NotRunning && masterControl.StartTimerAutomatically)
-			{
-				int time = memory.GetGameTimeInMilliseconds();
-				
-				// The timer should autostart on a new game, but not every time you load into a file. Note that
+            {
+                // The timer should autostart on a new game, but not every time you load into a file. Note that
 				// if someone resets their timer manually immediately as the run begins, the timer may
 				// autostart again if game time is still less than the threshold value. This is fixable, but
 				// likely not worth the effort.
-				if (run.GameTime == 0 && time > 0 && time < TimerAutostartThreshold)
+				if (run.GameTime == 0 && inGameTime > 0 && inGameTime < TimerAutostartThreshold)
 				{
 					timer.Start();
 				}
@@ -655,25 +682,19 @@ namespace LiveSplit.DarkSouls
 			// Quitout splits (below) are detected using game time (specifically, when IGT is reset back to zero). As
 			// such, the current IGT value needs to be stored here before it's reset while updating game time.
 			int previousGameTime = run.GameTime;
-			int newGameTime = memory.GetGameTimeInMilliseconds();
 
-            if (_soulsRemastered.ProcessHooked)
-            {
-				//TODO REMASTERED
-                //newGameTime = _soulsRemastered.GetGameTimeInMilliseconds();
-			}
 
 			// The timer is intentionally updated before an autosplit occurs (to ensure the split time is as accurate
 			// as possible).
 			if (masterControl.UseGameTime)
 			{
-				UpdateGameTime(newGameTime);
+				UpdateGameTime(inGameTime);
 			}
 			else
 			{
 				// Game time must be tracked even if "Use game time" is disabled (in order to accomodate quitout
 				// splits).
-				run.GameTime = newGameTime;
+				run.GameTime = inGameTime;
 			}
 
 			// This is called each tick regardless of whether the current split is an item split (to ensure that the
@@ -742,7 +763,7 @@ namespace LiveSplit.DarkSouls
 			if (waitingOnQuitout)
 			{
 				// Game time is reset to zero on the title screen, but not on regular loading screens.
-				if (newGameTime == 0 && previousGameTime > 0)
+				if (inGameTime == 0 && previousGameTime > 0)
 				{
 					if (splitCollection.CurrentSplit.Type == SplitTypes.Quitout)
 					{
@@ -770,7 +791,7 @@ namespace LiveSplit.DarkSouls
 			if (waitingOnUnload)
 			{
 				// When the load screen appears following a quitout, the player isn't unloaded instantly.
-				if (!memory.IsPlayerLoaded())
+				if (!memory.IsPlayerLoaded() && !_soulsRemastered.IsPlayerLoaded())
 				{
 					waitingOnUnload = false;
 					waitingOnReload = true;
@@ -783,7 +804,7 @@ namespace LiveSplit.DarkSouls
 			{
 				// By the time this point in the code is reached, the player must already be unloaded (due to quitting
 				// to the title screen).
-				if (memory.IsPlayerLoaded())
+				if (memory.IsPlayerLoaded() || _soulsRemastered.IsPlayerLoaded())
 				{
 					waitingOnReload = false;
 					timer.Split();
@@ -811,17 +832,25 @@ namespace LiveSplit.DarkSouls
 
 			return memory.ProcessHooked;
 		}
+		
 
 		private void UpdateGameTime(int newGameTime)
 		{
 			// When the player quits the game, the IGT clock keeps ticking for 18 extra frames. Those frames are
 			// removed from the timer on quitout. This is largely done to keep parity with the existing IGT tool.
-			const int QuitoutCorrection = 594;
+			int QuitoutCorrection = 594;
+
+			//Quitout correction causing weird behavior on remastered
+            if (_soulsRemastered.Hook())
+            {
+                QuitoutCorrection = 0;
+            }
+
 
 			LiveSplitState state = timer.CurrentState;
 
 			// Setting this value to always be true prevents a weird timer creep from LiveSplit. I don't know why.
-			state.IsGameTimePaused = true;
+            state.IsGameTimePaused = true;
 
 			TimerPhase phase = timer.CurrentState.CurrentPhase;
 			
@@ -848,8 +877,8 @@ namespace LiveSplit.DarkSouls
 			int max = Math.Max(newGameTime, run.MaxGameTime);
 
 			if (phase != TimerPhase.Paused)
-			{
-				state.SetGameTime(TimeSpan.FromMilliseconds(max));
+            {
+				timer.CurrentState.SetGameTime(TimeSpan.FromMilliseconds(max));
 			}
 
 			run.GameTime = newGameTime;
@@ -1227,8 +1256,19 @@ namespace LiveSplit.DarkSouls
 		}
 
 		private bool ProcessQuitout(int[] data)
-		{
-			bool loaded = memory.IsPlayerLoaded();
+        {
+            bool loaded = false;
+
+            if (memory.ProcessHooked)
+            {
+				loaded = memory.IsPlayerLoaded();
+            }
+
+            if (_soulsRemastered.Hook())
+            {
+                loaded = _soulsRemastered.IsPlayerLoaded();
+            }
+			
 
 			if (loaded != run.Flag)
 			{
@@ -1293,22 +1333,27 @@ namespace LiveSplit.DarkSouls
 
         private bool ProcessRemastered(int[] data)
         {
-            var bossId = run.Id;
+            Log($"ProcessRemastered ${data[0]}");
+			var bossId = run.Id;
 
-            if (!_soulsRemastered.ProcessHooked)
+            if (_soulsRemastered.Hook())
             {
-                _soulsRemastered.Hook();//retry hooking
-            }
-            else
-            {
-                return !_soulsRemastered.IsBossAlive((BossFlags)run.Id);
-            }
+				return !_soulsRemastered.IsBossAlive((BossFlags)run.Id);
+			}
+
             return false;
         }
 
 
 		public void Dispose()
 		{
+
 		}
-	}
+
+		//Cant get a console window to work. Hard to debug when running in pre-built livesplit, instead of debugging from visual studio...
+        private void Log(string text)
+        {
+			//File.AppendAllText("C:\\temp\\livesplitlog.txt", $"{DateTime.Now.ToShortTimeString()} {text}\n");
+		}
+    }
 }
