@@ -84,7 +84,7 @@
 			this.splitTypeComboBox.Location = new System.Drawing.Point(12, 4);
 			this.splitTypeComboBox.Name = "splitTypeComboBox";
 			this.splitTypeComboBox.Prompt = null;
-			this.splitTypeComboBox.Size = new System.Drawing.Size(85, 21);
+			this.splitTypeComboBox.Size = new System.Drawing.Size(76, 21);
 			this.splitTypeComboBox.TabIndex = 2;
 			this.splitTypeComboBox.SelectedIndexChanged += new System.EventHandler(this.splitTypeComboBox_SelectedIndexChanged);
 			// 
