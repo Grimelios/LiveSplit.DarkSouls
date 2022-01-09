@@ -505,8 +505,7 @@ namespace LiveSplit.DarkSouls
 
 				case SplitTypes.Boss:
 					run.Id = Flags.OrderedBosses[data[0]];
-					run.Flag = memory.CheckFlag(run.Id);
-
+					run.Flag = !memory.IsBossAlive((BossFlags)run.Id);
 					break;
 
 				case SplitTypes.Covenant:
@@ -606,7 +605,6 @@ namespace LiveSplit.DarkSouls
                 case SplitTypes.Remastered:
                     //there is a - bosses - header before the actual list of bosses, hence -1 here.
                     run.Id = Flags.OrderedBosses[data[0]-1];
-
 
 					break;
 			}
@@ -1029,8 +1027,11 @@ namespace LiveSplit.DarkSouls
 		}
 
 		private bool ProcessBoss(int[] data)
-		{
-			bool isDefeated = memory.CheckFlag(run.Id);
+        {
+            var boss = (BossFlags)run.Id;
+            var isDefeated = !memory.IsBossAlive(boss);
+			//IsBossAlive
+			//bool isDefeated = memory.CheckFlag(run.Id);
 
 			if (isDefeated && !run.Flag)
 			{

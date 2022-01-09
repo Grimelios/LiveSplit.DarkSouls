@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiveSplit.DarkSouls", "Live
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{FC3B087D-B2B9-444D-8165-47E34720C02F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DarkSoulsMemory", "..\DarkSoulsMemory\src\DarkSoulsMemory\DarkSoulsMemory.csproj", "{981F985C-BBDB-4FAF-AFF4-3DA66A065A2F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,14 @@ Global
 		{FC3B087D-B2B9-444D-8165-47E34720C02F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FC3B087D-B2B9-444D-8165-47E34720C02F}.Release|x86.ActiveCfg = Release|Any CPU
 		{FC3B087D-B2B9-444D-8165-47E34720C02F}.Release|x86.Build.0 = Release|Any CPU
+		{981F985C-BBDB-4FAF-AFF4-3DA66A065A2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{981F985C-BBDB-4FAF-AFF4-3DA66A065A2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{981F985C-BBDB-4FAF-AFF4-3DA66A065A2F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{981F985C-BBDB-4FAF-AFF4-3DA66A065A2F}.Debug|x86.Build.0 = Debug|Any CPU
+		{981F985C-BBDB-4FAF-AFF4-3DA66A065A2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{981F985C-BBDB-4FAF-AFF4-3DA66A065A2F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{981F985C-BBDB-4FAF-AFF4-3DA66A065A2F}.Release|x86.ActiveCfg = Release|Any CPU
+		{981F985C-BBDB-4FAF-AFF4-3DA66A065A2F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

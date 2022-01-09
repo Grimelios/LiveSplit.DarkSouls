@@ -47,6 +47,42 @@ namespace LiveSplit.DarkSouls.Memory
 			return (IntPtr)MemoryTools.ReadInt32(process.Handle, results[0] + offset);
 		}
 
+        public static bool TryScan(Process process, byte?[] pattern, out IntPtr pointer)
+        {
+            pointer = IntPtr.Zero;
+
+            //Save as the scan function, except I don't want to immediately read the result
+            var regions = GetRegions(process);
+            foreach (var region in regions)
+            {
+                var bytes = region.Value;
+                for (int i = 0; i < bytes.Length - pattern.Length; i++)
+                {
+                    bool found = true;
+                    for (int j = 0; j < pattern.Length; j++)
+                    {
+                        if (pattern[j] != null)
+                        {
+                            if (pattern[j] != bytes[i + j])
+                            {
+                                found = false;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (found)
+                    {
+                        pointer = region.Key + i;
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+
 		public static Dictionary<IntPtr, byte[]> GetRegions(Process process)
 		{
 			const uint MEM_COMMIT = 0x1000;

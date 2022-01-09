@@ -50,12 +50,27 @@ namespace LiveSplit.DarkSouls.Memory
                 _worldProgression = (IntPtr)MemoryTools.ReadInt32(_process.Handle, GetBasePtr(_process, new byte?[] { 0x48, 0x8B, 0x0D, null, null, null, null, 0x41, 0xB8, 0x01, 0x00, 0x00, 0x00, 0x44 }));// GetWorldProgressBasePtr(_process);
                 _player = GetBasePtr(_process, new byte?[] { 0x48, 0x8B, 0x05, null, null, null, null, 0x45, 0x33, 0xED, 0x48, 0x8B, 0xF1, 0x48, 0x85, 0xC0});// GetWorldProgressBasePtr(_process);
                 _misc = GetBasePtr(_process, new byte?[] { 0x48, 0x8B, 0x05, null, null, null, null, 0x48, 0x39, 0x48, 0x68, 0x0F, 0x94, 0xC0, 0xC3 });// GetWorldProgressBasePtr(_process);
-                //48 8B 05 xx xx xx xx 45 33 ED 48 8B F1 48 85 C0
+             
                 
             }
 
             return _hooked;
         }
+
+
+        private void InitPtr()
+        {
+            _worldProgression = (IntPtr)MemoryTools.ReadInt32(_process.Handle, GetBasePtr(_process, new byte?[] { 0x48, 0x8B, 0x0D, null, null, null, null, 0x41, 0xB8, 0x01, 0x00, 0x00, 0x00, 0x44 }));// GetWorldProgressBasePtr(_process);
+            
+            
+            
+            _player = GetBasePtr(_process, new byte?[] { 0x48, 0x8B, 0x05, null, null, null, null, 0x45, 0x33, 0xED, 0x48, 0x8B, 0xF1, 0x48, 0x85, 0xC0 });// GetWorldProgressBasePtr(_process);
+            _misc = GetBasePtr(_process, new byte?[] { 0x48, 0x8B, 0x05, null, null, null, null, 0x48, 0x39, 0x48, 0x68, 0x0F, 0x94, 0xC0, 0xC3 });// GetWorldProgressBasePtr(_process);
+
+
+
+        }
+
 
         private IntPtr Scan(Process process, byte?[] scanBytes)
         {

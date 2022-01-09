@@ -26,6 +26,22 @@ namespace LiveSplit.DarkSouls.Memory
 			// Unlike other pointers, the equipment pointer (used to reset equipment indexes on timer reset) is only
 			// scanned once when the process is hooked.
 			Equipment = MemoryScanner.Scan(process, equipmentBytes, 0x24);
+
+			
+			if (MemoryScanner.TryScan(process, new byte?[] { 0x8B, 0x0D, null, null, null, null, 0x8B, 0x7E, 0x1C, 0x8B, 0x49, 0x08, 0x8B, 0x46, 0x20, 0x81, 0xC1, 0xB8, 0x01, 0x00, 0x00, 0x57, 0x51, 0x32, 0xDB }, out InGameTime))
+            {
+                InGameTime = InGameTime + 2;
+                InGameTime = (IntPtr)MemoryTools.ReadInt32(process.Handle, InGameTime);
+                InGameTime = (IntPtr)MemoryTools.ReadInt32(process.Handle, InGameTime);
+				InGameTime = InGameTime + 0x68;
+            }
+
+            if (MemoryScanner.TryScan(process, new byte?[] { 0x56, 0x8B, 0xF1, 0x8B, 0x46, 0x1C, 0x50, 0xA1, null, null, null, null, 0x32, 0xC9 }, out BossState))
+            {
+                BossState = (IntPtr)MemoryTools.ReadInt32(process.Handle, (IntPtr)MemoryTools.ReadInt32(process.Handle, (IntPtr)MemoryTools.ReadInt32(process.Handle, BossState + 8)));
+            }
+
+
 			Refresh(process);
 		}
 
@@ -37,6 +53,10 @@ namespace LiveSplit.DarkSouls.Memory
 		public IntPtr Inventory { get; private set; }
 		public IntPtr WorldState { get; private set; }
 		public IntPtr Zone { get; private set; }
+
+        public IntPtr InGameTime;
+
+        public IntPtr BossState;
 
 		public void Refresh(Process process)
 		{
