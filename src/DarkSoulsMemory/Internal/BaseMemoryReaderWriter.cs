@@ -1,0 +1,215 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace DarkSoulsMemory.Internal
+{
+    public class BaseMemoryReaderWriter
+    {
+        public Process _process;
+        public bool _isHooked = false;
+
+
+        internal bool AttachByName(string name)
+        {
+            //If we hooked before, "Refresh" the existing hook
+            if (_isHooked)
+            {
+                if (_process.HasExited)
+                {
+                    _isHooked = false;
+                    _process = null;
+                }
+            }
+            else
+            {
+                _process = Process.GetProcessesByName(name).FirstOrDefault();
+                if (_process != null)
+                {
+                    _isHooked = true;
+                }
+            }
+            return _isHooked;
+        }
+
+
+        internal bool TryScan(byte?[] pattern, out IntPtr pointer)
+        {
+            pointer = IntPtr.Zero;
+
+
+            try
+            {
+                //Save as the scan function, except I don't want to immediately read the result
+                var regions = GetRegions(_process);
+                foreach (var region in regions)
+                {
+                    var bytes = region.Value;
+                    for (int i = 0; i < bytes.Length - pattern.Length; i++)
+                    {
+                        bool found = true;
+                        for (int j = 0; j < pattern.Length; j++)
+                        {
+                            if (pattern[j] != null)
+                            {
+                                if (pattern[j] != bytes[i + j])
+                                {
+                                    found = false;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (found)
+                        {
+                            pointer = region.Key + i;
+                            return true;
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                //When the game closes, an exception will be thrown from GetRegions. We can just ignore it - re-hooking is implemented at a higher level in the code.
+            }
+
+            return false;
+        }
+
+        internal Dictionary<IntPtr, byte[]> GetRegions(Process process)
+        {
+            const uint MEM_COMMIT = 0x1000;
+            const uint PAGE_GUARD = 0x100;
+            const uint PAGE_EXECUTE_ANY = 0xF0;
+
+            List<MemoryRegion> regions = new List<MemoryRegion>();
+
+            var mainModule = process.MainModule;
+
+            IntPtr baseAddress = mainModule.BaseAddress;
+            IntPtr regionAddress = baseAddress;
+            IntPtr mainModuleEnd = baseAddress + mainModule.ModuleMemorySize;
+
+            uint queryResult;
+
+            do
+            {
+                MemoryRegion region = new MemoryRegion();
+                queryResult = Kernel32.VirtualQueryEx(process.Handle, regionAddress, out region, (uint)Marshal.SizeOf(region));
+
+                if (queryResult != 0)
+                {
+                    if ((region.State & MEM_COMMIT) != 0 &&
+                        (region.Protect & PAGE_GUARD) == 0 &&
+                        (region.Protect & PAGE_EXECUTE_ANY) != 0)
+                    {
+                        regions.Add(region);
+                    }
+
+                    regionAddress = (IntPtr)((ulong)region.BaseAddress.ToInt64() + region.RegionSize);
+                }
+            }
+            while (queryResult != 0 && regionAddress.ToInt64() < mainModuleEnd.ToInt64());
+
+            var memory = new Dictionary<IntPtr, byte[]>();
+
+            foreach (MemoryRegion memRegion in regions)
+            {
+                memory[memRegion.BaseAddress] = ReadBytes(memRegion.BaseAddress, (int)memRegion.RegionSize);
+            }
+
+            return memory;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct MemoryRegion
+        {
+            public IntPtr BaseAddress;
+            public IntPtr AllocationBase;
+
+            public uint AllocationProtect;
+            public ulong RegionSize;
+            public uint State;
+            public uint Protect;
+            public uint Type;
+        }
+
+
+        internal bool ReadBoolean(IntPtr address)
+        {
+            int bytesRead = 0;
+            byte[] bytes = new byte[1];
+
+            Kernel32.ReadProcessMemory(_process.Handle, address, bytes, bytes.Length, ref bytesRead);
+
+            return BitConverter.ToBoolean(bytes, 0);
+        }
+
+        internal byte ReadByte(IntPtr address)
+        {
+            int bytesRead = 0;
+            byte[] bytes = new byte[1];
+
+            Kernel32.ReadProcessMemory(_process.Handle, address, bytes, bytes.Length, ref bytesRead);
+
+            return bytes[0];
+        }
+
+        internal byte[] ReadBytes(IntPtr address, int count)
+        {
+            int bytesRead = 0;
+            byte[] bytes = new byte[count];
+
+            Kernel32.ReadProcessMemory(_process.Handle, address, bytes, bytes.Length, ref bytesRead);
+
+            return bytes;
+        }
+
+        internal int ReadInt32(IntPtr address)
+        {
+            int bytesRead = 0;
+            byte[] bytes = new byte[4];
+
+            Kernel32.ReadProcessMemory(_process.Handle, address, bytes, bytes.Length, ref bytesRead);
+
+            return BitConverter.ToInt32(bytes, 0);
+        }
+
+        internal long ReadInt64(IntPtr address)
+        {
+            int bytesRead = 0;
+            byte[] bytes = new byte[8];
+
+            Kernel32.ReadProcessMemory(_process.Handle, address, bytes, bytes.Length, ref bytesRead);
+
+            return BitConverter.ToInt64(bytes, 0);
+        }
+
+        internal float ReadFloat(IntPtr address)
+        {
+            int bytesRead = 0;
+            byte[] bytes = new byte[4];
+
+            Kernel32.ReadProcessMemory(_process.Handle, address, bytes, bytes.Length, ref bytesRead);
+
+            return BitConverter.ToSingle(bytes, 0);
+        }
+
+        internal IntPtr ReadPtr(IntPtr ptr)
+        {
+            return (IntPtr)ReadInt32(ptr);
+        }
+
+        internal void Write(IntPtr address, uint value)
+        {
+            uint bytesWritten = 0;
+
+            Kernel32.WriteProcessMemory(_process.Handle, address, BitConverter.GetBytes(value), 4, bytesWritten);
+        }
+
+    }
+}

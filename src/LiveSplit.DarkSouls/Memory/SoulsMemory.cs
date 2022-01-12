@@ -173,10 +173,10 @@ namespace LiveSplit.DarkSouls.Memory
 			//return MemoryTools.ReadInt32(handle, IntPtr.Add(pointer, 0x68));
 		}
 
-		public byte GetActiveAnimation()
-		{
-			return MemoryTools.ReadByte(handle, pointers.Character + 0xC5C);
-		}
+		//public byte GetActiveAnimation()
+		//{
+		//	return MemoryTools.ReadByte(handle, pointers.Character + 0xC5C);
+		//}
 
 		public int GetForcedAnimation()
 		{
@@ -216,10 +216,39 @@ namespace LiveSplit.DarkSouls.Memory
 			return MemoryTools.ReadBoolean(handle, pointers.WorldState - 0x37EF4);
 		}
 
-		public bool IsPlayerLoaded()
-		{
-			return MemoryTools.ReadInt32(handle, (IntPtr)0x137DC70) != 0;
-		}
+        private int _initialMillis = 0;
+        public bool IsPlayerLoaded()
+        {
+            //Can't find an address that has this flag, but I did notice that the timer only starts running when the player is loaded.
+            var temp = GetGameTimeInMilliseconds();
+
+            //Millis is 0 in main menu, when no save is loaded
+            if (temp == 0)
+            {
+                _initialMillis = 0;
+                return false;
+            }
+
+            //Detect a non 0 value of the clock - a save has just been loaded but the clock might not be running yet
+            if (_initialMillis == 0)
+            {
+                _initialMillis = temp;
+                return false;
+            }
+
+            //Clock is running since it has been initially loaded. 
+            if (_initialMillis != temp)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+		//public bool IsPlayerLoaded()
+		//{
+		//	  return MemoryTools.ReadInt32(handle, (IntPtr)0x137DC70) != 0;
+		//}
 
 		public int GetClearCount()
 		{
@@ -267,13 +296,13 @@ namespace LiveSplit.DarkSouls.Memory
 			return (CovenantFlags)MemoryTools.ReadByte(handle, pointers.CharacterStats + 0x10B);
 		}
 
-		// Note that the last bonfire value doesn't always correspond to a valid bonfire ID.
-		public int GetLastBonfire()
-		{
-			// For whatever reason, bonfire IDs retrieved in this way need to be corrected by a thousand to match the
-			// bonfire flags array.
-			return MemoryTools.ReadInt32(handle, pointers.WorldState + 0xB04) - 1000;
-		}
+		//// Note that the last bonfire value doesn't always correspond to a valid bonfire ID.
+		//public int GetLastBonfire()
+		//{
+		//	// For whatever reason, bonfire IDs retrieved in this way need to be corrected by a thousand to match the
+		//	// bonfire flags array.
+		//	return MemoryTools.ReadInt32(handle, pointers.WorldState + 0xB04) - 1000;
+		//}
 
 		public BonfireStates GetBonfireState(BonfireFlags bonfire)
 		{

@@ -20,6 +20,7 @@ namespace LiveSplit.DarkSouls
 
 		private const int EstusId = 200;
 
+        private DarkSoulsMemory.DarkSouls darkSouls;
 		private TimerModel timer;
 		private SplitCollection splitCollection;
         private SoulsMemory memory;
@@ -68,7 +69,7 @@ namespace LiveSplit.DarkSouls
 
 		public SoulsComponent()
         {
-            Log("init");
+            darkSouls = new DarkSoulsMemory.DarkSouls();
 
 			splitCollection = new SplitCollection();
 			memory = new SoulsMemory();
@@ -339,7 +340,6 @@ namespace LiveSplit.DarkSouls
 
 		public void Update(IInvalidator invalidator, LiveSplitState state, float width, float height, LayoutMode mode)
 		{
-            Log("update");
 			if (timer == null)
 			{
 				timer = new TimerModel();
@@ -375,7 +375,7 @@ namespace LiveSplit.DarkSouls
 		{
 			splitCollection.OnStart();
 
-			if (!memory.IsPlayerLoaded() && !_soulsRemastered.IsPlayerLoaded())
+			if (!IsPlayerLoaded())
 			{
 				waitingOnFirstLoad = true;
 
@@ -459,7 +459,6 @@ namespace LiveSplit.DarkSouls
 
 		private void UpdateRunState()
 		{
-            Log("UpdateRunState");
 			Split split = splitCollection.CurrentSplit;
 
 			if (split == null || split.Type == SplitTypes.Manual || !split.IsFinished)
@@ -613,7 +612,10 @@ namespace LiveSplit.DarkSouls
 		// Making the phase nullable makes testing easier.
 		public void Refresh(TimerPhase? nullablePhase = null)
 		{
-            // In theory, the first IGT frame of a run should have a time value of about 32 milliseconds (i.e. one
+            var isHooked = darkSouls.Refresh();
+
+
+			// In theory, the first IGT frame of a run should have a time value of about 32 milliseconds (i.e. one
 			// frame at 30 fps). In practice, though, the first non-zero time value tends to be a bit bigger than that.
 			// This threshold is arbitrary, but is meant to be big enough to cover that variation in start time, but
 			// small enough that later loads into a file don't autostart the timer.
@@ -638,7 +640,7 @@ namespace LiveSplit.DarkSouls
 
 			if (waitingOnFirstLoad)
 			{
-				if (!memory.IsPlayerLoaded() && !_soulsRemastered.IsPlayerLoaded())
+				if (!IsPlayerLoaded())
 				{
 					return;
 				}
@@ -789,7 +791,7 @@ namespace LiveSplit.DarkSouls
 			if (waitingOnUnload)
 			{
 				// When the load screen appears following a quitout, the player isn't unloaded instantly.
-				if (!memory.IsPlayerLoaded() && !_soulsRemastered.IsPlayerLoaded())
+				if (!IsPlayerLoaded())
 				{
 					waitingOnUnload = false;
 					waitingOnReload = true;
@@ -802,7 +804,7 @@ namespace LiveSplit.DarkSouls
 			{
 				// By the time this point in the code is reached, the player must already be unloaded (due to quitting
 				// to the title screen).
-				if (memory.IsPlayerLoaded() || _soulsRemastered.IsPlayerLoaded())
+				if (IsPlayerLoaded())
 				{
 					waitingOnReload = false;
 					timer.Split();
@@ -896,6 +898,21 @@ namespace LiveSplit.DarkSouls
 			return new ItemId(baseId, category);
 		}
 
+        private bool IsPlayerLoaded()
+        {
+            if (memory.ProcessHooked)
+            {
+                return memory.IsPlayerLoaded();
+            }
+
+            if (_soulsRemastered.Hook())
+            {
+                return _soulsRemastered.IsPlayerLoaded();
+            }
+
+            return false;
+        }
+
 		private void PrepareWarp()
 		{
 			preparedForWarp = true;
@@ -911,8 +928,7 @@ namespace LiveSplit.DarkSouls
 			if (!isBonfireWarpConfirmed)
 			{
 				// This state becomes true for just a moment when the player confirms a bonfire warp.
-				isBonfireWarpConfirmed = memory.GetPromptedMenu() == BonfireWarpPrompt &&
-					memory.GetForcedAnimation() == (int)AnimationFlags.BonfireWarp;
+				isBonfireWarpConfirmed = memory.GetPromptedMenu() == BonfireWarpPrompt && memory.GetForcedAnimation() == (int)AnimationFlags.BonfireWarp;
 			}
 
 			bool visible = memory.IsLoadScreenVisible();
@@ -1334,7 +1350,6 @@ namespace LiveSplit.DarkSouls
 
         private bool ProcessRemastered(int[] data)
         {
-            Log($"ProcessRemastered ${data[0]}");
 			var bossId = run.Id;
 
             if (_soulsRemastered.Hook())
@@ -1349,12 +1364,6 @@ namespace LiveSplit.DarkSouls
 		public void Dispose()
 		{
 
-		}
-
-		//Cant get a console window to work. Hard to debug when running in pre-built livesplit, instead of debugging from visual studio...
-        private void Log(string text)
-        {
-			//File.AppendAllText("C:\\temp\\livesplitlog.txt", $"{DateTime.Now.ToShortTimeString()} {text}\n");
 		}
     }
 }

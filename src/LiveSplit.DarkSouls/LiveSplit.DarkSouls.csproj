@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\LiveSplit\LiveSplit\bin\Debug\Components\</OutputPath>
+    <OutputPath>..\..\..\LiveSplit\LiveSplit\bin\Debug\Components\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -36,7 +36,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="LiveSplit.Core">
-      <HintPath>..\..\LiveSplit\LiveSplit\bin\Debug\LiveSplit.Core.dll</HintPath>
+      <HintPath>..\..\..\LiveSplit\LiveSplit\bin\Release\LiveSplit.Core.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -47,7 +47,7 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Xml" />
     <Reference Include="UpdateManager">
-      <HintPath>..\..\LiveSplit\LiveSplit\bin\Debug\UpdateManager.dll</HintPath>
+      <HintPath>..\..\..\LiveSplit\LiveSplit\bin\Release\UpdateManager.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -145,6 +145,11 @@
     <Content Include="Resources\Question.png" />
     <Content Include="Resources\Splits.txt" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\DarkSoulsMemory\DarkSoulsMemory.csproj">
+      <Project>{981f985c-bbdb-4faf-aff4-3da66a065a2f}</Project>
+      <Name>DarkSoulsMemory</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

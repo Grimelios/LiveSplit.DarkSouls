@@ -3,47 +3,40 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiveSplit.DarkSouls", "LiveSplit.DarkSouls\LiveSplit.DarkSouls.csproj", "{4B6EC3BB-5C5D-4682-8714-8A6B7C455E52}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A32D2E2B-30C0-4A0B-811D-6C21211C88D1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{FC3B087D-B2B9-444D-8165-47E34720C02F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiveSplit.DarkSouls", "src\LiveSplit.DarkSouls\LiveSplit.DarkSouls.csproj", "{4B6EC3BB-5C5D-4682-8714-8A6B7C455E52}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DarkSoulsMemory", "..\DarkSoulsMemory\src\DarkSoulsMemory\DarkSoulsMemory.csproj", "{981F985C-BBDB-4FAF-AFF4-3DA66A065A2F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DarkSoulsMemory", "src\DarkSoulsMemory\DarkSoulsMemory.csproj", "{981F985C-BBDB-4FAF-AFF4-3DA66A065A2F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tester", "src\Tester\Tester.csproj", "{DBE52202-BECC-4456-8A1D-C841701BCF0A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
-		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
-		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{4B6EC3BB-5C5D-4682-8714-8A6B7C455E52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4B6EC3BB-5C5D-4682-8714-8A6B7C455E52}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4B6EC3BB-5C5D-4682-8714-8A6B7C455E52}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{4B6EC3BB-5C5D-4682-8714-8A6B7C455E52}.Debug|x86.Build.0 = Debug|Any CPU
 		{4B6EC3BB-5C5D-4682-8714-8A6B7C455E52}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4B6EC3BB-5C5D-4682-8714-8A6B7C455E52}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4B6EC3BB-5C5D-4682-8714-8A6B7C455E52}.Release|x86.ActiveCfg = Release|Any CPU
-		{4B6EC3BB-5C5D-4682-8714-8A6B7C455E52}.Release|x86.Build.0 = Release|Any CPU
-		{FC3B087D-B2B9-444D-8165-47E34720C02F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FC3B087D-B2B9-444D-8165-47E34720C02F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FC3B087D-B2B9-444D-8165-47E34720C02F}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{FC3B087D-B2B9-444D-8165-47E34720C02F}.Debug|x86.Build.0 = Debug|Any CPU
-		{FC3B087D-B2B9-444D-8165-47E34720C02F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FC3B087D-B2B9-444D-8165-47E34720C02F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FC3B087D-B2B9-444D-8165-47E34720C02F}.Release|x86.ActiveCfg = Release|Any CPU
-		{FC3B087D-B2B9-444D-8165-47E34720C02F}.Release|x86.Build.0 = Release|Any CPU
 		{981F985C-BBDB-4FAF-AFF4-3DA66A065A2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{981F985C-BBDB-4FAF-AFF4-3DA66A065A2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{981F985C-BBDB-4FAF-AFF4-3DA66A065A2F}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{981F985C-BBDB-4FAF-AFF4-3DA66A065A2F}.Debug|x86.Build.0 = Debug|Any CPU
 		{981F985C-BBDB-4FAF-AFF4-3DA66A065A2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{981F985C-BBDB-4FAF-AFF4-3DA66A065A2F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{981F985C-BBDB-4FAF-AFF4-3DA66A065A2F}.Release|x86.ActiveCfg = Release|Any CPU
-		{981F985C-BBDB-4FAF-AFF4-3DA66A065A2F}.Release|x86.Build.0 = Release|Any CPU
+		{DBE52202-BECC-4456-8A1D-C841701BCF0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DBE52202-BECC-4456-8A1D-C841701BCF0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DBE52202-BECC-4456-8A1D-C841701BCF0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DBE52202-BECC-4456-8A1D-C841701BCF0A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{4B6EC3BB-5C5D-4682-8714-8A6B7C455E52} = {A32D2E2B-30C0-4A0B-811D-6C21211C88D1}
+		{981F985C-BBDB-4FAF-AFF4-3DA66A065A2F} = {A32D2E2B-30C0-4A0B-811D-6C21211C88D1}
+		{DBE52202-BECC-4456-8A1D-C841701BCF0A} = {A32D2E2B-30C0-4A0B-811D-6C21211C88D1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4930EC22-2650-4996-9E55-DAD96940E7EE}

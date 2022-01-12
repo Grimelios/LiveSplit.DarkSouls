@@ -17,6 +17,7 @@ namespace LiveSplit.DarkSouls.Memory
 		BonfireRest1 = 7700,
 		BonfireRest2 = 7710,
 		BonfireRest3 = 7720,
+		 
 		BonfireWarp = 7725
 	}
 

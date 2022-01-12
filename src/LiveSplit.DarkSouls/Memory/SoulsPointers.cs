@@ -64,8 +64,9 @@ namespace LiveSplit.DarkSouls.Memory
 			character = (IntPtr)MemoryTools.ReadInt32(handle, character + 0x4);
 			character = (IntPtr)MemoryTools.ReadInt32(handle, character);
 			Character = character;
-			
-            if (MemoryScanner.TryScan(process, new byte?[] { 0x8B, 0x0D, null, null, null, null, 0x8B, 0x7E, 0x1C, 0x8B, 0x49, 0x08, 0x8B, 0x46, 0x20, 0x81, 0xC1, 0xB8, 0x01, 0x00, 0x00, 0x57, 0x51, 0x32, 0xDB }, out IntPtr characterBasePtr))
+			//6d8a1f0
+
+			if (MemoryScanner.TryScan(process, new byte?[] { 0x8B, 0x0D, null, null, null, null, 0x8B, 0x7E, 0x1C, 0x8B, 0x49, 0x08, 0x8B, 0x46, 0x20, 0x81, 0xC1, 0xB8, 0x01, 0x00, 0x00, 0x57, 0x51, 0x32, 0xDB }, out IntPtr characterBasePtr))
             {
                 characterBasePtr = characterBasePtr + 2;
                 characterBasePtr = (IntPtr)MemoryTools.ReadInt32(process.Handle, characterBasePtr);
