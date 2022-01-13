@@ -47,7 +47,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Internal\BottomlessBoxTracker.cs" />
     <Compile Include="Internal\BaseMemoryReaderWriter.cs" />
     <Compile Include="BossType.cs" />
     <Compile Include="DarkSouls.cs" />
@@ -59,16 +58,10 @@
     <Compile Include="ForcedAnimation.cs" />
     <Compile Include="Internal\IDarkSouls.cs" />
     <Compile Include="Internal\Item.cs" />
-    <Compile Include="ItemFlags.cs" />
-    <Compile Include="ItemID.cs" />
-    <Compile Include="Internal\ItemLists.cs" />
     <Compile Include="Internal\ItemPrompt.cs" />
     <Compile Include="Internal\Kernel32.cs" />
-    <Compile Include="Internal\ItemState.cs" />
-    <Compile Include="Internal\ItemTracker.cs" />
     <Compile Include="MenuPrompt.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Internal\TrackerBase.cs" />
     <Compile Include="Internal\Zone.cs" />
   </ItemGroup>
   <ItemGroup>
