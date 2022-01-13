@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO.Pipes;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -67,8 +68,6 @@ namespace DarkSoulsMemory.Internal.DarkSoulsRemastered
         private IntPtr _playerCtrl;
         private IntPtr _forcedAnimation;
         private IntPtr _itemPrompt;
-
-
         public void InitCharacter()
         {
             if (TryScan(new byte?[]{0x48, 0x8B, 0x05, null, null, null, null, 0x48, 0x39, 0x48, 0x68, 0x0F, 0x94, 0xC0, 0xC3}, out _playerIns))
@@ -129,6 +128,24 @@ namespace DarkSoulsMemory.Internal.DarkSoulsRemastered
             }
             return ItemPrompt.Unknown;
         }
+
+        public Vector3 GetPlayerPosition()
+        {
+            var position = (IntPtr)ReadInt32(_playerIns);
+            position = (IntPtr)ReadInt32(position + 0x68);
+            position = (IntPtr)ReadInt32(position + 0x18);
+            position = (IntPtr)ReadInt32(position + 0x28);
+            position = (IntPtr)ReadInt32(position + 0x50);
+            position = (IntPtr)ReadInt32(position + 0x20);
+            position = position + 0x120;
+            
+            var x = ReadFloat(position);
+            var y = ReadFloat(position + 0x4);
+            var z = ReadFloat(position + 0x8);
+            return new Vector3(x, y, z);
+        }
+
+
 
         public List<Item> GetCurrentInventoryItems()
         {

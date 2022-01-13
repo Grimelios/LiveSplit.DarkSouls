@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using DarkSoulsMemory.Internal;
@@ -94,6 +95,35 @@ namespace DarkSoulsMemory
             }
 
             return _darkSouls.GetItemPrompt();
+        }
+
+        /// <summary>
+        /// Returns the player's position
+        /// </summary>
+        /// <returns></returns>
+        public Vector3 GetPlayerPosition()
+        {
+            if (_darkSouls == null)
+            {
+                return Vector3.Zero;
+            }
+
+            return _darkSouls.GetPlayerPosition();
+        }
+
+
+        /// <summary>
+        /// Returns a list of the current inventory items
+        /// </summary>
+        /// <returns></returns>
+        public List<Item> GetCurrentInventoryItems()
+        {
+            if (_darkSouls == null)
+            {
+                return new List<Item>();
+            }
+
+            return _darkSouls.GetCurrentInventoryItems();
         }
 
 

@@ -24,7 +24,7 @@ namespace Tester
                 darkSouls.Refresh();
 
                 Console.Clear();
-                Console.WriteLine($"IGT {darkSouls.GetGameTimeInMilliseconds()} test value: {darkSouls.GetCurrentTestValue()}");
+                Console.WriteLine($"IGT {darkSouls.GetGameTimeInMilliseconds()} test value: {darkSouls.GetCurrentTestValue()} {darkSouls.GetPlayerPosition()}");
                 Thread.Sleep(50);
             }
         }

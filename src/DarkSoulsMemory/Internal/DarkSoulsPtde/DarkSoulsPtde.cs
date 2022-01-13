@@ -153,7 +153,7 @@ namespace DarkSoulsMemory.Internal.DarkSoulsPtde
         }
 
 
-        public Vector3 GetPosition()
+        public Vector3 GetPlayerPosition()
         {
             var map = (IntPtr)ReadInt32(_character + 0x28);
             var position = (IntPtr)ReadInt32(map + 0x1c);
@@ -267,63 +267,7 @@ namespace DarkSoulsMemory.Internal.DarkSoulsPtde
         {
             return 0;
         }
-
-
-
-        protected ItemId ComputeItemId(IntPtr address)
-        {
-            int rawId = ComputeRawId(address);
-            int category = rawId != -1 ? GetCategory(address) : -1;
-
-            return ComputeItemId(rawId, category);
-        }
-
-        protected int ComputeRawId(IntPtr address)
-        {
-            return ReadInt32(address);
-        }
-
-        private int GetCategory(IntPtr address)
-        {
-            int value = ReadByte(address - 0x1);
-
-            return value.ToHex();
-        }
-
-
-
-        protected ItemId ComputeItemId(int rawId, int category)
-        {
-            int baseId;
         
-            // All upgradeable items have an ID five digits or greater (but not all items with an ID that long are
-            // necessarily upgradeable).
-            if (rawId / 10000 > 0)
-            {
-                // For upgradeable items, mods and reinforcement are represented through the ID directly. The hundreds
-                // digit (third from the right) represents mods, while the ones digit (far right) represents
-                // reinforcement. All such IDs are at least five digits long.
-                ComputeUpgrades(rawId, out int mods, out int reinforcement);
-        
-                baseId = rawId - mods * 100 - reinforcement;
-            }
-            else
-            {
-                baseId = rawId;
-            }
-        
-            return new ItemId(baseId, category);
-        }
-
-        private void ComputeUpgrades(int rawId, out int mods, out int reinforcement)
-        {
-            // For upgradeable items, mods and reinforcement are represented through the ID directly. The hundreds
-            // digit (third from the right) represents mods, while the tens digit (second from the right) represents
-            // reinforcement. All such IDs are at least five digits long.
-            mods = (rawId % 1000) / 100;
-            reinforcement = rawId % 100;
-        }
-
 
         #endregion
 
