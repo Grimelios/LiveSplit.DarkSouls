@@ -51,6 +51,13 @@ namespace DarkSoulsMemory.Internal
         ItemPrompt GetItemPrompt();
 
         /// <summary>
+        /// Returns a list of the current inventory items
+        /// </summary>
+        /// <returns></returns>
+        List<Item> GetCurrentInventoryItems();
+
+
+        /// <summary>
         /// For testing
         /// </summary>
         /// <returns></returns>

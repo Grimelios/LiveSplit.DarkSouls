@@ -15,7 +15,7 @@ namespace DarkSoulsMemory.Internal.DarkSoulsRemastered
         {
             Attach();
 
-            InitPlayerPtr();
+            InitGameDataManPtr();
             InitWorldProgressionPtr();
             InitMenuPrompt();
         }
@@ -25,7 +25,7 @@ namespace DarkSoulsMemory.Internal.DarkSoulsRemastered
             if (AttachByName("DarkSoulsRemastered"))
             {
                 //These ptrs must refresh every frame
-                InitPlayerPtr();
+                InitGameDataManPtr();
                 InitCharacter();
             }
 
@@ -36,12 +36,12 @@ namespace DarkSoulsMemory.Internal.DarkSoulsRemastered
 
         #region init base pointers =======================================================================================================================================
 
-        private IntPtr _player;
-        private void InitPlayerPtr()
+        private IntPtr _gameDataMan;
+        private void InitGameDataManPtr()
         {
-            if (TryScan(new byte?[] { 0x48, 0x8B, 0x05, null, null, null, null, 0x45, 0x33, 0xED, 0x48, 0x8B, 0xF1, 0x48, 0x85, 0xC0 }, out _player))
+            if (TryScan(new byte?[] { 0x48, 0x8B, 0x05, null, null, null, null, 0x45, 0x33, 0xED, 0x48, 0x8B, 0xF1, 0x48, 0x85, 0xC0 }, out _gameDataMan))
             {
-                _player = (IntPtr)ReadInt32(_player + ReadInt32(_player + 3) + 7);
+                _gameDataMan = (IntPtr)ReadInt32(_gameDataMan + ReadInt32(_gameDataMan + 3) + 7);
             }
         }
 
@@ -86,7 +86,7 @@ namespace DarkSoulsMemory.Internal.DarkSoulsRemastered
 
         public int GetGameTimeInMilliseconds()
         {
-            return ReadInt32(_player + 0xA4);
+            return ReadInt32(_gameDataMan + 0xA4);
         }
 
 
@@ -129,6 +129,124 @@ namespace DarkSoulsMemory.Internal.DarkSoulsRemastered
             }
             return ItemPrompt.Unknown;
         }
+
+        public List<Item> GetCurrentInventoryItems()
+        {
+            //Path: GameDataMan->hostPlayerGameData->equipItemData->equipGameData->equipInventoryData->equipInventoryDataSub
+
+            var items = new List<Item>();
+
+            var hostPlayerGameData = (IntPtr)ReadInt32(_gameDataMan + 16);
+            var equipData = hostPlayerGameData + 0x280;
+            var equipItemData = equipData + 416;
+            var equipGameData = (IntPtr)ReadInt32(equipItemData + 16);
+            var equipInventoryData = equipGameData + 288;
+            var equipInventoryDataSub = equipInventoryData + 16;
+
+            //Item count
+            var itemCount = ReadInt32(equipInventoryDataSub + 48);
+            var keyCount = ReadInt32(equipInventoryDataSub + 52);
+
+            //Struct has 2 lists, list 1 seems to be a subset of list 2, the lists start at the same address..
+
+            var itemList2Len = ReadInt32(equipInventoryDataSub);
+            var itemList1Len = ReadInt32(equipInventoryDataSub + 16);
+
+            var itemList1 = (IntPtr)ReadInt32(equipInventoryDataSub + 32);
+            var itemList2 = (IntPtr)ReadInt32(equipInventoryDataSub + 40);
+
+            for (var i = 0; i < itemList2Len; i++)
+            {
+                //size of NS::FRPG_EquipInventoryDataItem is 28 or 0x1c
+                var addr = itemList2 + (i * 0x1c);
+                
+                var cat = ReadByte(addr + 3);
+                var item = ReadInt32(addr + 4);
+
+                if (item != -1)
+                {
+                    //Console.WriteLine($"0x{addr.ToInt32():X}: {cat} {item}");
+
+                    var categories = new List<ItemCategory>();
+                    switch (cat.ToHex())
+                    {
+                        case 0:
+                            categories.Add(ItemCategory.MeleeWeapons);
+                            categories.Add(ItemCategory.RangedWeapons);
+                            categories.Add(ItemCategory.Ammo);
+                            categories.Add(ItemCategory.Shields);
+                            categories.Add(ItemCategory.SpellTools);
+                            break;
+
+                        case 1:
+                            categories.Add(ItemCategory.Armor);
+                            break;
+
+                        case 2:
+                            categories.Add(ItemCategory.Rings);
+                            break;
+
+                        case 4:
+                            categories.Add(ItemCategory.Consumables);
+                            categories.Add(ItemCategory.Key);
+                            categories.Add(ItemCategory.Spells);
+                            categories.Add(ItemCategory.UpgradeMaterials);
+                            categories.Add(ItemCategory.UsableItems);
+                            break;
+                    }
+
+                    //Decode item
+                    int id = 0;
+                    ItemInfusion infusion = ItemInfusion.Normal;
+                    int level = 0;
+
+                    //if 4 or less digits -> non-upgradable item.
+                    if (categories.Contains(ItemCategory.Consumables) && item >= 200 && item <= 215 && !items.Any(j => j.Type == ItemType.EstusFlask))
+                    {
+                        var estus = Item.AllItems.First(j => j.Type == ItemType.EstusFlask);
+                        var instance = new Item(estus.Name, estus.Id, estus.Type, estus.Category, estus.StackLimit, estus.Upgrade);
+                        instance.Infusion = infusion;
+                        instance.UpgradeLevel = level;
+                        items.Add(instance);
+                        continue;
+                    }
+                    else if (item < 10000)
+                    {
+                        id = item;
+                    }
+                    else
+                    {
+                        //Separate digits
+                        int one = item % 10;
+                        int ten = (item / 10) % 10;
+                        int hundred = (item / 100) % 10;
+
+                        id = item - (one + (10 * ten) + (100 * hundred));
+                        infusion = (ItemInfusion)hundred;
+                        level = one + (10 * ten);
+                    }
+
+                    var lookupItem = Item.AllItems.FirstOrDefault(j => categories.Contains(j.Category) && j.Id == id);
+                    if (lookupItem != null)
+                    {
+                        var instance = new Item(lookupItem.Name, lookupItem.Id, lookupItem.Type, lookupItem.Category, lookupItem.StackLimit, lookupItem.Upgrade);
+                        instance.Infusion = infusion;
+                        instance.UpgradeLevel = level;
+                        items.Add(instance);
+                    }
+                }
+            }
+
+            //For debugging
+            //foreach (var item in items)
+            //{
+            //    Console.WriteLine(item.Type);
+            //}
+
+            return items;
+        }
+
+
 
 
         public int GetCurrentTestValue()

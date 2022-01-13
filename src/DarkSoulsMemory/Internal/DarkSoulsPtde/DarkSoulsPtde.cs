@@ -254,21 +254,17 @@ namespace DarkSoulsMemory.Internal.DarkSoulsPtde
             return items;
         }
 
+        public List<Item> GetCurrentInventoryItems()
+        {
+            var inventoryItems = GetInventoryItems(0x128, 0xA24);
+            var keyItems = GetInventoryItems(0x12C, 0x324);
+            inventoryItems.AddRange(keyItems);
+            return inventoryItems;
+        }
+
 
         public int GetCurrentTestValue()
         {
-            //ItemCount = 0x128,
-            //ItemStart = 0xA24,
-            //KeyCount = 0x12C,
-            //KeyStart = 0x324
-
-            var inventoryItems = GetInventoryItems(0x128, 0xA24);
-            var keyItems       = GetInventoryItems(0x12C, 0x324);
-
-            inventoryItems.AddRange(keyItems);
-            inventoryItems.ForEach(j => Console.WriteLine(j.Type));
-
-            Console.ReadKey();
             return 0;
         }
 
