@@ -14,13 +14,7 @@ namespace LiveSplit.DarkSouls.Memory
 		private Process process;
 		private IntPtr handle;
 		private SoulsPointers pointers;
-
-		// Tracking items is a bit complex. It makes more sense for the memory class to manage that complexity rather
-		// than the main component class.
-		private ItemTracker keyTracker;
-		private ItemTracker itemTracker;
-		private BottomlessBoxTracker bottomlessBoxTracker;
-
+        
 		public bool ProcessHooked { get; private set; }
 
 		public bool Hook()
@@ -59,118 +53,7 @@ namespace LiveSplit.DarkSouls.Memory
 
 			return ProcessHooked;
 		}
-
-		public void SetItems(List<ItemId> itemIds, int[] keyItems)
-		{
-			if (itemIds == null)
-			{
-				keyTracker = null;
-				itemTracker = null;
-				bottomlessBoxTracker = null;
-
-				return;
-			}
-
-			List<ItemId> keys = new List<ItemId>();
-			List<ItemId> items = new List<ItemId>();
-
-			foreach (ItemId id in itemIds)
-			{
-				if (keyItems.Contains(id.BaseId))
-				{
-					keys.Add(id);
-				}
-				else
-				{
-					items.Add(id);
-				}
-			}
-
-			IntPtr inventory = pointers.Inventory;
-
-			// Both trackers are nullified if no splits would require using them.
-			keyTracker = keys.Count > 0
-				? new ItemTracker(inventory, handle, (int)InventoryFlags.KeyStart, (int)InventoryFlags.KeyCount)
-				: null;
-
-			itemTracker = items.Count > 0
-				? new ItemTracker(inventory, handle, (int)InventoryFlags.ItemStart, (int)InventoryFlags.ItemCount)
-				: null;
-
-			// Key items can't be put in the box, meaning that the bottomless box only needs to be tracked if items
-			// themselves are tracked.
-			bottomlessBoxTracker = items.Count > 0
-				? new BottomlessBoxTracker(inventory, handle)
-				: null;
-
-			keyTracker?.SetItems(keys);
-			itemTracker?.SetItems(items);
-			bottomlessBoxTracker?.SetItems(items);
-		}
-
-		// This function is called once per update tick if item splits are in use (regardless of whether an item split
-		// is active). In contrast, the function above effectively resets the tracker at the start of a new run.
-		public void RefreshItems()
-		{
-			keyTracker?.Refresh();
-			itemTracker?.Refresh();
-			bottomlessBoxTracker?.Refresh();
-		}
-
-		public ItemState[] GetItemStates(int baseId, int category, bool isKey)
-		{
-			// Key items don't share IDs with any other items (except for a few mystery items, but those aren't
-			// included in the autosplitter UI).
-			if (isKey)
-			{
-				return keyTracker.GetItemStates(baseId, category);
-			}
-
-			List<ItemState> states = new List<ItemState>();
-			states.AddRange(itemTracker.GetItemStates(baseId, category));
-			states.AddRange(bottomlessBoxTracker.GetItemStates(baseId, category));
-
-			return states.ToArray();
-		}
-
 		
-		//public int GetGameTimeInMilliseconds()
-		//{
-        //    return MemoryTools.ReadInt32(handle, pointers.InGameTime);
-		//
-        //    //IntPtr pointer = (IntPtr)MemoryTools.ReadInt32(handle, (IntPtr)0x1378700);
-		//	//
-		//	//return MemoryTools.ReadInt32(handle, IntPtr.Add(pointer, 0x68));
-		//}
-
-		//public byte GetActiveAnimation()
-		//{
-		//	return MemoryTools.ReadByte(handle, pointers.Character + 0xC5C);
-		//}
-
-		//public int GetForcedAnimation()
-		//{
-		//	return MemoryTools.ReadInt32(handle, pointers.Character + 0xFC);
-		//}
-
-		// Every time the player uses an item that requires a yes/no confirmation box, the ID of the item can be
-		// retreived. That ID remains in place until the item's animation is complete.
-		//public int GetPromptedItem()
-		//{
-		//	return MemoryTools.ReadInt32(handle, pointers.Character + 0x62C);
-		//}
-
-		// "Prompted menu" here refers to the small menu near the bottom of the screen (such as yes/no confirmation
-		// boxes). Each box has a unique ID (based on the text displayed).
-		//public byte GetPromptedMenu()
-		//{
-		//	// The prompted menu ID is stored using a static address.
-		//	return MemoryTools.ReadByte(handle, (IntPtr)0x12E33E0);
-		//}
-
-		// In this context, "World" (and "Area" below) refer to large geographic locations within the world. The two
-		// values together can be used to roughly determine where you are (although not with the precision of
-		// individual named zones).
 		public byte GetWorld()
 		{
 			return MemoryTools.ReadByte(handle, pointers.Zone + 0xA13);
@@ -180,40 +63,6 @@ namespace LiveSplit.DarkSouls.Memory
 		{
 			return MemoryTools.ReadByte(handle, pointers.Zone + 0xA12);
 		}
-
-		//public bool IsLoadScreenVisible()
-		//{
-		//	return MemoryTools.ReadBoolean(handle, pointers.WorldState - 0x37EF4);
-		//}
-
-        //private int _initialMillis = 0;
-        //public bool IsPlayerLoaded()
-        //{
-        //    //Can't find an address that has this flag, but I did notice that the timer only starts running when the player is loaded.
-        //    var temp = GetGameTimeInMilliseconds();
-		//
-        //    //Millis is 0 in main menu, when no save is loaded
-        //    if (temp == 0)
-        //    {
-        //        _initialMillis = 0;
-        //        return false;
-        //    }
-		//
-        //    //Detect a non 0 value of the clock - a save has just been loaded but the clock might not be running yet
-        //    if (_initialMillis == 0)
-        //    {
-        //        _initialMillis = temp;
-        //        return false;
-        //    }
-		//
-        //    //Clock is running since it has been initially loaded. 
-        //    if (_initialMillis != temp)
-        //    {
-        //        return true;
-        //    }
-		//
-        //    return false;
-        //}
 
 		//public bool IsPlayerLoaded()
 		//{
@@ -236,43 +85,12 @@ namespace LiveSplit.DarkSouls.Memory
 		{
 			return MemoryTools.ReadInt32(handle, pointers.CharacterStats + 0xC);
 		}
-
-		//public Vector3 GetPlayerPosition()
-		//{
-		//	float x = GetPlayerX();
-		//	float y = GetPlayerY();
-		//	float z = GetPlayerZ();
-		//
-		//	return new Vector3(x, y, z);
-		//}
-		//
-		//public float GetPlayerX()
-		//{
-		//	return MemoryTools.ReadFloat(handle, pointers.CharacterPosition + 0x10);
-		//}
-		//
-		//public float GetPlayerY()
-		//{
-		//	return MemoryTools.ReadFloat(handle, pointers.CharacterPosition + 0x14);
-		//}
-		//
-		//public float GetPlayerZ()
-		//{
-		//	return MemoryTools.ReadFloat(handle, pointers.CharacterPosition + 0x18);
-		//}
-
+		
 		public CovenantFlags GetCovenant()
 		{
 			return (CovenantFlags)MemoryTools.ReadByte(handle, pointers.CharacterStats + 0x10B);
 		}
-
-		//// Note that the last bonfire value doesn't always correspond to a valid bonfire ID.
-		//public int GetLastBonfire()
-		//{
-		//	// For whatever reason, bonfire IDs retrieved in this way need to be corrected by a thousand to match the
-		//	// bonfire flags array.
-		//	return MemoryTools.ReadInt32(handle, pointers.WorldState + 0xB04) - 1000;
-		//}
+		
 
 		public BonfireStates GetBonfireState(BonfireFlags bonfire)
 		{
@@ -383,66 +201,5 @@ namespace LiveSplit.DarkSouls.Memory
 
 			return false;
 		}
-
-
-        //public bool IsBossAlive(BossFlags bossType)
-        //{
-        //    var boss = _bosses.First(i => i.BossType == bossType);
-        //    var memVal = MemoryTools.ReadInt32(process.Handle, pointers.BossState + boss.Offset);
-        //    return !IsBitSet(memVal, boss.Bit);
-        //}
-		//
-        //private static bool IsBitSet(int b, int pos)
-        //{
-        //    return (b & (1 << pos)) != 0;
-        //}
-
-		//#region data/lookup tables =======================================================================================================================================
-		//
-		//private struct Boss
-		//{
-		//	public Boss(BossFlags bossType, int offset, int bit)
-		//	{
-		//		BossType = bossType;
-		//		Offset = offset;
-		//		Bit = bit;
-		//	}
-		//
-		//	public BossFlags BossType;
-		//	public int Offset;
-		//	public int Bit;
-		//}
-		//
-		//private readonly List<Boss> _bosses = new List<Boss>()
-		//{
-		//	new Boss(BossFlags.GapingDragon      , 0x0   , 1),
-		//	new Boss(BossFlags.Gargoyles         , 0x0   , 2),
-		//	new Boss(BossFlags.Priscilla         , 0x0   , 3),
-		//	new Boss(BossFlags.Sif               , 0x0   , 4),
-		//	new Boss(BossFlags.Pinwheel          , 0x0   , 5),
-		//	new Boss(BossFlags.Nito              , 0x0   , 6),
-		//	new Boss(BossFlags.BedOfChaos        , 0x0   , 9),
-		//	new Boss(BossFlags.Quelaag           , 0x0   , 8),
-		//	new Boss(BossFlags.IronGolem         , 0x0   , 10),
-		//	new Boss(BossFlags.OrnsteinAndSmough , 0x0   , 11),
-		//	new Boss(BossFlags.FourKings         , 0x0   , 12),
-		//	new Boss(BossFlags.Seath             , 0x0   , 13),
-		//	new Boss(BossFlags.Gwyn              , 0x0   , 14),
-		//	new Boss(BossFlags.AsylumDemon       , 0x0   , 15),
-		//	new Boss(BossFlags.TaurusDemon       , 0xF70 , 26),
-		//	new Boss(BossFlags.CapraDemon        , 0xF70 , 25),
-		//	new Boss(BossFlags.MoonlightButterfly, 0x1E70, 27),
-		//	new Boss(BossFlags.SanctuaryGuardian , 0x2300, 31),
-		//	new Boss(BossFlags.Artorias          , 0x2300, 30),
-		//	new Boss(BossFlags.Manus             , 0x2300, 29),
-		//	new Boss(BossFlags.Kalameet          , 0x2300, 27),
-		//	new Boss(BossFlags.Firesage          , 0x3C30, 5),
-		//	new Boss(BossFlags.CeaselessDischarge, 0x3C70, 27),
-		//	new Boss(BossFlags.CentipedeDemon    , 0x3C70, 26),
-		//	new Boss(BossFlags.Gwyndolin         , 0x4670, 27),
-		//	new Boss(BossFlags.StrayDemon        , 0x5A70, 27),
-		//};
-		//
-		//#endregion
-	}
+    }
 }

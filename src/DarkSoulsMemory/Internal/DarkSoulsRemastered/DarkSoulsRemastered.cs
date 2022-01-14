@@ -212,11 +212,11 @@ namespace DarkSoulsMemory.Internal.DarkSoulsRemastered
                 
                 var cat = ReadByte(addr + 3);
                 var item = ReadInt32(addr + 4);
+                var quantity = ReadInt32(addr + 8);//Is this right? gota test.
+
 
                 if (item != -1)
                 {
-                    //Console.WriteLine($"0x{addr.ToInt32():X}: {cat} {item}");
-
                     var categories = new List<ItemCategory>();
                     switch (cat.ToHex())
                     {
@@ -255,8 +255,26 @@ namespace DarkSoulsMemory.Internal.DarkSoulsRemastered
                     {
                         var estus = Item.AllItems.First(j => j.Type == ItemType.EstusFlask);
                         var instance = new Item(estus.Name, estus.Id, estus.Type, estus.Category, estus.StackLimit, estus.Upgrade);
+
+                        //Item ID is both the item + reinforcement. Level field does not change in the games memory for the estus flask.
+                        //Goes like this:
+                        //200 == empty level 0
+                        //201 == full level 0
+                        //202 == empty level 1
+                        //203 == full level 1
+                        //203 == empty level 2
+                        //204 == full level 2
+                        //etc
+
+                        //If the flask is not empty, the amount of charges is stored in the quantity field.
+                        //If the ID - 200 is an even number, the flask is empty. For this case we can even ignore the 200 and just check the ID
+
+                        instance.Quantity = item % 2 == 0 ? 0 : quantity;
+
+                        //Calculating the upgrade level
+                        instance.UpgradeLevel = (item - 200) / 2;
+
                         instance.Infusion = infusion;
-                        instance.UpgradeLevel = level;
                         items.Add(instance);
                         continue;
                     }
@@ -280,19 +298,14 @@ namespace DarkSoulsMemory.Internal.DarkSoulsRemastered
                     if (lookupItem != null)
                     {
                         var instance = new Item(lookupItem.Name, lookupItem.Id, lookupItem.Type, lookupItem.Category, lookupItem.StackLimit, lookupItem.Upgrade);
+                        instance.Quantity = quantity;
                         instance.Infusion = infusion;
                         instance.UpgradeLevel = level;
                         items.Add(instance);
                     }
                 }
             }
-
-            //For debugging
-            //foreach (var item in items)
-            //{
-            //    Console.WriteLine(item.Type);
-            //}
-
+            
             return items;
         }
 

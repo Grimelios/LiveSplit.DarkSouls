@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DarkSoulsMemory;
 
 namespace LiveSplit.DarkSouls.Memory
 {
@@ -215,32 +216,32 @@ namespace LiveSplit.DarkSouls.Memory
 
 		public static readonly int[] OrderedBosses =
 		{
-			(int)BossFlags.Artorias,
-			(int)BossFlags.AsylumDemon,
-			(int)BossFlags.BedOfChaos,
-			(int)BossFlags.CapraDemon,
-			(int)BossFlags.CeaselessDischarge,
-			(int)BossFlags.CentipedeDemon,
-			(int)BossFlags.Firesage,
-			(int)BossFlags.FourKings,
-			(int)BossFlags.GapingDragon,
-			(int)BossFlags.Gargoyles,
-			(int)BossFlags.Gwyn,
-			(int)BossFlags.Gwyndolin,
-			(int)BossFlags.IronGolem,
-			(int)BossFlags.Kalameet,
-			(int)BossFlags.Manus,
-			(int)BossFlags.MoonlightButterfly,
-			(int)BossFlags.Nito,
-			(int)BossFlags.OrnsteinAndSmough,
-			(int)BossFlags.Pinwheel,
-			(int)BossFlags.Priscilla,
-			(int)BossFlags.Quelaag,
-			(int)BossFlags.SanctuaryGuardian,
-			(int)BossFlags.Seath,
-			(int)BossFlags.Sif,
-			(int)BossFlags.StrayDemon,
-			(int)BossFlags.TaurusDemon
+			(int)BossType.Artorias,
+			(int)BossType.AsylumDemon,
+			(int)BossType.BedOfChaos,
+			(int)BossType.CapraDemon,
+			(int)BossType.CeaselessDischarge,
+			(int)BossType.CentipedeDemon,
+			(int)BossType.Firesage,
+			(int)BossType.FourKings,
+			(int)BossType.GapingDragon,
+			(int)BossType.Gargoyles,
+			(int)BossType.Gwyn,
+			(int)BossType.Gwyndolin,
+			(int)BossType.IronGolem,
+			(int)BossType.Kalameet,
+			(int)BossType.Manus,
+			(int)BossType.MoonlightButterfly,
+			(int)BossType.Nito,
+			(int)BossType.OrnsteinAndSmough,
+			(int)BossType.Pinwheel,
+			(int)BossType.Priscilla,
+			(int)BossType.Quelaag,
+			(int)BossType.SanctuaryGuardian,
+			(int)BossType.Seath,
+			(int)BossType.Sif,
+			(int)BossType.StrayDemon,
+			(int)BossType.TaurusDemon
 		};
 
 		public static readonly int[] OrderedCovenants =
@@ -260,16 +261,16 @@ namespace LiveSplit.DarkSouls.Memory
 
 		public static readonly int[] OrderedInfusions =
 		{
-			(int)InfusionFlags.Basic,
-			(int)InfusionFlags.Chaos,
-			(int)InfusionFlags.Crystal,
-			(int)InfusionFlags.Divine,
-			(int)InfusionFlags.Enchanted,
-			(int)InfusionFlags.Fire,
-			(int)InfusionFlags.Lightning,
-			(int)InfusionFlags.Magic,
-			(int)InfusionFlags.Occult,
-			(int)InfusionFlags.Raw
+			(int)ItemInfusion.Normal,
+			(int)ItemInfusion.Chaos,
+			(int)ItemInfusion.Crystal,
+			(int)ItemInfusion.Divine,
+			(int)ItemInfusion.Enchanted,
+			(int)ItemInfusion.Fire,
+			(int)ItemInfusion.Lightning,
+			(int)ItemInfusion.Magic,
+			(int)ItemInfusion.Occult,
+			(int)ItemInfusion.Raw
 		};
 	}
 }

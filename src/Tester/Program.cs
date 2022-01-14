@@ -18,8 +18,16 @@ namespace Tester
 
 
             var darkSouls = new DarkSouls();
+            var items = darkSouls.GetCurrentInventoryItems();
 
-            darkSouls.GetCurrentInventoryItems();
+            foreach (var item in items)
+            {
+                Console.WriteLine(item.Type + " " + item.Quantity);
+            }
+
+            Console.ReadKey();
+            return;
+
             while (true)
             {
                 darkSouls.Refresh();

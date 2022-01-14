@@ -206,6 +206,9 @@ namespace DarkSoulsMemory.Internal.DarkSoulsPtde
             for (int i = 0; i < count; i++)
             {
                 var category = ReadByte(address - 0x1);
+                var itemId = ReadInt32(address);
+                var quantity = ReadInt32(address+0x4);
+                
                 var hexCategory = category.ToHex();
 
 
@@ -237,36 +240,51 @@ namespace DarkSoulsMemory.Internal.DarkSoulsPtde
                         break;
                 }
 
-                var memVal = ReadInt32(address);
-                Console.WriteLine(memVal);
-
                 //Decode item
                 int id = 0;
                 ItemInfusion infusion = ItemInfusion.Normal;
                 int level = 0;
 
                 //if 4 or less digits -> non-upgradable item.
-                if (categories.Contains(ItemCategory.Consumables) && memVal >= 200 && memVal <= 215 && !items.Any(j => j.Type == ItemType.EstusFlask))
+                if (categories.Contains(ItemCategory.Consumables) && itemId >= 200 && itemId <= 215 && !items.Any(j => j.Type == ItemType.EstusFlask))
                 {
                     var estus = Item.AllItems.First(j => j.Type == ItemType.EstusFlask);
                     var instance = new Item(estus.Name, estus.Id, estus.Type, estus.Category, estus.StackLimit, estus.Upgrade);
+
+                    //Item ID is both the item + reinforcement. Level field does not change in the games memory for the estus flask.
+                    //Goes like this:
+                    //200 == empty level 0
+                    //201 == full level 0
+                    //202 == empty level 1
+                    //203 == full level 1
+                    //203 == empty level 2
+                    //204 == full level 2
+                    //etc
+
+                    //If the flask is not empty, the amount of charges is stored in the quantity field.
+                    //If the ID - 200 is an even number, the flask is empty. For this case we can even ignore the 200 and just check the ID
+
+                    instance.Quantity = itemId % 2 == 0 ? 0 : quantity;
+
+                    //Calculating the upgrade level
+                    instance.UpgradeLevel = (itemId - 200) / 2;
+
                     instance.Infusion = infusion;
-                    instance.UpgradeLevel = level;
                     items.Add(instance);
                     continue;
                 }
-                else if (memVal < 10000)
+                else if (itemId < 10000)
                 {
-                    id = memVal;
+                    id = itemId;
                 }
                 else
                 {
                     //Separate digits
-                    int one = memVal % 10;
-                    int ten = (memVal / 10) % 10;
-                    int hundred = (memVal / 100) % 10;
+                    int one = itemId % 10;
+                    int ten = (itemId / 10) % 10;
+                    int hundred = (itemId / 100) % 10;
 
-                    id = memVal - (one + (10 * ten) + (100 * hundred));
+                    id = itemId - (one + (10 * ten) + (100 * hundred));
                     infusion = (ItemInfusion)hundred;
                     level = one + (10 * ten);
                 }
@@ -275,6 +293,7 @@ namespace DarkSoulsMemory.Internal.DarkSoulsPtde
                 if (lookupItem != null)
                 {
                     var instance = new Item(lookupItem.Name, lookupItem.Id, lookupItem.Type, lookupItem.Category, lookupItem.StackLimit, lookupItem.Upgrade);
+                    instance.Quantity = quantity;
                     instance.Infusion = infusion;
                     instance.UpgradeLevel = level;
                     items.Add(instance);

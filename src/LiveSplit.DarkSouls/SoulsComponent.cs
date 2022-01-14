@@ -501,33 +501,83 @@ namespace LiveSplit.DarkSouls
 
 				case SplitTypes.Item:
 					ItemId id = ComputeItemId(split);
-
-					int baseId = id.BaseId;
-					int mods = data[2];
-					int reinforcement = data[3];
-					int count = data[4];
-
-					isItemWarpSplitActive = data[5] == 2;
-					isEstusSplit = baseId == EstusId;
-
-					// In the layout file, mods and reinforcement are stored as int.MaxValue to simplify split
-					// validation. 
-					mods = mods == int.MaxValue ? 0 : Flags.OrderedInfusions[mods];
-					reinforcement = reinforcement == int.MaxValue ? 0 : reinforcement;
-
-					// Estus splits have their reinforcement stored as zero (since the reinforcement is implied through
-					// ID directly).
-					if (isEstusSplit)
+                    var itemId = id.BaseId;
+					
+					var infusion = ItemInfusion.Normal;
+                    if (data[2] != Int32.MaxValue)
 					{
-						estusReinforcement = reinforcement;
-						reinforcement = 0;
-					}
+                        infusion = (ItemInfusion)Flags.OrderedInfusions[data[2]];
+                    }
 
-					// The data field of the run state isn't otherwise used for item splits, so it's used to store item
-					// category (required to differentiate between items with the same ID).
-					run.Id = id.BaseId;
-					run.Data = id.Category;
-					run.TargetItem = new ItemState(mods, reinforcement, count);
+                    var level = data[3];
+                    var quantity = data[4];
+					
+					var categories = new List<ItemCategory>();
+                    switch (Utilities.ToHex(id.Category))
+                    {
+                        case 0:
+                            categories.Add(ItemCategory.MeleeWeapons);
+                            categories.Add(ItemCategory.RangedWeapons);
+                            categories.Add(ItemCategory.Ammo);
+                            categories.Add(ItemCategory.Shields);
+                            categories.Add(ItemCategory.SpellTools);
+                            break;
+
+                        case 1:
+                            categories.Add(ItemCategory.Armor);
+                            break;
+
+                        case 2:
+                            categories.Add(ItemCategory.Rings);
+                            break;
+
+                        case 4:
+                            categories.Add(ItemCategory.Consumables);
+                            categories.Add(ItemCategory.Key);
+                            categories.Add(ItemCategory.Spells);
+                            categories.Add(ItemCategory.UpgradeMaterials);
+                            categories.Add(ItemCategory.UsableItems);
+                            break;
+                    }
+
+                    //if (categories.Contains(ItemCategory.Consumables) && id.BaseId >= 200 && id.BaseId <= 215)
+                    //{
+                    //    var estus = Item.AllItems.First(j => j.Type == ItemType.EstusFlask);
+                    //    var instance = new Item(estus.Name, estus.Id, estus.Type, estus.Category, estus.StackLimit, estus.Upgrade);
+					//
+                    //    //Item ID is both the item + reinforcement. Level field does not change in the games memory for the estus flask.
+                    //    //Goes like this:
+                    //    //200 == empty level 0
+                    //    //201 == full level 0
+                    //    //202 == empty level 1
+                    //    //203 == full level 1
+                    //    //203 == empty level 2
+                    //    //204 == full level 2
+                    //    //etc
+					//
+                    //    //If the flask is not empty, the amount of charges is stored in the quantity field.
+                    //    //If the ID - 200 is an even number, the flask is empty. For this case we can even ignore the 200 and just check the ID
+					//
+                    //    instance.Quantity = id.BaseId % 2 == 0 ? 0 : data[4];
+					//
+                    //    //Calculating the upgrade level
+                    //    instance.UpgradeLevel = (id.BaseId - 200) / 2;
+					//	
+                    //    instance.Infusion = infusion;
+                    //    instance.UpgradeLevel = level;
+                    //    run.TargetItem = instance;
+                    //    break;
+                    //}
+                    
+                    var lookupItem = Item.AllItems.FirstOrDefault(j => categories.Contains(j.Category) && j.Id == itemId);
+                    if (lookupItem != null)
+                    {
+                        var instance = new Item(lookupItem.Name, lookupItem.Id, lookupItem.Type, lookupItem.Category, lookupItem.StackLimit, lookupItem.Upgrade);
+                        instance.Quantity = data[4];
+						instance.Infusion = infusion;
+                        instance.UpgradeLevel = level;
+                        run.TargetItem = instance;
+					}
 
 					break;
 
@@ -630,10 +680,10 @@ namespace LiveSplit.DarkSouls
 
 			// This is called each tick regardless of whether the current split is an item split (to ensure that the
 			// inventory state is accurate by the time an item split crops up).
-			if (itemsEnabled)
-			{
-				memory.RefreshItems();
-			}
+			//if (itemsEnabled)
+			//{
+			//	memory.RefreshItems();
+			//}
 
 			// This check is intentionally done relatively far down in the function. The reason is that an ended timer
 			// can be undone, and if that happens, I'd like all splits to continue working properly. Specifically, that
@@ -1101,50 +1151,15 @@ namespace LiveSplit.DarkSouls
 		// waiting for a warp).
 		private bool IsTargetItemSatisfied()
 		{
-			int targetId = run.Id;
-
-			// Estus flasks are a bit unique as far as upgrades. Other reinforceable items (like weapons and pyromancy
-			// flames) store their upgrades by directly modifying the ID in memory. In contrast, estus flasks span a
-			// range of IDs, starting at 200 (for an unfilled +0 flask) up through 215 (a filled +7 flask).
-			if (isEstusSplit)
-			{
-				targetId += estusReinforcement * 2;
+            //This function is called before target item is set..
+            if (run.TargetItem != null)
+            {
+                var items = darkSouls.GetCurrentInventoryItems();
+                return items.Any(i => i.Type == run.TargetItem.Type && i.Infusion == run.TargetItem.Infusion && i.UpgradeLevel == run.TargetItem.UpgradeLevel && i.Quantity >= run.TargetItem.Quantity);
 			}
 
-			bool isKey = keyItems.Contains(targetId);
-
-			// This double array felt like the easiest way to handle estus splits, even though literally every item
-			// besides the estus flask will only use a single state array.
-			ItemState[][] states = new ItemState[2][];
-			states[0] = memory.GetItemStates(targetId, run.Data, isKey);
-
-			if (isEstusSplit)
-			{
-				// For estus splits, the unfilled ID (at the target reinforement) is stored. Adding one brings you to
-				// the filled ID for that same reinforcement level.
-				states[1] = memory.GetItemStates(targetId + 1, run.Data, false);
-			}
-
-			ItemState target = run.TargetItem;
-
-			int count = 0;
-
-			foreach (ItemState[] array in states)
-			{
-				if (array == null)
-				{
-					continue;
-				}
-				
-				// Computing the count in this way allows the target count to be honored even if the target item
-				// doesn't stack (e.g. splitting on three stone greatswords rather than one).
-				count += array
-					.Where(state => state.Mods == target.Mods && state.Reinforcement >= target.Reinforcement)
-					.Sum(state => state.Count);
-			}
-
-			return count >= target.Count;
-		}
+            return false;
+        }
 
 		private bool ProcessZone(int[] data)
 		{

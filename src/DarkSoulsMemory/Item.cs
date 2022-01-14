@@ -23,9 +23,18 @@ namespace DarkSoulsMemory
         public ItemType Type;
         public ItemCategory Category;
         public int StackLimit;
+        public int Quantity;
         public ItemUpgrade Upgrade;
         public ItemInfusion Infusion;
         public int UpgradeLevel;
+
+        //For display in debugger
+        public override string ToString()
+        {
+            return $"{Name} {Quantity}";
+        }
+
+
 
         public int GetGameValue()
         {

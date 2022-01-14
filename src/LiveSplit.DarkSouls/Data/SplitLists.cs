@@ -87,7 +87,6 @@ namespace LiveSplit.DarkSouls.Data
 			splits.Bosses = groups["Bosses"].ToArray();
 			splits.Covenants = groups["Covenants"].ToArray();
 			splits.Zones = groups["Zones"].ToArray();
-            splits.RemasteredBosses = groups["Remastered"].ToArray();
 
 			return splits;
 		}
@@ -98,6 +97,5 @@ namespace LiveSplit.DarkSouls.Data
 		public string[] Bosses { get; set; }
 		public string[] Covenants { get; set; }
 		public string[] Zones { get; set; }
-        public string[] RemasteredBosses { get; set; }
 	}
 }
