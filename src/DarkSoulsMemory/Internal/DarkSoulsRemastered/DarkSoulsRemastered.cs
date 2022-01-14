@@ -51,7 +51,9 @@ namespace DarkSoulsMemory.Internal.DarkSoulsRemastered
         {
             if (TryScan(new byte?[] { 0x48, 0x8B, 0x0D, null, null, null, null, 0x41, 0xB8, 0x01, 0x00, 0x00, 0x00, 0x44 }, out _worldProgression))
             {
-                _worldProgression = (IntPtr)ReadInt32((IntPtr)ReadInt32(_worldProgression + ReadInt32(_worldProgression + 3) + 7));
+                _worldProgression = _worldProgression + ReadInt32(_worldProgression + 3) + 7;
+                _worldProgression = (IntPtr)ReadInt32(_worldProgression);
+                _worldProgression = (IntPtr)ReadInt32(_worldProgression);
             }
         }
 
@@ -87,6 +89,37 @@ namespace DarkSoulsMemory.Internal.DarkSoulsRemastered
         {
             return ReadInt32(_gameDataMan + 0xA4);
         }
+
+        private int _previousMillis = 0;
+        public bool IsPlayerLoaded()
+        {
+            //Can't find an address that has this flag, but I did notice that the timer only starts running when the player is loaded.
+            var millis = GetGameTimeInMilliseconds();
+
+            //Millis is 0 in main menu, when no save is loaded
+            if (millis == 0)
+            {
+                _previousMillis = 0;
+                return false;
+            }
+
+            //Detect a non 0 value of the clock - a save has just been loaded but the clock might not be running yet
+            if (_previousMillis == 0)
+            {
+                _previousMillis = millis;
+                return false;
+            }
+
+            //Clock is running since it has been initially loaded. 
+            if (_previousMillis != millis)
+            {
+                _previousMillis = millis;
+                return true;
+            }
+
+            return false;
+        }
+
 
 
         public bool IsBossDefeated(BossType bossType)
@@ -265,6 +298,28 @@ namespace DarkSoulsMemory.Internal.DarkSoulsRemastered
 
 
 
+        public BonfireState GetBonfireState(Bonfire bonfire)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ZoneType GetZone()
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public void ResetInventoryIndices()
+        {
+            if (TryScan(new byte?[] { 0x48, 0x8D, 0x15, null, null, null, null, 0xC1, 0xE1, 0x10, 0x49, 0x8B, 0xC6, 0x41, 0x0B, 0x8F, 0x14, 0x02, 0x00, 0x00, 0x44, 0x8B, 0xC6, 0x42, 0x89, 0x0C, 0xB2, 0x41, 0x8B, 0xD6, 0x49, 0x8B, 0xCF }, out IntPtr basePtr))
+            {
+                basePtr = ReadPtr(basePtr + 3) + 7;
+                for (int i = 0; i < 20; i++)
+                {
+                    Write(basePtr + (0x4 * i), uint.MaxValue);
+                }
+            }
+        }
 
         public int GetCurrentTestValue()
         {

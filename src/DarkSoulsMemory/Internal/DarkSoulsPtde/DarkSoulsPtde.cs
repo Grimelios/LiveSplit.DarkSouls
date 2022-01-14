@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DarkSoulsMemory.Internal.DarkSoulsPtde
@@ -104,6 +105,36 @@ namespace DarkSoulsMemory.Internal.DarkSoulsPtde
         public int GetGameTimeInMilliseconds()
         {
             return ReadInt32(_inGameTime);
+        }
+
+        private int _previousMillis = 0;
+        public bool IsPlayerLoaded()
+        {
+            //Can't find an address that has this flag, but I did notice that the timer only starts running when the player is loaded.
+            var millis = GetGameTimeInMilliseconds();
+
+            //Millis is 0 in main menu, when no save is loaded
+            if (millis == 0)
+            {
+                _previousMillis = 0;
+                return false;
+            }
+
+            //Detect a non 0 value of the clock - a save has just been loaded but the clock might not be running yet
+            if (_previousMillis == 0)
+            {
+                _previousMillis = millis;
+                return false;
+            }
+
+            //Clock is running since it has been initially loaded. 
+            if (_previousMillis != millis)
+            {
+                _previousMillis = millis;
+                return true;
+            }
+
+            return false;
         }
 
 
@@ -262,10 +293,66 @@ namespace DarkSoulsMemory.Internal.DarkSoulsPtde
             return inventoryItems;
         }
 
+        public BonfireState GetBonfireState(Bonfire bonfire)
+        {
+            
+            IntPtr pointer = (IntPtr)0x137E204;//TODO: hardcoded address
+            pointer = (IntPtr)ReadInt32(pointer);
+            pointer = (IntPtr)ReadInt32(IntPtr.Add(pointer, 0xB48));
+            pointer = (IntPtr)ReadInt32(IntPtr.Add(pointer, 0x24));
+            pointer = (IntPtr)ReadInt32(pointer);
+
+            IntPtr bonfirePointer = (IntPtr)ReadInt32(IntPtr.Add(pointer, 0x8));
+
+            while (bonfirePointer != IntPtr.Zero)
+            {
+                int bonfireId = ReadInt32(IntPtr.Add(bonfirePointer, 0x4));
+                if (bonfireId == (int)bonfire)
+                {
+                    int bonfireState = ReadInt32(IntPtr.Add(bonfirePointer, 0x8));
+                    var state = (BonfireState)bonfireState;
+                    return (BonfireState)bonfireState;
+                }
+                
+                pointer = (IntPtr)ReadInt32(pointer);
+                bonfirePointer = (IntPtr)ReadInt32(IntPtr.Add(pointer, 0x8));
+            }
+
+            return BonfireState.Undiscovered;
+        }
 
         public int GetCurrentTestValue()
         {
             return 0;
+        }
+
+
+        public ZoneType GetZone()
+        {
+            var zonePtr = (IntPtr)ReadInt32((IntPtr)0x137E204);//TODO: hardcoded address
+            var world = ReadByte(zonePtr + 0xA13);
+            var area = ReadByte(zonePtr + 0xA12);
+
+            var zone = _zones.FirstOrDefault(i => i.World == world && i.Area == area);
+            if (zone != null)
+            {
+                return zone.ZoneType;
+            }
+
+            return ZoneType.Unknown;
+        }
+
+
+        public void ResetInventoryIndices()
+        {
+            if (TryScan(new byte?[] { 0x8B, 0x4C, 0x24, 0x34, 0x8B, 0x44, 0x24, 0x2C, 0x89, 0x8A, 0x38, 0x01, 0x00, 0x00, 0x8B, 0x90, 0x08, 0x01, 0x00, 0x00, 0xC1, 0xE2, 0x10, 0x0B, 0x90, 0x00, 0x01, 0x00, 0x00, 0x8B, 0xC1, 0x8B, 0xCD, 0x89, 0x14, 0xAD, null, null, null, null }, out IntPtr basePtr))
+            {
+                basePtr = (IntPtr)ReadInt32(basePtr + 0x24);
+                foreach (int slot in _equipmentSlots)//Bit strange - the slots seem a single connected memory area. Why not write from start to end, increment baseptr by 4 bytes each loop
+                {
+                    Write(basePtr + slot, uint.MaxValue);
+                }
+            }
         }
         
 
@@ -315,6 +402,56 @@ namespace DarkSoulsMemory.Internal.DarkSoulsPtde
             new Boss(BossType.CentipedeDemon    , 0x3C70, 26),
             new Boss(BossType.Gwyndolin         , 0x4670, 27),
             new Boss(BossType.StrayDemon        , 0x5A70, 27),
+        };
+
+
+        private class Zone
+        {
+            public Zone(int world, int area, ZoneType zoneType)
+            {
+                World = world;
+                Area = area;
+                ZoneType = zoneType;
+            }
+
+            public int World;
+            public int Area;
+            public ZoneType ZoneType;
+        }
+
+        private readonly List<Zone> _zones = new List<Zone>()
+        {
+            new Zone(15, 1, ZoneType.AnorLondo),
+            new Zone(18, 0, ZoneType.FirelinkAltar),
+            new Zone(10, 2, ZoneType.FirelinkShrine),
+            new Zone(11, 0, ZoneType.PaintedWorld),
+            new Zone(12, 1, ZoneType.SanctuaryGarden),
+            new Zone(15, 0, ZoneType.SensFortressRoof),
+            new Zone(16, 0, ZoneType.TheAbyss),
+            new Zone(18, 1, ZoneType.UndeadAsylum),
+        };
+
+        private int[] _equipmentSlots =
+        {
+            0x0, // Slot 7
+            0x4, // Slot 0
+            0x8, // Slot 8
+            0xC, // Slot 1
+            0x10, // Slot 9
+            0x10 + 0x8, // Slot 10
+            0x14, // Slot 11
+            0x14 + 0x8, // Slot 12
+            0x20, // Slot 14
+            0x20 + 0x4, // Slot 15
+            0x20 + 0x8, // Slot 16
+            0x20 + 0xC, // Slot 17
+            0x34, // Slot 18
+            0x34 + 0x4, // Slot 19
+            0x3C, // Slot 2
+            0x3C + 0x4, // Slot 3
+            0x3C + 0x8, // Slot 4
+            0x3C + 0xC, // Slot 5
+            0x3C + 0x10, // Slot 6
         };
 
         #endregion

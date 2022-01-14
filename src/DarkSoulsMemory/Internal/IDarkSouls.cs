@@ -24,6 +24,12 @@ namespace DarkSoulsMemory.Internal
 
 
         /// <summary>
+        /// Checks if IGT clock is running, if it is running, the player has to be loaded.
+        /// </summary>
+        /// <returns></returns>
+        bool IsPlayerLoaded();
+
+        /// <summary>
         /// Returns true if the given boss is still alive.
         /// </summary>
         /// <param name="boss"></param>
@@ -63,6 +69,25 @@ namespace DarkSoulsMemory.Internal
         /// </summary>
         /// <returns></returns>
         Vector3 GetPlayerPosition();
+
+
+        /// <summary>
+        /// Returns the state of the given bonfire
+        /// </summary>
+        /// <returns></returns>
+        BonfireState GetBonfireState(Bonfire bonfire);
+
+        /// <summary>
+        /// Returns the current zone
+        /// </summary>
+        /// <returns></returns>
+        ZoneType GetZone();
+
+
+        /// <summary>
+        /// Resets inventory indices
+        /// </summary>
+        void ResetInventoryIndices();
 
         /// <summary>
         /// For testing

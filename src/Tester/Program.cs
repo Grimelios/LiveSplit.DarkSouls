@@ -19,12 +19,13 @@ namespace Tester
 
             var darkSouls = new DarkSouls();
 
+            darkSouls.GetCurrentInventoryItems();
             while (true)
             {
                 darkSouls.Refresh();
 
                 Console.Clear();
-                Console.WriteLine($"IGT {darkSouls.GetGameTimeInMilliseconds()} test value: {darkSouls.GetCurrentTestValue()} {darkSouls.GetPlayerPosition()}");
+                Console.WriteLine($"IGT {darkSouls.GetGameTimeInMilliseconds()} test value: {darkSouls.GetCurrentTestValue()} {darkSouls.IsPlayerLoaded()}");
                 Thread.Sleep(50);
             }
         }

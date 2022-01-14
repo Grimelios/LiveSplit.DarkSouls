@@ -133,70 +133,40 @@ namespace LiveSplit.DarkSouls.Memory
 			return states.ToArray();
 		}
 
-		public void ResetEquipmentIndexes()
-		{
-			int[] slots =
-			{
-				0x0, // Slot 7
-				0x4, // Slot 0
-				0x8, // Slot 8
-				0xC, // Slot 1
-				0x10, // Slot 9
-				0x10 + 0x8, // Slot 10
-				0x14, // Slot 11
-				0x14 + 0x8, // Slot 12
-				0x20, // Slot 14
-				0x20 + 0x4, // Slot 15
-				0x20 + 0x8, // Slot 16
-				0x20 + 0xC, // Slot 17
-				0x34, // Slot 18
-				0x34 + 0x4, // Slot 19
-				0x3C, // Slot 2
-				0x3C + 0x4, // Slot 3
-				0x3C + 0x8, // Slot 4
-				0x3C + 0xC, // Slot 5
-				0x3C + 0x10, // Slot 6
-			};
-
-			foreach (int slot in slots)
-			{
-				MemoryTools.Write(handle, pointers.Equipment + slot, uint.MaxValue);
-			}
-		}
-
-		public int GetGameTimeInMilliseconds()
-		{
-            return MemoryTools.ReadInt32(handle, pointers.InGameTime);
-
-            //IntPtr pointer = (IntPtr)MemoryTools.ReadInt32(handle, (IntPtr)0x1378700);
-			//
-			//return MemoryTools.ReadInt32(handle, IntPtr.Add(pointer, 0x68));
-		}
+		
+		//public int GetGameTimeInMilliseconds()
+		//{
+        //    return MemoryTools.ReadInt32(handle, pointers.InGameTime);
+		//
+        //    //IntPtr pointer = (IntPtr)MemoryTools.ReadInt32(handle, (IntPtr)0x1378700);
+		//	//
+		//	//return MemoryTools.ReadInt32(handle, IntPtr.Add(pointer, 0x68));
+		//}
 
 		//public byte GetActiveAnimation()
 		//{
 		//	return MemoryTools.ReadByte(handle, pointers.Character + 0xC5C);
 		//}
 
-		public int GetForcedAnimation()
-		{
-			return MemoryTools.ReadInt32(handle, pointers.Character + 0xFC);
-		}
+		//public int GetForcedAnimation()
+		//{
+		//	return MemoryTools.ReadInt32(handle, pointers.Character + 0xFC);
+		//}
 
 		// Every time the player uses an item that requires a yes/no confirmation box, the ID of the item can be
 		// retreived. That ID remains in place until the item's animation is complete.
-		public int GetPromptedItem()
-		{
-			return MemoryTools.ReadInt32(handle, pointers.Character + 0x62C);
-		}
+		//public int GetPromptedItem()
+		//{
+		//	return MemoryTools.ReadInt32(handle, pointers.Character + 0x62C);
+		//}
 
 		// "Prompted menu" here refers to the small menu near the bottom of the screen (such as yes/no confirmation
 		// boxes). Each box has a unique ID (based on the text displayed).
-		public byte GetPromptedMenu()
-		{
-			// The prompted menu ID is stored using a static address.
-			return MemoryTools.ReadByte(handle, (IntPtr)0x12E33E0);
-		}
+		//public byte GetPromptedMenu()
+		//{
+		//	// The prompted menu ID is stored using a static address.
+		//	return MemoryTools.ReadByte(handle, (IntPtr)0x12E33E0);
+		//}
 
 		// In this context, "World" (and "Area" below) refer to large geographic locations within the world. The two
 		// values together can be used to roughly determine where you are (although not with the precision of
@@ -211,39 +181,39 @@ namespace LiveSplit.DarkSouls.Memory
 			return MemoryTools.ReadByte(handle, pointers.Zone + 0xA12);
 		}
 
-		public bool IsLoadScreenVisible()
-		{
-			return MemoryTools.ReadBoolean(handle, pointers.WorldState - 0x37EF4);
-		}
+		//public bool IsLoadScreenVisible()
+		//{
+		//	return MemoryTools.ReadBoolean(handle, pointers.WorldState - 0x37EF4);
+		//}
 
-        private int _initialMillis = 0;
-        public bool IsPlayerLoaded()
-        {
-            //Can't find an address that has this flag, but I did notice that the timer only starts running when the player is loaded.
-            var temp = GetGameTimeInMilliseconds();
-
-            //Millis is 0 in main menu, when no save is loaded
-            if (temp == 0)
-            {
-                _initialMillis = 0;
-                return false;
-            }
-
-            //Detect a non 0 value of the clock - a save has just been loaded but the clock might not be running yet
-            if (_initialMillis == 0)
-            {
-                _initialMillis = temp;
-                return false;
-            }
-
-            //Clock is running since it has been initially loaded. 
-            if (_initialMillis != temp)
-            {
-                return true;
-            }
-
-            return false;
-        }
+        //private int _initialMillis = 0;
+        //public bool IsPlayerLoaded()
+        //{
+        //    //Can't find an address that has this flag, but I did notice that the timer only starts running when the player is loaded.
+        //    var temp = GetGameTimeInMilliseconds();
+		//
+        //    //Millis is 0 in main menu, when no save is loaded
+        //    if (temp == 0)
+        //    {
+        //        _initialMillis = 0;
+        //        return false;
+        //    }
+		//
+        //    //Detect a non 0 value of the clock - a save has just been loaded but the clock might not be running yet
+        //    if (_initialMillis == 0)
+        //    {
+        //        _initialMillis = temp;
+        //        return false;
+        //    }
+		//
+        //    //Clock is running since it has been initially loaded. 
+        //    if (_initialMillis != temp)
+        //    {
+        //        return true;
+        //    }
+		//
+        //    return false;
+        //}
 
 		//public bool IsPlayerLoaded()
 		//{

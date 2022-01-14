@@ -11,6 +11,8 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using System.Xml;
+using DarkSoulsMemory;
+using DarkSoulsMemory.Internal;
 
 namespace LiveSplit.DarkSouls
 {
@@ -20,7 +22,9 @@ namespace LiveSplit.DarkSouls
 
 		private const int EstusId = 200;
 
-        private DarkSoulsMemory.DarkSouls darkSouls;
+        private readonly DarkSoulsMemory.DarkSouls darkSouls;
+
+
 		private TimerModel timer;
 		private SplitCollection splitCollection;
         private SoulsMemory memory;
@@ -375,7 +379,7 @@ namespace LiveSplit.DarkSouls
 		{
 			splitCollection.OnStart();
 
-			if (!IsPlayerLoaded())
+			if (!darkSouls.IsPlayerLoaded())
 			{
 				waitingOnFirstLoad = true;
 
@@ -390,15 +394,7 @@ namespace LiveSplit.DarkSouls
 		{
 			if (masterControl.ResetEquipmentIndexes)
 			{
-                if (memory.ProcessHooked)
-                {
-                    memory.ResetEquipmentIndexes();
-				}
-
-                if (_soulsRemastered.Hook())
-                {
-					_soulsRemastered.ResetInventoryIndices();
-                }
+				darkSouls.ResetInventoryIndices();
             }
 
 
@@ -514,7 +510,7 @@ namespace LiveSplit.DarkSouls
 
 					if (onDiscover)
 					{
-						run.Data = memory.GetPromptedMenu();
+						run.Data = (int)darkSouls.GetMenuPrompt();
 						run.Target = target;
 					}
 					else
@@ -611,8 +607,9 @@ namespace LiveSplit.DarkSouls
 
 		// Making the phase nullable makes testing easier.
 		public void Refresh(TimerPhase? nullablePhase = null)
-		{
-            var isHooked = darkSouls.Refresh();
+        {
+            Hook();
+            darkSouls.Refresh();
 
 
 			// In theory, the first IGT frame of a run should have a time value of about 32 milliseconds (i.e. one
@@ -621,13 +618,8 @@ namespace LiveSplit.DarkSouls
 			// small enough that later loads into a file don't autostart the timer.
 			const int TimerAutostartThreshold = 150;
 
-			
-			//moved into temps - is PTDE hook is evaluated first in the if statement, remastered hook might never be called at all, and not get hooked when started later than livesplit
-            var ptdeHooked = Hook();
-            var remasteredHooked = _soulsRemastered.Hook();
-            
             //If neither game is connected
-			if (!ptdeHooked && !remasteredHooked)
+			if (!darkSouls.IsGameAttached)
 			{
 				return;
 			}
@@ -640,12 +632,12 @@ namespace LiveSplit.DarkSouls
 
 			if (waitingOnFirstLoad)
 			{
-				if (!IsPlayerLoaded())
+				if (!darkSouls.IsPlayerLoaded())
 				{
 					return;
 				}
 
-				InitializeItems();
+				//InitializeItems();
 				UpdateRunState();
 
 				waitingOnFirstLoad = false;
@@ -654,14 +646,9 @@ namespace LiveSplit.DarkSouls
 			TimerPhase phase = nullablePhase.Value;
 
             int inGameTime = 0;
-            if (memory.ProcessHooked)
+            if (darkSouls.IsGameAttached)
             {
-                inGameTime = memory.GetGameTimeInMilliseconds();
-            }
-
-            if (_soulsRemastered.Hook())
-            {
-                inGameTime = _soulsRemastered.GetGameTimeInMilliseconds();
+                inGameTime = darkSouls.GetGameTimeInMilliseconds();
             }
 
 
@@ -725,14 +712,14 @@ namespace LiveSplit.DarkSouls
 			{
 				if (isBonfireWarpSplitActive)
 				{
-					int[] leaveValues =
+					ForcedAnimation[] leaveValues =
 					{
-						(int)AnimationFlags.BonfireLeave1,
-						(int)AnimationFlags.BonfireLeave2,
-						(int)AnimationFlags.BonfireLeave3
+						ForcedAnimation.BonfireLeave1,
+						ForcedAnimation.BonfireLeave2,
+						ForcedAnimation.BonfireLeave3
 					};
 
-					int animation = memory.GetForcedAnimation();
+                    var animation = darkSouls.GetForcedAnimation();
 
 					// Without this check, the player could rest at a target bonfire (without warping), then warp from
 					// another bonfire and have the tool incorrectly split.
@@ -791,7 +778,7 @@ namespace LiveSplit.DarkSouls
 			if (waitingOnUnload)
 			{
 				// When the load screen appears following a quitout, the player isn't unloaded instantly.
-				if (!IsPlayerLoaded())
+				if (!darkSouls.IsPlayerLoaded())
 				{
 					waitingOnUnload = false;
 					waitingOnReload = true;
@@ -804,7 +791,7 @@ namespace LiveSplit.DarkSouls
 			{
 				// By the time this point in the code is reached, the player must already be unloaded (due to quitting
 				// to the title screen).
-				if (IsPlayerLoaded())
+				if (darkSouls.IsPlayerLoaded())
 				{
 					waitingOnReload = false;
 					timer.Split();
@@ -898,40 +885,21 @@ namespace LiveSplit.DarkSouls
 			return new ItemId(baseId, category);
 		}
 
-        private bool IsPlayerLoaded()
-        {
-            if (memory.ProcessHooked)
-            {
-                return memory.IsPlayerLoaded();
-            }
-
-            if (_soulsRemastered.Hook())
-            {
-                return _soulsRemastered.IsPlayerLoaded();
-            }
-
-            return false;
-        }
-
 		private void PrepareWarp()
 		{
 			preparedForWarp = true;
-			isLoadScreenVisible = memory.IsLoadScreenVisible();
+			isLoadScreenVisible = !darkSouls.IsPlayerLoaded();
 		}
 
 		private bool CheckWarp()
 		{
-			const int Darksign = 117;
-			const int HomewardBone = 330;
-			const int BonfireWarpPrompt = 80;
-
 			if (!isBonfireWarpConfirmed)
 			{
 				// This state becomes true for just a moment when the player confirms a bonfire warp.
-				isBonfireWarpConfirmed = memory.GetPromptedMenu() == BonfireWarpPrompt && memory.GetForcedAnimation() == (int)AnimationFlags.BonfireWarp;
+				isBonfireWarpConfirmed = darkSouls.GetMenuPrompt() == MenuPrompt.BonfireWarp  && darkSouls.GetForcedAnimation() == ForcedAnimation.BonfireWarp;
 			}
 
-			bool visible = memory.IsLoadScreenVisible();
+			bool visible = !darkSouls.IsPlayerLoaded();
 			bool previouslyVisible = isLoadScreenVisible;
 
 			isLoadScreenVisible = visible;
@@ -964,9 +932,9 @@ namespace LiveSplit.DarkSouls
 				return false;
 			}
 
-			int itemUsed = memory.GetPromptedItem();
+			var itemUsed = darkSouls.GetItemPrompt();
 
-			return itemUsed == Darksign || itemUsed == HomewardBone;
+			return itemUsed == ItemPrompt.Darksign || itemUsed == ItemPrompt.HomewardBone;
 		}
 
 		private bool ProcessBonfire(int[] data)
@@ -983,15 +951,15 @@ namespace LiveSplit.DarkSouls
 
 			if (onRest || onLeave || onWarp)
 			{
-				int[] animationValues;
+				ForcedAnimation[] animationValues;
 
 				if (onLeave)
 				{
 					animationValues = new[]
 					{
-						(int)AnimationFlags.BonfireLeave1,
-						(int)AnimationFlags.BonfireLeave2,
-						(int)AnimationFlags.BonfireLeave3
+						ForcedAnimation.BonfireLeave1,
+						ForcedAnimation.BonfireLeave2,
+						ForcedAnimation.BonfireLeave3
 					};
 				}
 				// Both rest and warp splits need to check resting animation values.
@@ -999,13 +967,13 @@ namespace LiveSplit.DarkSouls
 				{
 					animationValues = new[]
 					{
-						(int)AnimationFlags.BonfireRest1,
-						(int)AnimationFlags.BonfireRest2,
-						(int)AnimationFlags.BonfireRest3
+						ForcedAnimation.BonfireStartRest1,
+						ForcedAnimation.BonfireStartRest2,
+						ForcedAnimation.BonfireStartRest3
 					};
 				}
 
-				int animation = memory.GetForcedAnimation();
+				var animation = darkSouls.GetForcedAnimation();
 
 				// This confirms that the player is the correct bonfire animation (either resting or leaving, as
 				// appropriate), but not which bonfire.
@@ -1078,13 +1046,13 @@ namespace LiveSplit.DarkSouls
 			const int Radius = 40;
 			const int CovenantPromptId = 121;
 
-			int menu = memory.GetPromptedMenu();
+            var menu = darkSouls.GetMenuPrompt();
 
-			if (menu != run.Data)
+			if (menu != (MenuPrompt)run.Data)
 			{
-				run.Data = menu;
+				run.Data = (int)menu;
 
-				if (menu == CovenantPromptId)
+				if (menu == MenuPrompt.Covenant)
 				{
 					// At this point, the covenant prompt has appeared, but it's unknown to which covenant the prompt
 					// applies (since all covenants use the same prompt).
@@ -1164,7 +1132,7 @@ namespace LiveSplit.DarkSouls
 			}
 
 			// The player is unloaded just as the credits start.
-			return waitingOnCredits && !memory.IsPlayerLoaded();
+			return waitingOnCredits && !darkSouls.IsPlayerLoaded();
 		}
 
 		private bool ProcessFlag(int[] data)
@@ -1278,8 +1246,8 @@ namespace LiveSplit.DarkSouls
 
             if (memory.ProcessHooked)
             {
-				loaded = memory.IsPlayerLoaded();
-            }
+				loaded = !darkSouls.IsPlayerLoaded();
+			}
 
             if (_soulsRemastered.Hook())
             {

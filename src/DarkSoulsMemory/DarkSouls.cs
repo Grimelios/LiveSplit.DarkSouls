@@ -38,6 +38,20 @@ namespace DarkSoulsMemory
 
 
         /// <summary>
+        /// Checks if IGT clock is running, if it is running, the player has to be loaded.
+        /// </summary>
+        /// <returns></returns>
+        public bool IsPlayerLoaded()
+        {
+            if (_darkSouls == null)
+            {
+                return false;
+            }
+
+            return _darkSouls.IsPlayerLoaded();
+        }
+
+        /// <summary>
         /// Returns true if the given boss is still alive.
         /// </summary>
         /// <param name="boss"></param>
@@ -128,6 +142,36 @@ namespace DarkSoulsMemory
 
 
         /// <summary>
+        /// Returns the state of the given bonfire
+        /// </summary>
+        /// <returns></returns>
+        public BonfireState GetBonfireState(Bonfire bonfire)
+        {
+            if (_darkSouls == null)
+            {
+                return BonfireState.Undiscovered;
+            }
+
+            return _darkSouls.GetBonfireState(bonfire);
+        }
+
+
+        /// <summary>
+        /// Returns the current zone
+        /// </summary>
+        /// <returns></returns>
+        public ZoneType GetZone()
+        {
+            if (_darkSouls == null)
+            {
+                return ZoneType.Unknown;
+            }
+
+            return _darkSouls.GetZone();
+        }
+
+
+        /// <summary>
         /// Only for developers
         /// </summary>
         /// <returns></returns>
@@ -142,6 +186,24 @@ namespace DarkSoulsMemory
         }
 
 
+        /// <summary>
+        /// Resets inventory indices
+        /// </summary>
+        public void ResetInventoryIndices()
+        {
+            if (_darkSouls == null)
+            {
+                return;
+            }
+
+            _darkSouls.ResetInventoryIndices();
+        }
+
+
+        /// <summary>
+        /// Returns true if the game is currently attached and memory can be read.
+        /// </summary>
+        public bool IsGameAttached => _darkSouls != null;
 
 
         /// <summary>

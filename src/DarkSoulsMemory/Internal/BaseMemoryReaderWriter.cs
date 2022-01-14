@@ -79,9 +79,17 @@ namespace DarkSoulsMemory.Internal
 
             return false;
         }
-
+        
+        //We scan signatures in the code - this memory never changes. No need to copy these bytes out every time we do a scan.
+        //Makes the program use more memory, but gives a lot of performance back
+        private Dictionary<IntPtr, byte[]> _cachedRegions;
         internal Dictionary<IntPtr, byte[]> GetRegions(Process process)
         {
+            if (_cachedRegions != null)
+            {
+                return _cachedRegions;
+            }
+
             const uint MEM_COMMIT = 0x1000;
             const uint PAGE_GUARD = 0x100;
             const uint PAGE_EXECUTE_ANY = 0xF0;
@@ -122,6 +130,7 @@ namespace DarkSoulsMemory.Internal
                 memory[memRegion.BaseAddress] = ReadBytes(memRegion.BaseAddress, (int)memRegion.RegionSize);
             }
 
+            _cachedRegions = memory;
             return memory;
         }
 
