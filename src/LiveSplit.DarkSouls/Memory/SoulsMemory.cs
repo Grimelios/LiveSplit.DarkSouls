@@ -237,29 +237,29 @@ namespace LiveSplit.DarkSouls.Memory
 			return MemoryTools.ReadInt32(handle, pointers.CharacterStats + 0xC);
 		}
 
-		public Vector3 GetPlayerPosition()
-		{
-			float x = GetPlayerX();
-			float y = GetPlayerY();
-			float z = GetPlayerZ();
-
-			return new Vector3(x, y, z);
-		}
-
-		public float GetPlayerX()
-		{
-			return MemoryTools.ReadFloat(handle, pointers.CharacterPosition + 0x10);
-		}
-
-		public float GetPlayerY()
-		{
-			return MemoryTools.ReadFloat(handle, pointers.CharacterPosition + 0x14);
-		}
-
-		public float GetPlayerZ()
-		{
-			return MemoryTools.ReadFloat(handle, pointers.CharacterPosition + 0x18);
-		}
+		//public Vector3 GetPlayerPosition()
+		//{
+		//	float x = GetPlayerX();
+		//	float y = GetPlayerY();
+		//	float z = GetPlayerZ();
+		//
+		//	return new Vector3(x, y, z);
+		//}
+		//
+		//public float GetPlayerX()
+		//{
+		//	return MemoryTools.ReadFloat(handle, pointers.CharacterPosition + 0x10);
+		//}
+		//
+		//public float GetPlayerY()
+		//{
+		//	return MemoryTools.ReadFloat(handle, pointers.CharacterPosition + 0x14);
+		//}
+		//
+		//public float GetPlayerZ()
+		//{
+		//	return MemoryTools.ReadFloat(handle, pointers.CharacterPosition + 0x18);
+		//}
 
 		public CovenantFlags GetCovenant()
 		{
@@ -385,64 +385,64 @@ namespace LiveSplit.DarkSouls.Memory
 		}
 
 
-        public bool IsBossAlive(BossFlags bossType)
-        {
-            var boss = _bosses.First(i => i.BossType == bossType);
-            var memVal = MemoryTools.ReadInt32(process.Handle, pointers.BossState + boss.Offset);
-            return !IsBitSet(memVal, boss.Bit);
-        }
+        //public bool IsBossAlive(BossFlags bossType)
+        //{
+        //    var boss = _bosses.First(i => i.BossType == bossType);
+        //    var memVal = MemoryTools.ReadInt32(process.Handle, pointers.BossState + boss.Offset);
+        //    return !IsBitSet(memVal, boss.Bit);
+        //}
+		//
+        //private static bool IsBitSet(int b, int pos)
+        //{
+        //    return (b & (1 << pos)) != 0;
+        //}
 
-        private static bool IsBitSet(int b, int pos)
-        {
-            return (b & (1 << pos)) != 0;
-        }
-
-		#region data/lookup tables =======================================================================================================================================
-
-		private struct Boss
-		{
-			public Boss(BossFlags bossType, int offset, int bit)
-			{
-				BossType = bossType;
-				Offset = offset;
-				Bit = bit;
-			}
-
-			public BossFlags BossType;
-			public int Offset;
-			public int Bit;
-		}
-
-		private readonly List<Boss> _bosses = new List<Boss>()
-		{
-			new Boss(BossFlags.GapingDragon      , 0x0   , 1),
-			new Boss(BossFlags.Gargoyles         , 0x0   , 2),
-			new Boss(BossFlags.Priscilla         , 0x0   , 3),
-			new Boss(BossFlags.Sif               , 0x0   , 4),
-			new Boss(BossFlags.Pinwheel          , 0x0   , 5),
-			new Boss(BossFlags.Nito              , 0x0   , 6),
-			new Boss(BossFlags.BedOfChaos        , 0x0   , 9),
-			new Boss(BossFlags.Quelaag           , 0x0   , 8),
-			new Boss(BossFlags.IronGolem         , 0x0   , 10),
-			new Boss(BossFlags.OrnsteinAndSmough , 0x0   , 11),
-			new Boss(BossFlags.FourKings         , 0x0   , 12),
-			new Boss(BossFlags.Seath             , 0x0   , 13),
-			new Boss(BossFlags.Gwyn              , 0x0   , 14),
-			new Boss(BossFlags.AsylumDemon       , 0x0   , 15),
-			new Boss(BossFlags.TaurusDemon       , 0xF70 , 26),
-			new Boss(BossFlags.CapraDemon        , 0xF70 , 25),
-			new Boss(BossFlags.MoonlightButterfly, 0x1E70, 27),
-			new Boss(BossFlags.SanctuaryGuardian , 0x2300, 31),
-			new Boss(BossFlags.Artorias          , 0x2300, 30),
-			new Boss(BossFlags.Manus             , 0x2300, 29),
-			new Boss(BossFlags.Kalameet          , 0x2300, 27),
-			new Boss(BossFlags.Firesage          , 0x3C30, 5),
-			new Boss(BossFlags.CeaselessDischarge, 0x3C70, 27),
-			new Boss(BossFlags.CentipedeDemon    , 0x3C70, 26),
-			new Boss(BossFlags.Gwyndolin         , 0x4670, 27),
-			new Boss(BossFlags.StrayDemon        , 0x5A70, 27),
-		};
-
-		#endregion
+		//#region data/lookup tables =======================================================================================================================================
+		//
+		//private struct Boss
+		//{
+		//	public Boss(BossFlags bossType, int offset, int bit)
+		//	{
+		//		BossType = bossType;
+		//		Offset = offset;
+		//		Bit = bit;
+		//	}
+		//
+		//	public BossFlags BossType;
+		//	public int Offset;
+		//	public int Bit;
+		//}
+		//
+		//private readonly List<Boss> _bosses = new List<Boss>()
+		//{
+		//	new Boss(BossFlags.GapingDragon      , 0x0   , 1),
+		//	new Boss(BossFlags.Gargoyles         , 0x0   , 2),
+		//	new Boss(BossFlags.Priscilla         , 0x0   , 3),
+		//	new Boss(BossFlags.Sif               , 0x0   , 4),
+		//	new Boss(BossFlags.Pinwheel          , 0x0   , 5),
+		//	new Boss(BossFlags.Nito              , 0x0   , 6),
+		//	new Boss(BossFlags.BedOfChaos        , 0x0   , 9),
+		//	new Boss(BossFlags.Quelaag           , 0x0   , 8),
+		//	new Boss(BossFlags.IronGolem         , 0x0   , 10),
+		//	new Boss(BossFlags.OrnsteinAndSmough , 0x0   , 11),
+		//	new Boss(BossFlags.FourKings         , 0x0   , 12),
+		//	new Boss(BossFlags.Seath             , 0x0   , 13),
+		//	new Boss(BossFlags.Gwyn              , 0x0   , 14),
+		//	new Boss(BossFlags.AsylumDemon       , 0x0   , 15),
+		//	new Boss(BossFlags.TaurusDemon       , 0xF70 , 26),
+		//	new Boss(BossFlags.CapraDemon        , 0xF70 , 25),
+		//	new Boss(BossFlags.MoonlightButterfly, 0x1E70, 27),
+		//	new Boss(BossFlags.SanctuaryGuardian , 0x2300, 31),
+		//	new Boss(BossFlags.Artorias          , 0x2300, 30),
+		//	new Boss(BossFlags.Manus             , 0x2300, 29),
+		//	new Boss(BossFlags.Kalameet          , 0x2300, 27),
+		//	new Boss(BossFlags.Firesage          , 0x3C30, 5),
+		//	new Boss(BossFlags.CeaselessDischarge, 0x3C70, 27),
+		//	new Boss(BossFlags.CentipedeDemon    , 0x3C70, 26),
+		//	new Boss(BossFlags.Gwyndolin         , 0x4670, 27),
+		//	new Boss(BossFlags.StrayDemon        , 0x5A70, 27),
+		//};
+		//
+		//#endregion
 	}
 }

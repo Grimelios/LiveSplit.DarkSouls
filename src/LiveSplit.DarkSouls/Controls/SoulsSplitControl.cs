@@ -120,7 +120,6 @@ namespace LiveSplit.DarkSouls.Controls
 				{ SplitTypes.Item, GetItemControls },
 				{ SplitTypes.Quitout, GetQuitoutControls },
 				{ SplitTypes.Zone, GetZoneControls },
-				{ SplitTypes.Remastered, GetRemasteredControls },
 			};	
 		}
 
@@ -668,26 +667,7 @@ namespace LiveSplit.DarkSouls.Controls
 		}
 
 
-        private Control[] GetRemasteredControls()
-        {
-            const int BossListWidth = 131;
-
-            var bossList = GetDropdown(lists.RemasteredBosses, "Bosses", BossListWidth);
-            //bossList.SelectedIndexChanged += (sender, args) =>
-            //{
-            //    bossTiming.Enabled = true;
-            //};
-
-            return new Control[]
-            {
-                bossList,
-               // bossTiming
-            };
-        }
-
-
-
-		private void LinkItemLines(Control[] line1, Control[] line2)
+        private void LinkItemLines(Control[] line1, Control[] line2)
 		{
 			// Infusions are called "modifications" in most of the codebase. Swapping to "infusions" happened pretty
 			// late in the project, so it wasn't worth renaming everything internally.

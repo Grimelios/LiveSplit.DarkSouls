@@ -9,10 +9,10 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Windows.Forms;
 using System.Xml;
 using DarkSoulsMemory;
-using DarkSoulsMemory.Internal;
 
 namespace LiveSplit.DarkSouls
 {
@@ -23,12 +23,11 @@ namespace LiveSplit.DarkSouls
 		private const int EstusId = 200;
 
         private readonly DarkSoulsMemory.DarkSouls darkSouls;
-
+        private SoulsMemory memory;
 
 		private TimerModel timer;
 		private SplitCollection splitCollection;
-        private SoulsMemory memory;
-        private SoulsRemastered _soulsRemastered;
+
 		private SoulsMasterControl masterControl;
 		private Dictionary<SplitTypes, Func<int[], bool>> splitFunctions;
 		private Dictionary<Zones, List<Zone>> zoneMap;
@@ -77,7 +76,6 @@ namespace LiveSplit.DarkSouls
 
 			splitCollection = new SplitCollection();
 			memory = new SoulsMemory();
-            _soulsRemastered = new SoulsRemastered();
 			masterControl = new SoulsMasterControl();
 			run = new RunState();
 
@@ -91,7 +89,6 @@ namespace LiveSplit.DarkSouls
 				{ SplitTypes.Item, ProcessItem },
 				{ SplitTypes.Quitout, ProcessQuitout },
 				{ SplitTypes.Zone, ProcessZone },
-				{ SplitTypes.Remastered, ProcessRemastered },
 			};
 
 			// This array is used for covenant discovery splits. Discovery occurs when the player is prompted to join a
@@ -385,8 +382,7 @@ namespace LiveSplit.DarkSouls
 
 				return;
 			}
-
-			InitializeItems();
+			
 			UpdateRunState();
 		}
 
@@ -406,53 +402,7 @@ namespace LiveSplit.DarkSouls
 
 			splitCollection.OnReset();
 		}
-
-		private void InitializeItems()
-		{
-			var splits = splitCollection.Splits;
-
-			if (splits == null)
-			{
-				return;
-			}
-
-			itemsEnabled = splits.Any(s => s.Type == SplitTypes.Item);
-
-			if (!itemsEnabled)
-			{
-				return;
-			}
-
-			List<ItemId> items = new List<ItemId>();
-
-			foreach (Split split in splitCollection.Splits)
-			{
-				if (split.Type != SplitTypes.Item || !split.IsFinished)
-				{
-					continue;
-				}
-
-				ItemId id = ComputeItemId(split);
-
-				// Given the nature of how estus IDs are stored, both the filled and unfilled versions of
-				// the flask (at the target reinforcement) must be tracked.
-				if (id.BaseId == EstusId)
-				{
-					int reinforcement = split.Data[3];
-
-					id.BaseId += reinforcement * 2;
-
-					ItemId filledId = new ItemId(id.BaseId + 1, id.Category);
-
-					items.Add(filledId);
-				}
-
-				items.Add(id);
-			}
-
-			memory.SetItems(items, keyItems);
-		}
-
+		
 		private void UpdateRunState()
 		{
 			Split split = splitCollection.CurrentSplit;
@@ -500,7 +450,7 @@ namespace LiveSplit.DarkSouls
 
 				case SplitTypes.Boss:
 					run.Id = Flags.OrderedBosses[data[0]];
-					run.Flag = !memory.IsBossAlive((BossFlags)run.Id);
+					run.Flag = darkSouls.IsBossDefeated((BossType)run.Id);
 					break;
 
 				case SplitTypes.Covenant:
@@ -594,12 +544,6 @@ namespace LiveSplit.DarkSouls
 				case SplitTypes.Zone:
 					run.Zone = GetZone();
 					run.Target = data[0];
-
-					break;
-
-                case SplitTypes.Remastered:
-                    //there is a - bosses - header before the actual list of bosses, hence -1 here.
-                    run.Id = Flags.OrderedBosses[data[0]-1];
 
 					break;
 			}
@@ -828,10 +772,10 @@ namespace LiveSplit.DarkSouls
 			int QuitoutCorrection = 594;
 
 			//Quitout correction causing weird behavior on remastered
-            if (_soulsRemastered.Hook())
-            {
-                QuitoutCorrection = 0;
-            }
+            //if (_soulsRemastered.Hook())
+            //{
+            //    QuitoutCorrection = 0;
+            //}
 
 
 			LiveSplitState state = timer.CurrentState;
@@ -1012,8 +956,8 @@ namespace LiveSplit.DarkSouls
 
 		private bool ProcessBoss(int[] data)
         {
-            var boss = (BossFlags)run.Id;
-            var isDefeated = !memory.IsBossAlive(boss);
+            var boss = (BossType)run.Id;
+            var isDefeated = darkSouls.IsBossDefeated(boss);
 			//IsBossAlive
 			//bool isDefeated = memory.CheckFlag(run.Id);
 
@@ -1044,7 +988,6 @@ namespace LiveSplit.DarkSouls
 			// covenant. For reference, the largest distance I could find is within the area surrounding the ancient
 			// dragon in Ash Lake.
 			const int Radius = 40;
-			const int CovenantPromptId = 121;
 
             var menu = darkSouls.GetMenuPrompt();
 
@@ -1119,7 +1062,7 @@ namespace LiveSplit.DarkSouls
 				run.Data++;
 
 				// The player's X coordinate increases as you approach the exit (the exit is at roughly 421).
-				bool isDarkLord = memory.GetPlayerX() > 415;
+				bool isDarkLord = darkSouls.GetPlayerPosition().X > 415;
 				bool isDarkLordTarget = data[0] == 5;
 
 				if (isDarkLord == isDarkLordTarget)
@@ -1242,19 +1185,8 @@ namespace LiveSplit.DarkSouls
 
 		private bool ProcessQuitout(int[] data)
         {
-            bool loaded = false;
-
-            if (memory.ProcessHooked)
-            {
-				loaded = !darkSouls.IsPlayerLoaded();
-			}
-
-            if (_soulsRemastered.Hook())
-            {
-                loaded = _soulsRemastered.IsPlayerLoaded();
-            }
+            bool loaded = darkSouls.IsPlayerLoaded();
 			
-
 			if (loaded != run.Flag)
 			{
 				run.Flag = loaded;
@@ -1293,7 +1225,7 @@ namespace LiveSplit.DarkSouls
 
 		private int ComputeClosestTarget(Vector3[] targets, int radius)
 		{
-			Vector3 playerPosition = memory.GetPlayerPosition();
+			Vector3 playerPosition = darkSouls.GetPlayerPosition();
 
 			int closestIndex = -1;
 
@@ -1314,20 +1246,6 @@ namespace LiveSplit.DarkSouls
 
 			return closestIndex;
 		}
-
-
-        private bool ProcessRemastered(int[] data)
-        {
-			var bossId = run.Id;
-
-            if (_soulsRemastered.Hook())
-            {
-				return !_soulsRemastered.IsBossAlive((BossFlags)run.Id);
-			}
-
-            return false;
-        }
-
 
 		public void Dispose()
 		{

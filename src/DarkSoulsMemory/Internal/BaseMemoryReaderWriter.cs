@@ -72,7 +72,7 @@ namespace DarkSoulsMemory.Internal
                     }
                 }
             }
-            catch (Exception e)
+            catch
             {
                 //When the game closes, an exception will be thrown from GetRegions. We can just ignore it - re-hooking is implemented at a higher level in the code.
             }

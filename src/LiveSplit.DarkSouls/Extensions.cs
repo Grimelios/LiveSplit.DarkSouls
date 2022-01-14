@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
@@ -55,5 +56,15 @@ namespace LiveSplit.DarkSouls
 		{
 			return new Point(point.X - p.X, point.Y - p.Y);
 		}
+
+        public static float ComputeDistanceSquared(this Vector3 self, Vector3 other)
+        {
+            float dX = self.X - other.X;
+            float dY = self.Y - other.Y;
+            float dZ = self.Z - other.Z;
+
+            return dX * dX + dY * dY + dZ * dZ;
+        }
+
 	}
 }
