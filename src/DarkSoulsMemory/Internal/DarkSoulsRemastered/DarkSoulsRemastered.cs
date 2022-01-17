@@ -313,7 +313,38 @@ namespace DarkSoulsMemory.Internal.DarkSoulsRemastered
 
         public BonfireState GetBonfireState(Bonfire bonfire)
         {
-            throw new NotImplementedException();
+            
+            if (TryScan(new byte?[] { 0x48, 0x8b, 0x05, null, null, null, null, 0x48, 0x05, 0x08, 0x0a, 0x00, 0x00, 0x48, 0x89, 0x44, 0x24, 0x50, 0xe8, 0x34, 0xfc, 0xfd, 0xff }, out IntPtr frgpNetManImp))
+            {
+                frgpNetManImp = frgpNetManImp + ReadInt32(frgpNetManImp + 3) + 7;
+                frgpNetManImp = (IntPtr)ReadInt32(frgpNetManImp);
+                var frpgNetBonfireDb = (IntPtr)ReadInt32(frgpNetManImp + 2920);
+
+                var unknownStruct1 = (IntPtr)ReadInt32(frpgNetBonfireDb + 0x28);
+                var unknownStruct2 = (IntPtr)ReadInt32(unknownStruct1);
+                var frpgNetBonfireDbItem = (IntPtr)ReadInt32(unknownStruct2 + 0x10);
+
+                while (frpgNetBonfireDbItem != IntPtr.Zero)
+                {
+                    var bonfireId = ReadInt32(frpgNetBonfireDbItem + 0x8);
+                    var bonfireStatus = ReadInt32(frpgNetBonfireDbItem + 0xc);
+
+                    if (bonfireId.TryParseEnum(out Bonfire foundBonfire) && foundBonfire == bonfire)
+                    {
+                        if (!bonfireStatus.TryParseEnum(out BonfireState state))
+                        {
+                            state = BonfireState.Undiscovered;
+                        }
+                        return state;
+                    }
+
+                    //First pointer in this struct is a pointer to the next struct. Linked list?
+                    unknownStruct2 = (IntPtr)ReadInt32(unknownStruct2);
+                    //Also update the pointer to the next bonfire item
+                    frpgNetBonfireDbItem = (IntPtr)ReadInt32(unknownStruct2 + 0x10);
+                }
+            }
+            return BonfireState.Undiscovered;
         }
 
         public ZoneType GetZone()
@@ -336,6 +367,38 @@ namespace DarkSoulsMemory.Internal.DarkSoulsRemastered
 
         public int GetCurrentTestValue()
         {
+            var result = new Dictionary<Bonfire, BonfireState>();
+            if (TryScan("48 8b 05 ? ? ? ? 48 05 08 0a 00 00 48 89 44 24 50 e8 34 fc fd ff".ToAob(), out IntPtr frgpNetManImp))
+            {
+                frgpNetManImp = frgpNetManImp + ReadInt32(frgpNetManImp + 3) + 7;
+                frgpNetManImp = (IntPtr)ReadInt32(frgpNetManImp);
+                var frpgNetBonfireDb = (IntPtr)ReadInt32(frgpNetManImp+ 2920);
+                
+                var unknownStruct1 = (IntPtr)ReadInt32(frpgNetBonfireDb + 0x28);
+                var unknownStruct2 = (IntPtr)ReadInt32(unknownStruct1);
+                var frpgNetBonfireDbItem = (IntPtr)ReadInt32(unknownStruct2 + 0x10);
+
+                while (frpgNetBonfireDbItem != IntPtr.Zero)
+                {
+                    var bonfireId = ReadInt32(frpgNetBonfireDbItem + 0x8);
+                    var bonfireStatus = ReadInt32(frpgNetBonfireDbItem + 0xc);
+
+                    if (bonfireId.TryParseEnum(out Bonfire bonfire))
+                    {
+                        if (!bonfireStatus.TryParseEnum(out BonfireState state))
+                        {
+                            state = BonfireState.Undiscovered;
+                        }
+                        result.Add(bonfire, state);
+                    }
+
+                    //First pointer in this struct is a pointer to the next struct. Linked list?
+                    unknownStruct2 = (IntPtr)ReadInt32(unknownStruct2);
+                    //Also update the pointer to the next bonfire item
+                    frpgNetBonfireDbItem = (IntPtr)ReadInt32(unknownStruct2 + 0x10);
+                }
+            }
+
             return 0;
         }
 

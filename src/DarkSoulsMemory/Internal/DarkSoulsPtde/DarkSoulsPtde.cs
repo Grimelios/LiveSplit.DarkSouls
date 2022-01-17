@@ -342,6 +342,8 @@ namespace DarkSoulsMemory.Internal.DarkSoulsPtde
 
         public int GetCurrentTestValue()
         {
+            var state = GetBonfireState(Bonfire.UndeadAsylumInterior);
+
             return 0;
         }
 

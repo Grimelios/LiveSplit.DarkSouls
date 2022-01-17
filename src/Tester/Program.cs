@@ -18,22 +18,24 @@ namespace Tester
 
 
             var darkSouls = new DarkSouls();
-            var items = darkSouls.GetCurrentInventoryItems();
+            //var items = darkSouls.GetCurrentInventoryItems();
+            //
+            //foreach (var item in items)
+            //{
+            //    Console.WriteLine(item.Type + " " + item.Quantity);
+            //}
+            //
+            //Console.ReadKey();
+            //return;
 
-            foreach (var item in items)
-            {
-                Console.WriteLine(item.Type + " " + item.Quantity);
-            }
 
-            Console.ReadKey();
-            return;
 
             while (true)
             {
                 darkSouls.Refresh();
 
                 Console.Clear();
-                Console.WriteLine($"IGT {darkSouls.GetGameTimeInMilliseconds()} test value: {darkSouls.GetCurrentTestValue()} {darkSouls.IsPlayerLoaded()}");
+                Console.WriteLine($"IGT {darkSouls.GetGameTimeInMilliseconds()} test value:  {darkSouls.GetBonfireState(Bonfire.UndeadAsylumInterior)}");
                 Thread.Sleep(50);
             }
         }
