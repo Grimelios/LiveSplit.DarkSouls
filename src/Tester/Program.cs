@@ -28,14 +28,16 @@ namespace Tester
             //Console.ReadKey();
             //return;
 
-            darkSouls.GetBonfireState(Bonfire.UndeadAsylumInterior);
+            
 
             while (true)
             {
                 darkSouls.Refresh();
 
+                var stuff = darkSouls.GetCurrentInventoryItems();
+
                 Console.Clear();
-                Console.WriteLine($"IGT {darkSouls.GetGameTimeInMilliseconds()} test value:  {darkSouls.GetZone()}");
+                Console.WriteLine($"IGT {darkSouls.GetGameTimeInMilliseconds()} test value:  {darkSouls.GetCurrentTestValue()}");
                 Thread.Sleep(50);
             }
         }

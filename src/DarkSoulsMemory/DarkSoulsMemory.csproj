@@ -58,6 +58,7 @@
     <Compile Include="Internal\Extensions.cs" />
     <Compile Include="ForcedAnimation.cs" />
     <Compile Include="Internal\IDarkSouls.cs" />
+    <Compile Include="Internal\ItemReader.cs" />
     <Compile Include="Item.cs" />
     <Compile Include="ItemPrompt.cs" />
     <Compile Include="Internal\Kernel32.cs" />

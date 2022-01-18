@@ -20,6 +20,7 @@ namespace DarkSoulsMemory.Internal.DarkSoulsPtde
             InitWorldProgressionPtr();
             InitMenuPrompt();
             InitFrgpNetManImpBasePtr();
+            InitGameDataMan();
         }
 
         public bool Attach()
@@ -28,7 +29,6 @@ namespace DarkSoulsMemory.Internal.DarkSoulsPtde
             {
                 //these ptrs must refresh every frame
                 InitCharacter();
-                InitInventory();
             }
 
             return _isHooked;
@@ -84,18 +84,14 @@ namespace DarkSoulsMemory.Internal.DarkSoulsPtde
             }
         }
 
-        private IntPtr _inventory;
 
-        private void InitInventory()
+        private IntPtr _gameDataMan;
+        private void InitGameDataMan()
         {
-            //Shared with inGameTime - could reduce the amount of scanning per frame if I share a base ptr.
-            if (TryScan(new byte?[] { 0x8B, 0x0D, null, null, null, null, 0x8B, 0x7E, 0x1C, 0x8B, 0x49, 0x08, 0x8B, 0x46, 0x20, 0x81, 0xC1, 0xB8, 0x01, 0x00, 0x00, 0x57, 0x51, 0x32, 0xDB }, out _inventory))
+            if (TryScan(new byte?[] { 0x8B, 0x0D, null, null, null, null, 0x8B, 0x7E, 0x1C, 0x8B, 0x49, 0x08, 0x8B, 0x46, 0x20, 0x81, 0xC1, 0xB8, 0x01, 0x00, 0x00, 0x57, 0x51, 0x32, 0xDB }, out _gameDataMan))
             {
-                _inventory = _inventory + 2;
-                _inventory = (IntPtr)ReadInt32(_inventory);
-                _inventory = (IntPtr)ReadInt32(_inventory);
-                _inventory = (IntPtr)ReadInt32(_inventory + 0x8);
-                _inventory = _inventory + 0x1B8;
+                _gameDataMan = _gameDataMan + 2;
+                _gameDataMan = (IntPtr)ReadInt32(_gameDataMan);
             }
         }
 
@@ -205,122 +201,21 @@ namespace DarkSoulsMemory.Internal.DarkSoulsPtde
             return new Vector3(x, y, z);
         }
 
-
-        private List<Item> GetInventoryItems(int countOffset, int startOffset)
-        {
-            var items = new List<Item>();
-            
-            var start = _inventory + startOffset;
-            var count = ReadInt32(_inventory + countOffset);
-
-            var address = start;
-            for (int i = 0; i < count; i++)
-            {
-                var category = ReadByte(address - 0x1);
-                var itemId = ReadInt32(address);
-                var quantity = ReadInt32(address+0x4);
-                
-                var hexCategory = category.ToHex();
-
-
-                var categories = new List<ItemCategory>();
-                switch (hexCategory)
-                {
-                    case 0:
-                        categories.Add(ItemCategory.MeleeWeapons);
-                        categories.Add(ItemCategory.RangedWeapons);
-                        categories.Add(ItemCategory.Ammo);
-                        categories.Add(ItemCategory.Shields);
-                        categories.Add(ItemCategory.SpellTools);
-                        break;
-
-                    case 1:
-                        categories.Add(ItemCategory.Armor);
-                        break;
-
-                    case 2:
-                        categories.Add(ItemCategory.Rings);
-                        break;
-
-                    case 4:
-                        categories.Add(ItemCategory.Consumables);
-                        categories.Add(ItemCategory.Key);
-                        categories.Add(ItemCategory.Spells);
-                        categories.Add(ItemCategory.UpgradeMaterials);
-                        categories.Add(ItemCategory.UsableItems);
-                        break;
-                }
-
-                //Decode item
-                int id = 0;
-                ItemInfusion infusion = ItemInfusion.Normal;
-                int level = 0;
-
-                //if 4 or less digits -> non-upgradable item.
-                if (categories.Contains(ItemCategory.Consumables) && itemId >= 200 && itemId <= 215 && !items.Any(j => j.Type == ItemType.EstusFlask))
-                {
-                    var estus = Item.AllItems.First(j => j.Type == ItemType.EstusFlask);
-                    var instance = new Item(estus.Name, estus.Id, estus.Type, estus.Category, estus.StackLimit, estus.Upgrade);
-
-                    //Item ID is both the item + reinforcement. Level field does not change in the games memory for the estus flask.
-                    //Goes like this:
-                    //200 == empty level 0
-                    //201 == full level 0
-                    //202 == empty level 1
-                    //203 == full level 1
-                    //203 == empty level 2
-                    //204 == full level 2
-                    //etc
-
-                    //If the flask is not empty, the amount of charges is stored in the quantity field.
-                    //If the ID - 200 is an even number, the flask is empty. For this case we can even ignore the 200 and just check the ID
-
-                    instance.Quantity = itemId % 2 == 0 ? 0 : quantity;
-
-                    //Calculating the upgrade level
-                    instance.UpgradeLevel = (itemId - 200) / 2;
-
-                    instance.Infusion = infusion;
-                    items.Add(instance);
-                    continue;
-                }
-                else if (itemId < 10000)
-                {
-                    id = itemId;
-                }
-                else
-                {
-                    //Separate digits
-                    int one = itemId % 10;
-                    int ten = (itemId / 10) % 10;
-                    int hundred = (itemId / 100) % 10;
-
-                    id = itemId - (one + (10 * ten) + (100 * hundred));
-                    infusion = (ItemInfusion)hundred;
-                    level = one + (10 * ten);
-                }
-                
-                var lookupItem = Item.AllItems.FirstOrDefault(j => categories.Contains(j.Category) && j.Id == id);
-                if (lookupItem != null)
-                {
-                    var instance = new Item(lookupItem.Name, lookupItem.Id, lookupItem.Type, lookupItem.Category, lookupItem.StackLimit, lookupItem.Upgrade);
-                    instance.Quantity = quantity;
-                    instance.Infusion = infusion;
-                    instance.UpgradeLevel = level;
-                    items.Add(instance);
-                }
-
-                address += 0x1C; //Items are separated by this amount
-            }
-            return items;
-        }
-
         public List<Item> GetCurrentInventoryItems()
         {
-            var inventoryItems = GetInventoryItems(0x128, 0xA24);
-            var keyItems = GetInventoryItems(0x12C, 0x324);
-            inventoryItems.AddRange(keyItems);
-            return inventoryItems;
+            var gameDataManIns = (IntPtr)ReadInt32(_gameDataMan);//GameDataMan instance
+            var hostPlayerGameData = (IntPtr)ReadInt32(gameDataManIns + 0x8);//Host player game data
+
+            var itemCount = ReadInt32(hostPlayerGameData + 0x2e0);
+            var keyCount = ReadInt32(hostPlayerGameData + 0x2e4);
+
+            var listLength = ReadInt32(hostPlayerGameData + 0x4d4);
+            var listStart = hostPlayerGameData + 0x4d8;
+
+            var bytes = ReadBytes(listStart, listLength * 0x1c);
+            var items = ItemReader.GetCurrentInventoryItems(bytes, listLength, itemCount, keyCount);
+
+            return items;
         }
 
         public BonfireState GetBonfireState(Bonfire bonfire)
@@ -350,8 +245,6 @@ namespace DarkSoulsMemory.Internal.DarkSoulsPtde
 
         public int GetCurrentTestValue()
         {
-            var state = GetBonfireState(Bonfire.UndeadAsylumInterior);
-
             return 0;
         }
 
