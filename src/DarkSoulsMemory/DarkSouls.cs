@@ -175,11 +175,11 @@ namespace DarkSoulsMemory
         /// Only for developers
         /// </summary>
         /// <returns></returns>
-        public int GetCurrentTestValue()
+        public List<int> GetCurrentTestValue()
         {
             if (_darkSouls == null)
             {
-                return 0;
+                return null;
             }
 
             return _darkSouls.GetCurrentTestValue();

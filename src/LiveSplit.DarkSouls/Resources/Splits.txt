@@ -919,11 +919,20 @@ Notched Whip|Standard
 Whip|Standard
 
 Zones
+Depths
+Undead Burg & Undead Parish
+Firelink
+Painted World of Ariamis
+Darkroot Garden & Darkroot Basin
+Entire DLC
+Catacombs
+Tomb of the Giants
+Great Hollow & Ash Lake
+Blighttown & Quelaag's Domain
+Demon Ruins & Izalith
+Sen's Fortress
 Anor Londo
-Firelink Altar + Kiln
-Firelink Shrine
-Painted World
-Sanctuary Garden
-Sen's Fortress Roof
-The Abyss
+New Londo Ruins & Valley of Drakes & The Abyss
+Duke's Archives & Crystal Cave
+Firelink Altar & Kiln of the First Flame
 Undead Asylum

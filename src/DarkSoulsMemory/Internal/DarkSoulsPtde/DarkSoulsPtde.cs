@@ -18,7 +18,7 @@ namespace DarkSoulsMemory.Internal.DarkSoulsPtde
             
             InitWorldProgressionPtr();
             InitMenuPrompt();
-            InitFrgpNetManImp();
+            InitNetManImp();
             InitGameDataMan();
         }
 
@@ -81,12 +81,12 @@ namespace DarkSoulsMemory.Internal.DarkSoulsPtde
             }
         }
 
-        private IntPtr _frgpNetManImp;
-        private void InitFrgpNetManImp()
+        private IntPtr _netManImp;
+        private void InitNetManImp()
         {
-            if (TryScan(new byte?[] { 0x83, 0x3d, null, null, null, null, 0x00, 0x75, 0x4b, 0xa1, 0xc8, 0x87, 0x37, 0x01, 0x50, 0x6a, 0x08, 0x68, 0x78, 0x0b, 0x00, 0x00 }, out _frgpNetManImp))
+            if (TryScan(new byte?[] { 0x83, 0x3d, null, null, null, null, 0x00, 0x75, 0x4b, 0xa1, 0xc8, 0x87, 0x37, 0x01, 0x50, 0x6a, 0x08, 0x68, 0x78, 0x0b, 0x00, 0x00 }, out _netManImp))
             {
-                _frgpNetManImp = (IntPtr)ReadInt32(_frgpNetManImp + 2);
+                _netManImp = (IntPtr)ReadInt32(_netManImp + 2);
             }
         }
 
@@ -96,7 +96,6 @@ namespace DarkSoulsMemory.Internal.DarkSoulsPtde
 
         public int GetGameTimeInMilliseconds()
         {
-            //TODO: I think igt also lives in the GameDataMan struct. Can reduce the amount of scanning if I can find it in there.
             var gameDataManIns = (IntPtr)ReadInt32(_gameDataMan);
             return ReadInt32(gameDataManIns + 0x68);
         }
@@ -208,7 +207,7 @@ namespace DarkSoulsMemory.Internal.DarkSoulsPtde
 
         public BonfireState GetBonfireState(Bonfire bonfire)
         {
-            var pointer = (IntPtr)ReadInt32(_frgpNetManImp);  //instance
+            var pointer = (IntPtr)ReadInt32(_netManImp);  //instance
             pointer = (IntPtr)ReadInt32(IntPtr.Add(pointer, 0xB48)); //frpgNetBonfireDb
             pointer = (IntPtr)ReadInt32(IntPtr.Add(pointer, 0x24));
             pointer = (IntPtr)ReadInt32(pointer);
@@ -231,17 +230,37 @@ namespace DarkSoulsMemory.Internal.DarkSoulsPtde
             return BonfireState.Undiscovered;
         }
 
-        public int GetCurrentTestValue()
+
+        //In remastered, an area id can be found in the player instance. It gets updated on the fly while walking around.
+        //A similar behaving id does not seem to exist in PTDE.
+        public Area GetArea()
         {
-            return 0;
+            throw new NotImplementedException();
+        }
+
+        public List<int> GetCurrentTestValue()
+        {
+            var netManImpIns = (IntPtr)ReadInt32(_netManImp);
+
+
+            var zonePtr = (IntPtr)ReadInt32((IntPtr)0x137E204);//TODO: hardcoded address
+             
+            //var addr = zonePtr + 0xa12;
+            //addr = zonePtr + 0xa13;
+            //var world = ReadInt32(zonePtr + 0xA13);
+            //var area = ReadInt32(zonePtr + 0xA12);
+
+            var world = ReadByte(netManImpIns + 0xA13);
+            var area = ReadByte(netManImpIns + 0xA12);
+            return new List<int>() { world, area };
         }
 
 
         public ZoneType GetZone()
         {
-            var zonePtr = (IntPtr)ReadInt32((IntPtr)0x137E204);//TODO: hardcoded address
-            var world = ReadByte(zonePtr + 0xA13);
-            var area = ReadByte(zonePtr + 0xA12);
+            var netManImpIns = (IntPtr)ReadInt32(_netManImp);
+            var world = ReadByte(netManImpIns + 0xA13);
+            var area = ReadByte(netManImpIns + 0xA12);
 
             var zone = _zones.FirstOrDefault(i => i.World == world && i.Area == area);
             if (zone != null)
@@ -328,16 +347,25 @@ namespace DarkSoulsMemory.Internal.DarkSoulsPtde
             public int Area;
             public ZoneType ZoneType;
         }
-
+        
         private readonly List<Zone> _zones = new List<Zone>()
         {
+            new Zone(10, 0, ZoneType.Depths),
+            new Zone(10, 1, ZoneType.UndeadBurgAndUndeadParish),
+            new Zone(10, 2, ZoneType.Firelink),
+            new Zone(11, 0, ZoneType.PaintedWorldOfAriamis),
+            new Zone(12, 0, ZoneType.DarkrootGardenAndDarkrootBasin),
+            new Zone(12, 1, ZoneType.EntireDlc),
+            new Zone(13, 0, ZoneType.Catacombs),
+            new Zone(13, 1, ZoneType.TombOfTheGiants),
+            new Zone(13, 2, ZoneType.GreatHollowAndAshLake),
+            new Zone(14, 0, ZoneType.BlightTownAndQuelaagsDomain),
+            new Zone(14, 1, ZoneType.DemonRuinsAndLostIzalith),
+            new Zone(15, 0, ZoneType.SensFortress),
             new Zone(15, 1, ZoneType.AnorLondo),
-            new Zone(18, 0, ZoneType.FirelinkAltar),
-            new Zone(10, 2, ZoneType.FirelinkShrine),
-            new Zone(11, 0, ZoneType.PaintedWorld),
-            new Zone(12, 1, ZoneType.SanctuaryGarden),
-            new Zone(15, 0, ZoneType.SensFortressRoof),
-            new Zone(16, 0, ZoneType.TheAbyss),
+            new Zone(16, 0, ZoneType.NewLondoRuinsValleyofDrakesTheAbyss),
+            new Zone(17, 0, ZoneType.DukesArchivesAndCrystalCave),
+            new Zone(18, 0, ZoneType.FirelinkAltarAndKilnoftheFirstFlame),
             new Zone(18, 1, ZoneType.UndeadAsylum),
         };
 

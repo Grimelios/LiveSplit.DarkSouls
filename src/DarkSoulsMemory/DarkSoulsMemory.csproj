@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Area.cs" />
     <Compile Include="Bonfires.cs" />
     <Compile Include="Internal\BaseMemoryReaderWriter.cs" />
     <Compile Include="BossType.cs" />

@@ -89,10 +89,17 @@ namespace DarkSoulsMemory.Internal
         /// </summary>
         void ResetInventoryIndices();
 
+
+        /// <summary>
+        /// Returns the current area
+        /// </summary>
+        /// <returns></returns>
+        Area GetArea();
+
         /// <summary>
         /// For testing
         /// </summary>
         /// <returns></returns>
-        int GetCurrentTestValue();
+        List<int> GetCurrentTestValue();
     }
 }

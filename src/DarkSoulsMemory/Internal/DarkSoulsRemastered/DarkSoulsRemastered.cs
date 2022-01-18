@@ -18,6 +18,7 @@ namespace DarkSoulsMemory.Internal.DarkSoulsRemastered
             Attach();
 
             InitGameDataManPtr();
+            InitNetManImp();
             InitWorldProgressionPtr();
             InitMenuPrompt();
             InitGameDataManPtr();
@@ -48,9 +49,19 @@ namespace DarkSoulsMemory.Internal.DarkSoulsRemastered
             }
         }
 
+        private IntPtr _netManImp;
+        private void InitNetManImp()
+        {
+            if (TryScan(new byte?[] { 0x48, 0x8b, 0x05, null, null, null, null, 0x48, 0x05, 0x08, 0x0a, 0x00, 0x00, 0x48, 0x89, 0x44, 0x24, 0x50, 0xe8, 0x34, 0xfc, 0xfd, 0xff }, out _netManImp))
+            {
+                _netManImp = _netManImp + ReadInt32(_netManImp + 3) + 7;
+            }
+        }
+
         private IntPtr _worldProgression;
         private void InitWorldProgressionPtr()
         {
+            //This pointer path doesn't change when quiting to main menu. Can just resolve the pointer and keep using it for as long as the game is running.
             if (TryScan(new byte?[] { 0x48, 0x8B, 0x0D, null, null, null, null, 0x41, 0xB8, 0x01, 0x00, 0x00, 0x00, 0x44 }, out _worldProgression))
             {
                 _worldProgression = _worldProgression + ReadInt32(_worldProgression + 3) + 7;
@@ -141,21 +152,20 @@ namespace DarkSoulsMemory.Internal.DarkSoulsRemastered
 
         public MenuPrompt GetMenuPrompt()
         {
-            var mem = ReadByte(_menuPrompt);
-            if (Enum.IsDefined(typeof(MenuPrompt), (int)mem))
+            var menu = ReadByte(_menuPrompt);
+            if (((int)menu).TryParseEnum(out MenuPrompt menuPrompt))
             {
-                return (MenuPrompt)mem;
+                return menuPrompt;
             }
-
             return MenuPrompt.Unknown;
         }
 
         public ForcedAnimation GetForcedAnimation()
         {
-            var mem = ReadInt32(_forcedAnimation);
-            if (Enum.IsDefined(typeof(ForcedAnimation), mem))
+            var anim = ReadInt32(_forcedAnimation);
+            if (anim.TryParseEnum(out ForcedAnimation forcedAnimation))
             {
-                return (ForcedAnimation)mem;
+                return forcedAnimation;
             }
             return ForcedAnimation.Unknown;
         }
@@ -164,9 +174,9 @@ namespace DarkSoulsMemory.Internal.DarkSoulsRemastered
         {
             InitCharacter();
             var mem = ReadInt32(_itemPrompt);
-            if (mem.TryParseEnum(out ItemPrompt itenPrompt))
+            if (mem.TryParseEnum(out ItemPrompt itemPrompt))
             {
-                return itenPrompt;
+                return itemPrompt;
             }
             return ItemPrompt.Unknown;
         }
@@ -221,11 +231,10 @@ namespace DarkSoulsMemory.Internal.DarkSoulsRemastered
         public BonfireState GetBonfireState(Bonfire bonfire)
         {
             
-            if (TryScan(new byte?[] { 0x48, 0x8b, 0x05, null, null, null, null, 0x48, 0x05, 0x08, 0x0a, 0x00, 0x00, 0x48, 0x89, 0x44, 0x24, 0x50, 0xe8, 0x34, 0xfc, 0xfd, 0xff }, out IntPtr frgpNetManImp))
+            if (TryScan(new byte?[] { 0x48, 0x8b, 0x05, null, null, null, null, 0x48, 0x05, 0x08, 0x0a, 0x00, 0x00, 0x48, 0x89, 0x44, 0x24, 0x50, 0xe8, 0x34, 0xfc, 0xfd, 0xff }, out IntPtr netManImpIns))
             {
-                frgpNetManImp = frgpNetManImp + ReadInt32(frgpNetManImp + 3) + 7;
-                frgpNetManImp = (IntPtr)ReadInt32(frgpNetManImp);
-                var frpgNetBonfireDb = (IntPtr)ReadInt32(frgpNetManImp + 2920);
+                netManImpIns = (IntPtr)ReadInt32(_netManImp);
+                var frpgNetBonfireDb = (IntPtr)ReadInt32(netManImpIns + 2920);
 
                 var unknownStruct1 = (IntPtr)ReadInt32(frpgNetBonfireDb + 0x28);
                 var unknownStruct2 = (IntPtr)ReadInt32(unknownStruct1);
@@ -256,6 +265,13 @@ namespace DarkSoulsMemory.Internal.DarkSoulsRemastered
 
         public ZoneType GetZone()
         {
+            var netManImpIns = (IntPtr)ReadInt32(_netManImp);
+            var world = ReadInt32(netManImpIns + 2592); 
+            var area  = ReadInt32(netManImpIns + 2596);
+
+            var worldNew = ReadInt32(netManImpIns + 2696);
+            var areaNew  = ReadInt32(netManImpIns + 2700);
+
             throw new NotImplementedException();
         }
 
@@ -272,41 +288,55 @@ namespace DarkSoulsMemory.Internal.DarkSoulsRemastered
             }
         }
 
-        public int GetCurrentTestValue()
+        public Area GetArea()
         {
-            var result = new Dictionary<Bonfire, BonfireState>();
-            if (TryScan("48 8b 05 ? ? ? ? 48 05 08 0a 00 00 48 89 44 24 50 e8 34 fc fd ff".ToAob(), out IntPtr frgpNetManImp))
+            var instance = (IntPtr)ReadInt32(_playerIns);
+            var playerCtrl = (IntPtr)ReadInt32(instance + 104);
+
+            //var multiplayerAreaId = ReadInt32(playerCtrl + 0x354);
+            var areaId = ReadInt32(playerCtrl + 0x358);
+
+            if (areaId.TryParseEnum(out Area area))
             {
-                frgpNetManImp = frgpNetManImp + ReadInt32(frgpNetManImp + 3) + 7;
-                frgpNetManImp = (IntPtr)ReadInt32(frgpNetManImp);
-                var frpgNetBonfireDb = (IntPtr)ReadInt32(frgpNetManImp+ 2920);
-                
-                var unknownStruct1 = (IntPtr)ReadInt32(frpgNetBonfireDb + 0x28);
-                var unknownStruct2 = (IntPtr)ReadInt32(unknownStruct1);
-                var frpgNetBonfireDbItem = (IntPtr)ReadInt32(unknownStruct2 + 0x10);
-
-                while (frpgNetBonfireDbItem != IntPtr.Zero)
-                {
-                    var bonfireId = ReadInt32(frpgNetBonfireDbItem + 0x8);
-                    var bonfireStatus = ReadInt32(frpgNetBonfireDbItem + 0xc);
-
-                    if (bonfireId.TryParseEnum(out Bonfire bonfire))
-                    {
-                        if (!bonfireStatus.TryParseEnum(out BonfireState state))
-                        {
-                            state = BonfireState.Undiscovered;
-                        }
-                        result.Add(bonfire, state);
-                    }
-
-                    //First pointer in this struct is a pointer to the next struct. Linked list?
-                    unknownStruct2 = (IntPtr)ReadInt32(unknownStruct2);
-                    //Also update the pointer to the next bonfire item
-                    frpgNetBonfireDbItem = (IntPtr)ReadInt32(unknownStruct2 + 0x10);
-                }
+                return area;
             }
 
-            return 0;
+            return Area.NonInvadeableArea;
+        }
+
+        public List<int> GetCurrentTestValue()
+        {
+            var instance = (IntPtr)ReadInt32(_playerIns);
+            var playerCtrl = (IntPtr)ReadInt32(instance + 104);
+
+            var multiplayerAreaId = ReadInt32(playerCtrl + 0x354);
+            var areaId = ReadInt32(playerCtrl + 0x358);
+
+
+
+
+
+
+            ////1c4520e0
+            //var instance = (IntPtr)ReadInt32(_playerIns);
+            //instance = (IntPtr)ReadInt32(instance + 104);
+            //var addr = instance + 0x354;
+            //var multiplayerAreaId = ReadInt32(instance + 0x354);
+            //var AreaId = ReadInt32(instance + 0x358);
+            ////01c05b458
+            //
+            //var netManImpIns = (IntPtr)ReadInt32(_netManImp);
+            //var world = ReadInt32(netManImpIns + 2592);
+            //var area = ReadInt32(netManImpIns + 2596);
+
+
+
+            return new List<int>()
+            {
+                multiplayerAreaId,
+                areaId,
+            };
+
         }
 
 
@@ -360,6 +390,40 @@ namespace DarkSoulsMemory.Internal.DarkSoulsRemastered
             new Boss(BossType.Artorias          , 0x2303, 6),
         };
 
+        private class Zone
+        {
+            public Zone(int world, int area, ZoneType zoneType)
+            {
+                World = world;
+                Area = area;
+                ZoneType = zoneType;
+            }
+
+            public int World;
+            public int Area;
+            public ZoneType ZoneType;
+        }
+
+        private readonly List<Zone> _zones = new List<Zone>()
+        {
+            new Zone(10, 0, ZoneType.Depths),
+            new Zone(10, 1, ZoneType.UndeadBurgAndUndeadParish),
+            new Zone(10, 2, ZoneType.Firelink),
+            new Zone(11, 0, ZoneType.PaintedWorldOfAriamis),
+            new Zone(12, 0, ZoneType.DarkrootGardenAndDarkrootBasin),
+            new Zone(12, 1, ZoneType.EntireDlc),
+            new Zone(13, 0, ZoneType.Catacombs),
+            new Zone(13, 1, ZoneType.TombOfTheGiants),
+            new Zone(13, 2, ZoneType.GreatHollowAndAshLake),
+            new Zone(14, 0, ZoneType.BlightTownAndQuelaagsDomain),
+            new Zone(14, 1, ZoneType.DemonRuinsAndLostIzalith),
+            new Zone(15, 0, ZoneType.SensFortress),
+            new Zone(15, 1, ZoneType.AnorLondo),
+            new Zone(16, 0, ZoneType.NewLondoRuinsValleyofDrakesTheAbyss),
+            new Zone(17, 0, ZoneType.DukesArchivesAndCrystalCave),
+            new Zone(18, 0, ZoneType.FirelinkAltarAndKilnoftheFirstFlame),
+            new Zone(18, 1, ZoneType.UndeadAsylum),
+        };
 
         #endregion
 
