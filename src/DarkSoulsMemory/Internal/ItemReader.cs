@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DarkSoulsMemory.Internal
 {
-    internal class ItemReader
+    internal static class ItemReader
     {
         /// <summary>
         /// It turns out that the games store items in the same way. Since there is quite a bit of code, I opted to share this function between PTDE/remastered.

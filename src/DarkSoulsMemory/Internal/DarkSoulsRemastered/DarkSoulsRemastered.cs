@@ -19,6 +19,7 @@ namespace DarkSoulsMemory.Internal.DarkSoulsRemastered
             InitGameDataManPtr();
             InitWorldProgressionPtr();
             InitMenuPrompt();
+            InitGameDataManPtr();
         }
 
         public bool Attach()
@@ -26,7 +27,7 @@ namespace DarkSoulsMemory.Internal.DarkSoulsRemastered
             if (AttachByName("DarkSoulsRemastered"))
             {
                 //These ptrs must refresh every frame
-                InitGameDataManPtr();
+               
                 InitCharacter();
             }
 
@@ -42,7 +43,7 @@ namespace DarkSoulsMemory.Internal.DarkSoulsRemastered
         {
             if (TryScan(new byte?[] { 0x48, 0x8B, 0x05, null, null, null, null, 0x45, 0x33, 0xED, 0x48, 0x8B, 0xF1, 0x48, 0x85, 0xC0 }, out _gameDataMan))
             {
-                _gameDataMan = (IntPtr)ReadInt32(_gameDataMan + ReadInt32(_gameDataMan + 3) + 7);
+                _gameDataMan = _gameDataMan + ReadInt32(_gameDataMan + 3) + 7;
             }
         }
 
@@ -74,7 +75,7 @@ namespace DarkSoulsMemory.Internal.DarkSoulsRemastered
         {
             if (TryScan(new byte?[]{0x48, 0x8B, 0x05, null, null, null, null, 0x48, 0x39, 0x48, 0x68, 0x0F, 0x94, 0xC0, 0xC3}, out _playerIns))
             {
-                _playerIns = (IntPtr)(_playerIns.ToInt64() + ReadInt32(_playerIns + 3) + 7);
+                _playerIns = _playerIns + ReadInt32(_playerIns + 3) + 7;
                 _playerCtrl = (IntPtr)(ReadInt32(_playerIns) + 0x68);
                 _forcedAnimation = (IntPtr)ReadInt32(_playerCtrl) + 0x16C;
                 _itemPrompt = (IntPtr)ReadInt32(_playerCtrl) + 0x814;
@@ -87,7 +88,8 @@ namespace DarkSoulsMemory.Internal.DarkSoulsRemastered
 
         public int GetGameTimeInMilliseconds()
         {
-            return ReadInt32(_gameDataMan + 0xA4);
+            var gameDataManIns = (IntPtr)ReadInt32(_gameDataMan);
+            return ReadInt32(gameDataManIns + 0xA4);
         }
 
         private int _previousMillis = 0;
@@ -183,8 +185,8 @@ namespace DarkSoulsMemory.Internal.DarkSoulsRemastered
         public List<Item> GetCurrentInventoryItems()
         {
             //Path: GameDataMan->hostPlayerGameData->equipGameData->equipInventoryData->equipInventoryDataSub
-            
-            var hostPlayerGameData = (IntPtr)ReadInt32(_gameDataMan + 16);
+            var gameDataManIns = (IntPtr)ReadInt32(_gameDataMan);
+            var hostPlayerGameData = (IntPtr)ReadInt32(gameDataManIns + 16);
             var equipGameData = hostPlayerGameData + 0x280; //640
             var equipInventoryData = equipGameData + 288;
             var equipInventoryDataSub = equipInventoryData + 16;

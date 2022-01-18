@@ -15,11 +15,10 @@ namespace DarkSoulsMemory.Internal.DarkSoulsPtde
         public DarkSoulsPtde()
         {
             Attach();
-
-            InitInGameTimePtr();
+            
             InitWorldProgressionPtr();
             InitMenuPrompt();
-            InitFrgpNetManImpBasePtr();
+            InitFrgpNetManImp();
             InitGameDataMan();
         }
 
@@ -38,18 +37,6 @@ namespace DarkSoulsMemory.Internal.DarkSoulsPtde
 
         #region base pointers =======================================================================================================================================
         
-        private IntPtr _inGameTime;
-        private void InitInGameTimePtr()
-        {
-            if (TryScan(new byte?[] { 0x8B, 0x0D, null, null, null, null, 0x8B, 0x7E, 0x1C, 0x8B, 0x49, 0x08, 0x8B, 0x46, 0x20, 0x81, 0xC1, 0xB8, 0x01, 0x00, 0x00, 0x57, 0x51, 0x32, 0xDB }, out _inGameTime))
-            {
-                _inGameTime = _inGameTime + 2;
-                _inGameTime = (IntPtr)ReadInt32(_inGameTime);
-                _inGameTime = (IntPtr)ReadInt32(_inGameTime);
-                _inGameTime = _inGameTime + 0x68;
-            }
-        }
-
         private IntPtr _worldProgression;
         private void InitWorldProgressionPtr()
         {
@@ -84,7 +71,6 @@ namespace DarkSoulsMemory.Internal.DarkSoulsPtde
             }
         }
 
-
         private IntPtr _gameDataMan;
         private void InitGameDataMan()
         {
@@ -95,12 +81,12 @@ namespace DarkSoulsMemory.Internal.DarkSoulsPtde
             }
         }
 
-        private IntPtr _frgpNetManImpBasePtr;
-        private void InitFrgpNetManImpBasePtr()
+        private IntPtr _frgpNetManImp;
+        private void InitFrgpNetManImp()
         {
-            if (TryScan(new byte?[] { 0x83, 0x3d, null, null, null, null, 0x00, 0x75, 0x4b, 0xa1, 0xc8, 0x87, 0x37, 0x01, 0x50, 0x6a, 0x08, 0x68, 0x78, 0x0b, 0x00, 0x00 }, out _frgpNetManImpBasePtr))
+            if (TryScan(new byte?[] { 0x83, 0x3d, null, null, null, null, 0x00, 0x75, 0x4b, 0xa1, 0xc8, 0x87, 0x37, 0x01, 0x50, 0x6a, 0x08, 0x68, 0x78, 0x0b, 0x00, 0x00 }, out _frgpNetManImp))
             {
-                _frgpNetManImpBasePtr = (IntPtr)ReadInt32(_frgpNetManImpBasePtr + 2);
+                _frgpNetManImp = (IntPtr)ReadInt32(_frgpNetManImp + 2);
             }
         }
 
@@ -110,7 +96,9 @@ namespace DarkSoulsMemory.Internal.DarkSoulsPtde
 
         public int GetGameTimeInMilliseconds()
         {
-            return ReadInt32(_inGameTime);
+            //TODO: I think igt also lives in the GameDataMan struct. Can reduce the amount of scanning if I can find it in there.
+            var gameDataManIns = (IntPtr)ReadInt32(_gameDataMan);
+            return ReadInt32(gameDataManIns + 0x68);
         }
 
 
@@ -220,7 +208,7 @@ namespace DarkSoulsMemory.Internal.DarkSoulsPtde
 
         public BonfireState GetBonfireState(Bonfire bonfire)
         {
-            var pointer = (IntPtr)ReadInt32(_frgpNetManImpBasePtr);  //instance
+            var pointer = (IntPtr)ReadInt32(_frgpNetManImp);  //instance
             pointer = (IntPtr)ReadInt32(IntPtr.Add(pointer, 0xB48)); //frpgNetBonfireDb
             pointer = (IntPtr)ReadInt32(IntPtr.Add(pointer, 0x24));
             pointer = (IntPtr)ReadInt32(pointer);
