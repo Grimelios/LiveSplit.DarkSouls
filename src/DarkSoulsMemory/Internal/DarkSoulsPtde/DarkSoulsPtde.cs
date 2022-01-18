@@ -19,6 +19,7 @@ namespace DarkSoulsMemory.Internal.DarkSoulsPtde
             InitInGameTimePtr();
             InitWorldProgressionPtr();
             InitMenuPrompt();
+            InitFrgpNetManImpBasePtr();
         }
 
         public bool Attach()
@@ -98,6 +99,15 @@ namespace DarkSoulsMemory.Internal.DarkSoulsPtde
             }
         }
 
+        private IntPtr _frgpNetManImpBasePtr;
+        private void InitFrgpNetManImpBasePtr()
+        {
+            if (TryScan(new byte?[] { 0x83, 0x3d, null, null, null, null, 0x00, 0x75, 0x4b, 0xa1, 0xc8, 0x87, 0x37, 0x01, 0x50, 0x6a, 0x08, 0x68, 0x78, 0x0b, 0x00, 0x00 }, out _frgpNetManImpBasePtr))
+            {
+                _frgpNetManImpBasePtr = (IntPtr)ReadInt32(_frgpNetManImpBasePtr + 2);
+            }
+        }
+
         #endregion
         
         #region Reading game values
@@ -106,6 +116,7 @@ namespace DarkSoulsMemory.Internal.DarkSoulsPtde
         {
             return ReadInt32(_inGameTime);
         }
+
 
         private int _previousMillis = 0;
         public bool IsPlayerLoaded()
@@ -314,10 +325,8 @@ namespace DarkSoulsMemory.Internal.DarkSoulsPtde
 
         public BonfireState GetBonfireState(Bonfire bonfire)
         {
-            
-            IntPtr pointer = (IntPtr)0x137E204;//TODO: hardcoded address
-            pointer = (IntPtr)ReadInt32(pointer);
-            pointer = (IntPtr)ReadInt32(IntPtr.Add(pointer, 0xB48));
+            var pointer = (IntPtr)ReadInt32(_frgpNetManImpBasePtr);  //instance
+            pointer = (IntPtr)ReadInt32(IntPtr.Add(pointer, 0xB48)); //frpgNetBonfireDb
             pointer = (IntPtr)ReadInt32(IntPtr.Add(pointer, 0x24));
             pointer = (IntPtr)ReadInt32(pointer);
 
@@ -332,11 +341,10 @@ namespace DarkSoulsMemory.Internal.DarkSoulsPtde
                     var state = (BonfireState)bonfireState;
                     return (BonfireState)bonfireState;
                 }
-                
+
                 pointer = (IntPtr)ReadInt32(pointer);
                 bonfirePointer = (IntPtr)ReadInt32(IntPtr.Add(pointer, 0x8));
             }
-
             return BonfireState.Undiscovered;
         }
 
