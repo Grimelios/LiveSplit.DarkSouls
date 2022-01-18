@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO.Pipes;
 using System.Linq;
@@ -67,19 +68,26 @@ namespace DarkSoulsMemory.Internal.DarkSoulsRemastered
             }
         }
 
-        private IntPtr _playerIns;
+        private IntPtr _playerIns = IntPtr.Zero;
         private IntPtr _playerCtrl;
         private IntPtr _forcedAnimation;
         private IntPtr _itemPrompt;
         public void InitCharacter()
         {
-            if (TryScan(new byte?[]{0x48, 0x8B, 0x05, null, null, null, null, 0x48, 0x39, 0x48, 0x68, 0x0F, 0x94, 0xC0, 0xC3}, out _playerIns))
+            //Only scan once during initialization
+            if (_playerIns == IntPtr.Zero)
             {
-                _playerIns = _playerIns + ReadInt32(_playerIns + 3) + 7;
-                _playerCtrl = (IntPtr)(ReadInt32(_playerIns) + 0x68);
-                _forcedAnimation = (IntPtr)ReadInt32(_playerCtrl) + 0x16C;
-                _itemPrompt = (IntPtr)ReadInt32(_playerCtrl) + 0x814;
+                if (TryScan(new byte?[] { 0x48, 0x8B, 0x05, null, null, null, null, 0x48, 0x39, 0x48, 0x68, 0x0F, 0x94, 0xC0, 0xC3 }, out _playerIns))
+                {
+                    _playerIns = _playerIns + ReadInt32(_playerIns + 3) + 7;
+                }
             }
+
+            //Always update child pointers
+            var instance = (IntPtr)ReadInt32(_playerIns);
+            _playerCtrl = instance + 0x68;
+            _forcedAnimation = (IntPtr)ReadInt32(_playerCtrl) + 0x16C;
+            _itemPrompt = (IntPtr)ReadInt32(_playerCtrl) + 0x814;
         }
 
         #endregion
@@ -144,7 +152,6 @@ namespace DarkSoulsMemory.Internal.DarkSoulsRemastered
 
         public ForcedAnimation GetForcedAnimation()
         {
-            InitCharacter();
             var mem = ReadInt32(_forcedAnimation);
             if (Enum.IsDefined(typeof(ForcedAnimation), mem))
             {

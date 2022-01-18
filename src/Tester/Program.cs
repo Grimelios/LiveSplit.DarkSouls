@@ -37,7 +37,7 @@ namespace Tester
                 var stuff = darkSouls.GetCurrentInventoryItems();
 
                 Console.Clear();
-                Console.WriteLine($"IGT {darkSouls.GetGameTimeInMilliseconds()} test value:  {darkSouls.GetCurrentTestValue()}");
+                Console.WriteLine($"IGT {darkSouls.GetGameTimeInMilliseconds()} test value:  {darkSouls.GetItemPrompt()} {darkSouls.GetForcedAnimation()}");
                 Thread.Sleep(50);
             }
         }
