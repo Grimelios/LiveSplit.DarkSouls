@@ -11,6 +11,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DarkSoulsMemory", "src\Dark
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tester", "src\Tester\Tester.csproj", "{DBE52202-BECC-4456-8A1D-C841701BCF0A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misc", "misc", "{FFD3A9BB-C170-4984-B504-A4A3B9BF3DA5}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+		Components\Updates.xml = Components\Updates.xml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
