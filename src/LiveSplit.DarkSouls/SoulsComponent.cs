@@ -19,18 +19,14 @@ namespace LiveSplit.DarkSouls
     public class SoulsComponent : IComponent
 	{
 		public const string DisplayName = "Dark Souls Autosplitter";
-
-		private const int EstusId = 200;
-
+		
         private readonly DarkSoulsMemory.DarkSouls darkSouls;
-        private SoulsMemory memory;
 
 		private TimerModel timer;
 		private SplitCollection splitCollection;
 
 		private SoulsMasterControl masterControl;
 		private Dictionary<SplitTypes, Func<int[], bool>> splitFunctions;
-		private Dictionary<Zones, List<Zone>> zoneMap;
 		private Vector3[] covenantLocations;
 		private Vector3[] bonfireLocations;
 		private RunState run;
@@ -63,7 +59,6 @@ namespace LiveSplit.DarkSouls
             darkSouls = new DarkSoulsMemory.DarkSouls();
 
 			splitCollection = new SplitCollection();
-			memory = new SoulsMemory();
 			masterControl = new SoulsMasterControl();
 			run = new RunState();
 
@@ -153,49 +148,6 @@ namespace LiveSplit.DarkSouls
 				new Vector3(88, 15, 107), // Undead Parish - Andre
 				new Vector3(24, 10, -23) // Undead Parish - Sunlight
 			};
-
-			Zone abyss = new Zone(16, 0);
-			Zone anorLondo = new Zone(15, 1);
-			Zone asylum = new Zone(18, 1);
-			Zone basin = new Zone(12, 0);
-			Zone firelinkAltar = new Zone(18, 0);
-			Zone firelinkShrine = new Zone(10, 2);
-			Zone paintedWorld = new Zone(11, 0);
-			Zone sanctuaryGarden = new Zone(12, 1);
-			Zone sensRoof = new Zone(15, 0);
-
-			// Since zones are designed to capture transitions between distinct areas, each zone (from the enumeration)
-			// maps to both its associated zone (the first item in the list) and a list of neighboring zones (the
-			// remaining items).
-			zoneMap = new Dictionary<Zones, List<Zone>>
-			{
-				{ Zones.AnorLondo, new List<Zone> { anorLondo, paintedWorld, sensRoof }},
-				{ Zones.FirelinkAltar, new List<Zone> { firelinkAltar, abyss, firelinkShrine }},
-				{ Zones.FirelinkShrine, new List<Zone> { firelinkShrine, asylum, firelinkAltar }},
-				{ Zones.PaintedWorld, new List<Zone> { paintedWorld, anorLondo }},
-				{ Zones.SanctuaryGarden, new List<Zone> { sanctuaryGarden, basin }},
-				{ Zones.SensFortressRoof, new List<Zone> { sensRoof, anorLondo }},
-				{ Zones.TheAbyss, new List<Zone> { abyss, firelinkAltar }},
-				{ Zones.UndeadAsylum, new List<Zone> { asylum, firelinkShrine }}
-			};
-
-			// This list was previously used in the memory class when setting items. It makes more sense to store it
-			// here instead.
-			List<int> keys = new List<int>();
-			keys.AddRange(ItemFlags.OrderedKeys);
-			keys.AddRange(ItemFlags.OrderedEmbers);
-			keys.AddRange(ItemFlags.OrderedBonfireItems);
-			keys.Add((int)SoulFlags.BequeathedLordSoulShardFourKings);
-			keys.Add((int)SoulFlags.BequeathedLordSoulShardSeath);
-			keys.Add((int)SoulFlags.LordSoulBedOfChaos);
-			keys.Add((int)SoulFlags.LordSoulNito);
-
-			for (int i = 0; i < keys.Count; i++)
-			{
-				keys[i] = Utilities.StripHighestDigit(keys[i], out int digit);
-			}
-
-			keyItems = keys.ToArray();
 		}
 
 		public string ComponentName => DisplayName;
@@ -463,13 +415,13 @@ namespace LiveSplit.DarkSouls
 					{
 						case WorldEvents.Bell1:
 							run.Id = (int)BellFlags.FirstBell;
-							run.Flag = memory.CheckFlag(run.Id);
+							run.Flag = darkSouls.CheckFlag(run.Id);
 
 							break;
 
 						case WorldEvents.Bell2:
 							run.Id = (int)BellFlags.SecondBell;
-							run.Flag = memory.CheckFlag(run.Id);
+							run.Flag = darkSouls.CheckFlag(run.Id);
 
 							break;
 
@@ -482,7 +434,7 @@ namespace LiveSplit.DarkSouls
 					int flag = data[0];
 
 					run.Id = flag;
-					run.Flag = memory.CheckFlag(flag);
+					run.Flag = darkSouls.CheckFlag(flag);
 
 					break;
 
@@ -560,7 +512,6 @@ namespace LiveSplit.DarkSouls
 		// Making the phase nullable makes testing easier.
 		public void Refresh(TimerPhase? nullablePhase = null)
         {
-            Hook();
             darkSouls.Refresh();
 
 
@@ -758,20 +709,6 @@ namespace LiveSplit.DarkSouls
 			}
 		}
 
-		private bool Hook()
-		{
-			bool previouslyHooked = memory.ProcessHooked;
-
-			// It's possible for the timer to be running before Dark Souls is launched. In this case, all splits are
-			// treated as manual until the process is hooked, at which point the run state is updated appropriately.
-			if (memory.Hook() && !previouslyHooked && timer?.CurrentState.CurrentPhase == TimerPhase.Running)
-			{
-				waitingOnFirstLoad = true;
-			}
-
-			return memory.ProcessHooked;
-		}
-		
 
 		private void UpdateGameTime(int newGameTime)
 		{
@@ -1050,7 +987,7 @@ namespace LiveSplit.DarkSouls
 
 		private bool ProcessBell(int[] data)
 		{
-			bool rung = memory.CheckFlag(run.Id);
+			bool rung = darkSouls.CheckFlag(run.Id);
 
 			if (rung && !run.Flag)
 			{
@@ -1091,7 +1028,7 @@ namespace LiveSplit.DarkSouls
 		{
 			int flag = data[0];
 
-			if (!run.Flag && memory.CheckFlag(flag))
+			if (!run.Flag && darkSouls.CheckFlag(flag))
 			{
 				run.Flag = true;
 

@@ -198,22 +198,7 @@ namespace DarkSoulsMemory
 
             return _darkSouls.GetZone();
         }
-
-
-        /// <summary>
-        /// Only for developers
-        /// </summary>
-        /// <returns></returns>
-        public List<int> GetCurrentTestValue()
-        {
-            if (_darkSouls == null)
-            {
-                return null;
-            }
-
-            return _darkSouls.GetCurrentTestValue();
-        }
-
+        
 
         /// <summary>
         /// Resets inventory indices
@@ -242,6 +227,18 @@ namespace DarkSoulsMemory
             return _darkSouls.GetClearCount();
         }
 
+        /// <summary>
+        /// Check if arbitrary flag is set
+        /// </summary>
+        public bool CheckFlag(int flag)
+        {
+            if (_darkSouls == null)
+            {
+                return false;
+            }
+
+            return _darkSouls.CheckFlag(flag);
+        }
 
         /// <summary>
         /// Returns true if the game is currently attached and memory can be read.

@@ -114,11 +114,9 @@ namespace DarkSoulsMemory.Internal
         /// <returns></returns>
         int GetClearCount();
 
-
         /// <summary>
-        /// For testing
+        /// Check if arbitrary flag is set
         /// </summary>
-        /// <returns></returns>
-        List<int> GetCurrentTestValue();
+        bool CheckFlag(int flag);
     }
 }

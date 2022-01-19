@@ -20,6 +20,7 @@ namespace DarkSoulsMemory.Internal.DarkSoulsPtde
             InitMenuPrompt();
             InitNetManImp();
             InitGameDataMan();
+            InitFlags();
         }
 
         public bool Attach()
@@ -88,10 +89,17 @@ namespace DarkSoulsMemory.Internal.DarkSoulsPtde
             {
                 _netManImp = (IntPtr)ReadInt32(_netManImp + 2);
             }
-            //if (TryScan(new byte?[] { 0x83, 0x3d, null, null, null, null, 0x00, 0x75, 0x4b, 0xa1, 0xc8, 0x87, 0x37, 0x01, 0x50, 0x6a, 0x08, 0x68, 0x78, 0x0b, 0x00, 0x00 }, out _netManImp))
-            //{
-            //    _netManImp = (IntPtr)ReadInt32(_netManImp + 2);
-            //}
+        }
+
+        private IntPtr _flags;
+
+        private void InitFlags()
+        {
+            if (TryScan(new byte?[] { 0x33, 0xc4, 0x50, 0x8d, 0x44, 0x24, 0x0c, 0x64, 0xa3, 0x00, 0x00, 0x00, 0x00, 0x83, 0x3d, null, null, null, null, 0x00, 0x75, 0x4a }, out _flags))
+            {
+                _flags = _flags + 15;
+                _flags = (IntPtr)ReadInt32(_flags);
+            }
         }
 
         #endregion
@@ -212,9 +220,9 @@ namespace DarkSoulsMemory.Internal.DarkSoulsPtde
         public BonfireState GetBonfireState(Bonfire bonfire)
         {
             var pointer = (IntPtr)ReadInt32(_netManImp);  //instance
-            pointer = (IntPtr)ReadInt32(IntPtr.Add(pointer, 0xB48)); //frpgNetBonfireDb
-            pointer = (IntPtr)ReadInt32(IntPtr.Add(pointer, 0x24));
-            pointer = (IntPtr)ReadInt32(pointer);
+            pointer     = (IntPtr)ReadInt32(IntPtr.Add(pointer, 0xB48)); //frpgNetBonfireDb
+            pointer     = (IntPtr)ReadInt32(IntPtr.Add(pointer, 0x24));
+            pointer     = (IntPtr)ReadInt32(pointer);
 
             IntPtr bonfirePointer = (IntPtr)ReadInt32(IntPtr.Add(pointer, 0x8));
 
@@ -242,7 +250,6 @@ namespace DarkSoulsMemory.Internal.DarkSoulsPtde
             throw new NotImplementedException();
         }
 
-
         public int GetPlayerHealth()
         {
             var gameDataManIns = (IntPtr)ReadInt32(_gameDataMan);//GameDataMan instance
@@ -269,15 +276,6 @@ namespace DarkSoulsMemory.Internal.DarkSoulsPtde
             return ReadInt32(gameDataManIns + 0x3c);
         }
 
-        public List<int> GetCurrentTestValue()
-        {
-            return new List<int>()
-            {
-                GetClearCount(),0
-            };
-        }
-
-
         public ZoneType GetZone()
         {
             var netManImpIns = (IntPtr)ReadInt32(_netManImp);
@@ -293,7 +291,6 @@ namespace DarkSoulsMemory.Internal.DarkSoulsPtde
             return ZoneType.Unknown;
         }
 
-
         public void ResetInventoryIndices()
         {
             if (TryScan(new byte?[] { 0x8B, 0x4C, 0x24, 0x34, 0x8B, 0x44, 0x24, 0x2C, 0x89, 0x8A, 0x38, 0x01, 0x00, 0x00, 0x8B, 0x90, 0x08, 0x01, 0x00, 0x00, 0xC1, 0xE2, 0x10, 0x0B, 0x90, 0x00, 0x01, 0x00, 0x00, 0x8B, 0xC1, 0x8B, 0xCD, 0x89, 0x14, 0xAD, null, null, null, null }, out IntPtr basePtr))
@@ -305,6 +302,91 @@ namespace DarkSoulsMemory.Internal.DarkSoulsPtde
                 }
             }
         }
+
+        #endregion
+
+        #region Flags
+
+        public bool CheckFlag(int flag)
+        {
+            return GetEventFlagState(flag);
+        }
+
+        private bool GetEventFlagState(int id)
+        {
+            if (GetEventFlagAddress(id, out int address, out uint mask))
+            {
+                uint flags = (uint)ReadInt32((IntPtr)address);
+
+                return (flags & mask) != 0;
+            }
+            return false;
+        }
+
+        private bool GetEventFlagAddress(int id, out int address, out uint mask)
+        {
+            string idString = id.ToString("D8");
+
+            if (idString.Length == 8)
+            {
+                string group = idString.Substring(0, 1);
+                string area = idString.Substring(1, 3);
+                int section = int.Parse(idString.Substring(4, 1));
+                int number = int.Parse(idString.Substring(5, 3));
+
+                if (_eventFlagGroups.ContainsKey(group) && _eventFlagAreas.ContainsKey(area))
+                {
+                    int offset = _eventFlagGroups[group];
+                    offset += _eventFlagAreas[area] * 0x500;
+                    offset += section * 128;
+                    offset += (number - (number % 32)) / 8;
+                    
+                    address = ReadInt32((IntPtr)_flags);
+                    address = ReadInt32((IntPtr)address);
+                    address += offset;
+
+                    mask = 0x80000000 >> (number % 32);
+
+                    return true;
+                }
+            }
+
+            address = 0;
+            mask = 0;
+
+            return false;
+        }
+
+        private readonly Dictionary<string, int> _eventFlagGroups = new Dictionary<string, int>
+        {
+            {"0", 0x00000},
+            {"1", 0x00500},
+            {"5", 0x05F00},
+            {"6", 0x0B900},
+            {"7", 0x11300},
+        };
+
+        private readonly Dictionary<string, int> _eventFlagAreas = new Dictionary<string, int>
+        {
+            {"000", 00},
+            {"100", 01},
+            {"101", 02},
+            {"102", 03},
+            {"110", 04},
+            {"120", 05},
+            {"121", 06},
+            {"130", 07},
+            {"131", 08},
+            {"132", 09},
+            {"140", 10},
+            {"141", 11},
+            {"150", 12},
+            {"151", 13},
+            {"160", 14},
+            {"170", 15},
+            {"180", 16},
+            {"181", 17},
+        };
 
         #endregion
 
