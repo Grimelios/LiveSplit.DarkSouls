@@ -11,8 +11,8 @@ namespace LiveSplit.DarkSouls
 
 		public static void Main(string[] args)
         {
-            new SoulsForm().ShowDialog();
-            return;
+            //new SoulsForm().ShowDialog();
+            //return;
 
 			bool formTesting = args.Length > 0;
 
@@ -27,8 +27,7 @@ namespace LiveSplit.DarkSouls
 				while (true)
 				{
 					component.Refresh();
-
-					Thread.Sleep((int)(1000f / Tick));
+                    Thread.Sleep((int)(1000f / Tick));
 				}
 			}
 		}

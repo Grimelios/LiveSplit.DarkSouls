@@ -30,11 +30,7 @@ namespace LiveSplit.DarkSouls
 		private Vector3[] covenantLocations;
 		private Vector3[] bonfireLocations;
 		private RunState run;
-
-		// In terms of memory, "key items" refers to more than just keys. Tracking the full list of items categorized
-		// as key items simplifies a few checks later on.
-		private int[] keyItems;
-
+		
 		private bool preparedForWarp;
 		private bool isLoadScreenVisible;
 		private bool waitingOnQuitout;

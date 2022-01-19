@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.IO.Pipes;
 using System.Linq;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace DarkSoulsMemory.Internal.DarkSoulsRemastered
+namespace DarkSoulsMemory.Internal
 {
     internal class DarkSoulsRemastered : BaseMemoryReaderWriter, IDarkSouls
     {

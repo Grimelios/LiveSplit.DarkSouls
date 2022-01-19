@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace DarkSoulsMemory.Internal.DarkSoulsPtde
+namespace DarkSoulsMemory.Internal
 {
     internal class DarkSoulsPtde : BaseMemoryReaderWriter, IDarkSouls
     {

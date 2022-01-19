@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 using DarkSoulsMemory.Internal;
-using DarkSoulsMemory.Internal.DarkSoulsPtde;
-using DarkSoulsMemory.Internal.DarkSoulsRemastered;
 
 namespace DarkSoulsMemory
 {

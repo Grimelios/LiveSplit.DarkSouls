@@ -1,6 +1,6 @@
 # LiveSplit.DarkSouls
 
-This project is a configurable autosplitter for Dark Souls: Prepare To Die edition on PC. It does *not* work with the Remastered version. The autosplitter is designed to be usable for any Dark Souls speedrun, with a variety of split options available. In addition, the autosplitter can optionally serve as a full replacement for the existing IGT tool commonly used by the community to accurately display in-game time.
+This project is a configurable autosplitter for Dark Souls: Prepare To Die edition on PC. It *does* work with the Remastered version. The autosplitter is designed to be usable for any Dark Souls speedrun, with a variety of split options available. In addition, the autosplitter can optionally serve as a full replacement for the existing IGT tool commonly used by the community to accurately display in-game time.
 
 Created by [@Grimelios](https://twitter.com/Grimelios). Feel free to ping me on Twitter or Discord (Grimelios#2045) with any questions, concerns, or feedback. Big shoutout to the work done by existing Souls community members in tracking down memory locations, many of which I used in this project.
 
@@ -117,3 +117,13 @@ In all cases, the actual split occurs when the loading screen appears (following
 ## Good luck!
 
 That's it! My contact information is above (both Twitter and Discord) if you have any questions or concerns. I've tested extensively myself, but of course feel free to reach out if you encounter any bugs or missing features. Otherwise, enjoy your runs and good luck! :)
+
+## 2.0.0 update
+
+ [I](https://github.com/FrankvdStam) was able to make the splitter compatible with the "community" version of PTDE, and the remastered version of the game, and just want to thank the original creator [@Grimelios](https://twitter.com/Grimelios), helped me out with getting started and allowed me to be a contributor rather than forking this repository. I also want to thank dark souls reverse engineering expert [Nordgaren](https://github.com/Nordgaren/), who has been absolutely invaluable to me, basically taught me how to use cheat engine combined with ghidra to get the information I need out of these games.
+
+ Changes in 2.0.0:
+ +All hardcoded addresses have been replaced with AOB scans - this means that the splitter should work consistently for everyone, and be compatible with the "community" version of the game
+ +Added support for the remastered version of the game
+ +Added re-attaching: whenever the game crashes or you are forced to restart because of memes, the splitter when now automatically re-attach to the game. You can also switch from PTDE to remastered, and the splitter will re-attach to that automatically too. You should not have to restart the splitter again
+ +Moved all attaching/game data reading logic into a separate library. You can reuse this in your own application!
