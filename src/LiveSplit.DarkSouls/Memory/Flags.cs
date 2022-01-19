@@ -248,15 +248,15 @@ namespace LiveSplit.DarkSouls.Memory
 		{
 			// Note that the Darkmoon covenant is actually "Blade of the Darkmoon" and the Dragon covenant is "Path of
 			// the Dragon" (which changes the alphabetical ordering).
-			(int)CovenantFlags.Darkmoon,
-			(int)CovenantFlags.Chaos,
-			(int)CovenantFlags.Darkwraith,
-			(int)CovenantFlags.Forest,
-			(int)CovenantFlags.Gravelord,
-			(int)CovenantFlags.Dragon,
-			(int)CovenantFlags.Princess,
-			(int)CovenantFlags.Sunlight,
-			(int)CovenantFlags.WayOfWhite
+			(int)CovenantType.BladeOfTheDarkmoon,
+			(int)CovenantType.ChaosServant,
+			(int)CovenantType.Darkwraith,
+			(int)CovenantType.ForestHunter,
+			(int)CovenantType.GravelordServant,
+			(int)CovenantType.PathOfTheDragon,
+			(int)CovenantType.PrincessGuard,
+			(int)CovenantType.WarriorsOfSunlight,
+			(int)CovenantType.WayOfWhite
 		};
 
 		public static readonly int[] OrderedInfusions =

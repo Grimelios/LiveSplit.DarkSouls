@@ -307,12 +307,43 @@ namespace DarkSoulsMemory.Internal.DarkSoulsRemastered
             return Area.NonInvadeableArea;
         }
 
+
+        public int GetPlayerHealth()
+        {
+            var gameDataManIns = (IntPtr)ReadInt32(_gameDataMan);
+            var hostPlayerGameData = (IntPtr)ReadInt32(gameDataManIns + 16);
+            var playerGameDataAttributeInfo = hostPlayerGameData + 16;
+            return ReadInt32(playerGameDataAttributeInfo + 4);
+        }
+
+        public CovenantType GetCovenant()
+        {
+            var gameDataManIns = (IntPtr)ReadInt32(_gameDataMan);
+            var hostPlayerGameData = (IntPtr)ReadInt32(gameDataManIns + 16);
+            var playerGameDataAttributeInfo = hostPlayerGameData + 16;
+            var covenantId = ReadInt32(playerGameDataAttributeInfo + 259);
+
+            if (covenantId.TryParseEnum(out CovenantType covenant))
+            {
+                return covenant;
+            }
+            return CovenantType.None;
+        }
+
+        public int GetClearCount()
+        {
+            var gameDataManIns = (IntPtr)ReadInt32(_gameDataMan);
+            return ReadInt32(gameDataManIns + 0x78);
+        }
+
         public List<int> GetCurrentTestValue()
         {
-
+            var gameDataManIns = (IntPtr)ReadInt32(_gameDataMan);
+            var clearCount = ReadInt32(gameDataManIns + 0x78);
 
             return new List<int>()
             {
+                clearCount, 0
             };
 
         }

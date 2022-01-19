@@ -33,12 +33,11 @@ namespace Tester
             while (true)
             {
                 darkSouls.Refresh();
-
-                var stuff = darkSouls.GetCurrentInventoryItems();
-
+                
                 Console.Clear();
                 var test = darkSouls.GetCurrentTestValue();
-                Console.WriteLine($"{darkSouls.GetBonfireState(Bonfire.UndeadAsylumInterior)} {darkSouls.GetZone()}");
+                //Console.WriteLine($"{darkSouls.GetCovenant()} {darkSouls.GetPlayerHealth()}");
+                Console.WriteLine($"{test[0]} {test[1]}");
                 Thread.Sleep(50);
             }
         }

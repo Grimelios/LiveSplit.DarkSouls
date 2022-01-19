@@ -13,7 +13,7 @@ namespace LiveSplit.DarkSouls.Memory
 	{
 		private Process process;
 		private IntPtr handle;
-		private SoulsPointers pointers;
+		//private SoulsPointers pointers;
         
 		public bool ProcessHooked { get; private set; }
 
@@ -29,7 +29,7 @@ namespace LiveSplit.DarkSouls.Memory
 					return false;
 				}
 
-				pointers.Refresh(process);
+				//pointers.Refresh(process);
 
 				return true;
 			}
@@ -47,7 +47,7 @@ namespace LiveSplit.DarkSouls.Memory
 
 				// Item trackers are created below (or left as null if not needed).
 				handle = process.Handle;
-				pointers = new SoulsPointers(process);
+				//pointers = new SoulsPointers(process);
 				ProcessHooked = true;
 			}
 
@@ -69,27 +69,27 @@ namespace LiveSplit.DarkSouls.Memory
 		//	  return MemoryTools.ReadInt32(handle, (IntPtr)0x137DC70) != 0;
 		//}
 
-		public int GetClearCount()
-		{
-			IntPtr pointer = (IntPtr)MemoryTools.ReadInt32(handle, (IntPtr)0x1378700);
+		//public int GetClearCount()
+		//{
+		//	IntPtr pointer = (IntPtr)MemoryTools.ReadInt32(handle, (IntPtr)0x1378700);
+		//
+		//	if (pointer == IntPtr.Zero)
+		//	{
+		//		return -1;
+		//	}
+		//
+		//	return MemoryTools.ReadInt32(handle, pointer + 0x3C);
+		//}
 
-			if (pointer == IntPtr.Zero)
-			{
-				return -1;
-			}
-
-			return MemoryTools.ReadInt32(handle, pointer + 0x3C);
-		}
-
-		public int GetPlayerHP()
-		{
-			return MemoryTools.ReadInt32(handle, pointers.CharacterStats + 0xC);
-		}
-		
-		public CovenantFlags GetCovenant()
-		{
-			return (CovenantFlags)MemoryTools.ReadByte(handle, pointers.CharacterStats + 0x10B);
-		}
+		//public int GetPlayerHP()
+		//{
+		//	return MemoryTools.ReadInt32(handle, pointers.CharacterStats + 0xC);
+		//}
+		//
+		//public CovenantFlags GetCovenant()
+		//{
+		//	return (CovenantFlags)MemoryTools.ReadByte(handle, pointers.CharacterStats + 0x10B);
+		//}
 		
 
 		//public BonfireStates GetBonfireState(BonfireFlags bonfire)

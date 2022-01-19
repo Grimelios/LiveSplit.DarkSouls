@@ -242,11 +242,38 @@ namespace DarkSoulsMemory.Internal.DarkSoulsPtde
             throw new NotImplementedException();
         }
 
+
+        public int GetPlayerHealth()
+        {
+            var gameDataManIns = (IntPtr)ReadInt32(_gameDataMan);//GameDataMan instance
+            var hostPlayerGameData = (IntPtr)ReadInt32(gameDataManIns + 0x8);//Host player game data
+            return ReadInt32(hostPlayerGameData + 0xc);
+        }
+
+        public CovenantType GetCovenant()
+        {
+            var gameDataManIns = (IntPtr)ReadInt32(_gameDataMan);//GameDataMan instance
+            var hostPlayerGameData = (IntPtr)ReadInt32(gameDataManIns + 0x8);//Host player game data
+            var covenant = ReadInt32(hostPlayerGameData + 0x10b);
+
+            if (covenant.TryParseEnum(out CovenantType covenantType))
+            {
+                return covenantType;
+            }
+            return CovenantType.None;
+        }
+
+        public int GetClearCount()
+        {
+            var gameDataManIns = (IntPtr)ReadInt32(_gameDataMan);
+            return ReadInt32(gameDataManIns + 0x3c);
+        }
+
         public List<int> GetCurrentTestValue()
         {
-           
             return new List<int>()
             {
+                GetClearCount(),0
             };
         }
 
@@ -278,7 +305,6 @@ namespace DarkSoulsMemory.Internal.DarkSoulsPtde
                 }
             }
         }
-        
 
         #endregion
 

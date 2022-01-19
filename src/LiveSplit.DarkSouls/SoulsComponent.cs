@@ -57,19 +57,7 @@ namespace LiveSplit.DarkSouls
 		private bool isBonfireWarpSplitActive;
 		private bool isItemWarpSplitActive;
 
-		// The estus flask is more complex than other items. Conceptually, you have a single estus flask (either empty
-		// or filled) that can be upgraded to a maximum of +7. Internally, though, each separate flask has its own ID
-		// (16 total). Some special code is required to deal with that fact.
-		private bool isEstusSplit;
-
-		// This value is used to bump estus IDs up to their correct value (from the base, unfilled +0 ID). For estus
-		// splits, reinforcement can't be stored in the item target directly because it would mess with state
-		// comparison.
-		private int estusReinforcement;
-
-		// If a particular run doesn't ever split on items, it would be wasteful to track them.
-		private bool itemsEnabled;
-
+		
 		public SoulsComponent()
         {
             darkSouls = new DarkSoulsMemory.DarkSouls();
@@ -420,7 +408,6 @@ namespace LiveSplit.DarkSouls
 			isBonfireWarpConfirmed = false;
 			isBonfireWarpSplitActive = false;
 			isItemWarpSplitActive = false;
-			isEstusSplit = false;
 
 			int[] data = split.Data;
 
@@ -465,7 +452,7 @@ namespace LiveSplit.DarkSouls
 					}
 					else
 					{
-						run.Data = (int)memory.GetCovenant();
+						run.Data = (int)darkSouls.GetCovenant();
 						run.Target = target;
 					}
 
@@ -486,7 +473,7 @@ namespace LiveSplit.DarkSouls
 
 							break;
 
-						default: run.Data = memory.GetClearCount(); break;
+						default: run.Data = darkSouls.GetClearCount(); break;
 					}
 
 					break;
@@ -885,7 +872,7 @@ namespace LiveSplit.DarkSouls
 
 			// Dying counts as a warp (since you do actually warp on death). The exception here is fall control
 			// quitouts, but thankfully a successful fall control quitout causes the player's HP to stay intact.
-			if (memory.GetPlayerHP() == 0)
+			if (darkSouls.GetPlayerHealth() == 0)
 			{
 				return true;
 			}
@@ -1042,7 +1029,7 @@ namespace LiveSplit.DarkSouls
 
 		private bool CheckCovenantJoin()
 		{
-			int covenant = (int)memory.GetCovenant();
+			int covenant = (int)darkSouls.GetCovenant();
 
 			if (covenant != run.Data)
 			{
@@ -1077,7 +1064,7 @@ namespace LiveSplit.DarkSouls
 
 		private bool ProcessEnding(int[] data)
 		{
-			int clearCount = memory.GetClearCount();
+			int clearCount = darkSouls.GetClearCount();
 
 			if (clearCount == run.Data + 1)
 			{

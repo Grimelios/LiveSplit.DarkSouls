@@ -97,6 +97,25 @@ namespace DarkSoulsMemory.Internal
         Area GetArea();
 
         /// <summary>
+        /// Returns the current amount of health the player has
+        /// </summary>
+        /// <returns></returns>
+        int GetPlayerHealth();
+
+        /// <summary>
+        /// Returns the currently active covenant
+        /// </summary>
+        /// <returns></returns>
+        CovenantType GetCovenant();
+
+        /// <summary>
+        /// Returns the clear count. 0 means ng, 1 means ng+, etc.
+        /// </summary>
+        /// <returns></returns>
+        int GetClearCount();
+
+
+        /// <summary>
         /// For testing
         /// </summary>
         /// <returns></returns>

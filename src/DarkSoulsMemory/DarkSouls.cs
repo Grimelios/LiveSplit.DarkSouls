@@ -127,6 +127,35 @@ namespace DarkSoulsMemory
 
 
         /// <summary>
+        /// Returns the current amount of health the player has
+        /// </summary>
+        /// <returns></returns>
+        public int GetPlayerHealth()
+        {
+            if (_darkSouls == null)
+            {
+                return 0;
+            }
+
+            return _darkSouls.GetPlayerHealth();
+        }
+
+        /// <summary>
+        /// Returns the currently active covenant
+        /// </summary>
+        /// <returns></returns>
+        public CovenantType GetCovenant()
+        {
+            if (_darkSouls == null)
+            {
+                return CovenantType.None;
+            }
+
+            return _darkSouls.GetCovenant();
+        }
+
+
+        /// <summary>
         /// Returns a list of the current inventory items
         /// </summary>
         /// <returns></returns>
@@ -197,6 +226,20 @@ namespace DarkSoulsMemory
             }
 
             _darkSouls.ResetInventoryIndices();
+        }
+
+
+        /// <summary>
+        /// Returns the clear count. 0 means ng, 1 means ng+, etc.
+        /// </summary>
+        public int GetClearCount()
+        {
+            if (_darkSouls == null)
+            {
+                return 0;
+            }
+
+            return _darkSouls.GetClearCount();
         }
 
 
