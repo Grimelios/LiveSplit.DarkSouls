@@ -8,21 +8,7 @@ namespace Tester
     {
         static void Main(string[] args)
         {
-            //var ptrs = new SoulsPointers(Process.GetProcessesByName("DARKSOULS").First());
-
-
             var darkSouls = new DarkSouls();
-            //var items = darkSouls.GetCurrentInventoryItems();
-            //
-            //foreach (var item in items)
-            //{
-            //    Console.WriteLine(item.Type + " " + item.Quantity);
-            //}
-            //
-            //Console.ReadKey();
-            //return;
-
-            
 
             while (true)
             {

@@ -98,10 +98,7 @@
     <Compile Include="Controls\SoulsSplitControl.Designer.cs">
       <DependentUpon>SoulsSplitControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Data\ItemId.cs" />
     <Compile Include="Data\ItemLists.cs" />
-    <Compile Include="Data\Zone.cs" />
-    <Compile Include="Kernel32.cs" />
     <Compile Include="Memory\Flags.cs" />
     <Compile Include="Data\RunState.cs" />
     <Compile Include="Data\Split.cs" />

@@ -7,22 +7,8 @@ using DarkSoulsMemory;
 
 namespace LiveSplit.DarkSouls.Memory
 {
-	public enum AnimationFlags
-	{
-		// These three flags are matched with their respective sitting animations below.
-		BonfireLeave1 = 7702,
-		BonfireLeave2 = 7712,
-		BonfireLeave3 = 7722,
 
-		// These three flags correspond to all possible sitting styles the player can take when resting at a bonfire.
-		BonfireRest1 = 7700,
-		BonfireRest2 = 7710,
-		BonfireRest3 = 7720,
-		 
-		BonfireWarp = 7725
-	}
-
-	public enum BellFlags
+    public enum BellFlags
 	{
 		FirstBell = 11010700,
 		SecondBell = 11400200
@@ -86,37 +72,7 @@ namespace LiveSplit.DarkSouls.Memory
 		Undiscovered = -1,
 		Unlit = 0
 	}
-
-	public enum BossFlags
-	{
-		Artorias = 11210001,
-		AsylumDemon = 16,
-		BedOfChaos = 10,
-		CapraDemon = 11010902,
-		CeaselessDischarge = 11410900,
-		CentipedeDemon = 11410901,
-		Firesage = 11410410,
-		FourKings = 13,
-		GapingDragon = 2,
-		Gargoyles = 3,
-		Gwyn = 15,
-		Gwyndolin = 11510900,
-		IronGolem = 11,
-		Kalameet = 11210004,
-		Manus = 11210002,
-		MoonlightButterfly = 11200900,
-		Nito = 7,
-		OrnsteinAndSmough = 12,
-		Pinwheel = 6,
-		Priscilla = 4,
-		Quelaag = 9,
-		SanctuaryGuardian = 11210000,
-		Seath = 14,
-		Sif = 5,
-		StrayDemon = 11810900,
-		TaurusDemon = 11010901
-	}
-
+	
 	public enum CovenantFlags
 	{
 		Chaos = 9,
@@ -130,30 +86,7 @@ namespace LiveSplit.DarkSouls.Memory
 		Sunlight = 3,
 		WayOfWhite = 1
 	}
-
-	public enum InfusionFlags
-	{
-		Basic = 0,
-		Chaos = 9,
-		Crystal = 1,
-		Divine = 6,
-		Enchanted = 5,
-		Fire = 8,
-		Lightning = 2,
-		Magic = 4,
-		Occult = 7,
-		Raw = 3
-	}
-
-	public enum InventoryFlags
-	{
-		BottomlessBox = 0xEA40,
-		ItemCount = 0x128,
-		ItemStart = 0xA24,
-		KeyCount = 0x12C,
-		KeyStart = 0x324
-	}
-
+	
 	public static class Flags
 	{
 		public static readonly int[] OrderedBonfires =

@@ -389,7 +389,7 @@ namespace LiveSplit.DarkSouls
 					break;
 
 				case SplitTypes.Covenant:
-					bool onDiscover = data[1] == 0;
+					var onDiscover = data[1] == 0;
 
 					int target = Flags.OrderedCovenants[data[0]];
 
@@ -427,7 +427,7 @@ namespace LiveSplit.DarkSouls
 					break;
 
 				case SplitTypes.Flag:
-					int flag = data[0];
+					var flag = data[0];
 
 					run.Id = flag;
 					run.Flag = darkSouls.CheckFlag(flag);
@@ -435,11 +435,10 @@ namespace LiveSplit.DarkSouls
 					break;
 
 				case SplitTypes.Item:
-					ItemId id = ComputeItemId(split);
-                    var itemId = id.BaseId;
+                    ComputeItemId(split, out int itemId, out int category);
 					
 					var infusion = ItemInfusion.Normal;
-                    if (data[2] != Int32.MaxValue)
+                    if (data[2] != int.MaxValue)
 					{
                         infusion = (ItemInfusion)Flags.OrderedInfusions[data[2]];
                     }
@@ -448,7 +447,7 @@ namespace LiveSplit.DarkSouls
                     var quantity = data[4];
 					
 					var categories = new List<ItemCategory>();
-                    switch (Utilities.ToHex(id.Category))
+                    switch (Utilities.ToHex(category))
                     {
                         case 0:
                             categories.Add(ItemCategory.MeleeWeapons);
@@ -757,17 +756,17 @@ namespace LiveSplit.DarkSouls
 			run.MaxGameTime = max;
 		}
 
-		private ItemId ComputeItemId(Split split)
+		private void ComputeItemId(Split split, out int baseId, out int category)
 		{
 			int[] data = split.Data;
 			int rawId = ItemFlags.MasterList[data[0]][data[1]];
-			int baseId = Utilities.StripHighestDigit(rawId, out int digit);
+			baseId = Utilities.StripHighestDigit(rawId, out int digit);
 
 			// Many items have a category of zero, but the leading zero would be stripped from normal integers. As
 			// such, nine is used instead (since there's no real category with ID nine).
-			int category = digit == 9 ? 0 : digit;
+			category = digit == 9 ? 0 : digit;
 
-			return new ItemId(baseId, category);
+			//return new ItemId(baseId, category);
 		}
 
 		private void PrepareWarp()

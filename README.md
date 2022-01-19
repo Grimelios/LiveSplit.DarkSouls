@@ -122,6 +122,8 @@ That's it! My contact information is above (both Twitter and Discord) if you hav
 
  [I](https://github.com/FrankvdStam) was able to make the splitter compatible with the "community" version of PTDE, and the remastered version of the game, and just want to thank the original creator [@Grimelios](https://twitter.com/Grimelios), helped me out with getting started and allowed me to be a contributor rather than forking this repository. I also want to thank dark souls reverse engineering expert [Nordgaren](https://github.com/Nordgaren/), who has been absolutely invaluable to me, basically taught me how to use cheat engine combined with ghidra to get the information I need out of these games.
 
+ You can contact me on discord: wasted#2747
+
  Changes in 2.0.0:
  +All hardcoded addresses have been replaced with AOB scans - this means that the splitter should work consistently for everyone, and be compatible with the "community" version of the game
  +Added support for the remastered version of the game
