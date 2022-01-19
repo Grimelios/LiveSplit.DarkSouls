@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A32D2E2B-30C0-4A0B-811D-6C21211C88D1}"
+	ProjectSection(SolutionItems) = preProject
+		Components\Updates.xml = Components\Updates.xml
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiveSplit.DarkSouls", "src\LiveSplit.DarkSouls\LiveSplit.DarkSouls.csproj", "{4B6EC3BB-5C5D-4682-8714-8A6B7C455E52}"
 EndProject

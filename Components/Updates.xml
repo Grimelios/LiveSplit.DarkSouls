@@ -48,4 +48,13 @@
 			<change>Item tracking will now continue to function following a game crash.</change>
 		</changelog>
 	</update>
+	<update version="2.0.0">
+		<files>
+			<file path="Components/LiveSplit.DarkSouls.dll" status="changed" />
+			<file path="Components/DarkSoulsMemory.dll"     status="changed" />
+		</files>
+		<changelog>
+			<change>Drastically changed the internals so that the splitter is compatible with the steam/cracked/remastered versions of the game</change>
+		</changelog>
+	</update>
 </updates>

@@ -50,7 +50,6 @@
     <Compile Include="Area.cs" />
     <Compile Include="Bonfires.cs" />
     <Compile Include="CovenantType.cs" />
-    <Compile Include="Flags.cs" />
     <Compile Include="Internal\BaseMemoryReaderWriter.cs" />
     <Compile Include="BossType.cs" />
     <Compile Include="DarkSouls.cs" />

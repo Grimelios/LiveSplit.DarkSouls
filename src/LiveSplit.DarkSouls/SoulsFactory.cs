@@ -12,8 +12,7 @@ namespace LiveSplit.DarkSouls
 	{
 		public string ComponentName => SoulsComponent.DisplayName + " v" + Version;
 
-		public string Description =>
-			"Configurable autosplitter and IGT tool for Dark Souls: Prepare To Die Edition. Does not work for the remaster.";
+		public string Description => "Configurable autosplitter and IGT tool for all version of the first dark souls game.";
 
 		public string UpdateName => ComponentName;
 		public string XMLURL => UpdateURL + "Components/Updates.xml";
