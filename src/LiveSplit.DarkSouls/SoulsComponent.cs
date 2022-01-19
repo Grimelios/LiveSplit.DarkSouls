@@ -709,15 +709,8 @@ namespace LiveSplit.DarkSouls
 		{
 			// When the player quits the game, the IGT clock keeps ticking for 18 extra frames. Those frames are
 			// removed from the timer on quitout. This is largely done to keep parity with the existing IGT tool.
-			int QuitoutCorrection = 594;
-
-			//Quitout correction causing weird behavior on remastered
-            //if (_soulsRemastered.Hook())
-            //{
-            //    QuitoutCorrection = 0;
-            //}
-
-
+			const int quitoutCorrection = 594;
+            
 			LiveSplitState state = timer.CurrentState;
 
 			// Setting this value to always be true prevents a weird timer creep from LiveSplit. I don't know why.
@@ -737,7 +730,7 @@ namespace LiveSplit.DarkSouls
 			{
 				switch (phase)
 				{
-					case TimerPhase.Running: run.MaxGameTime -= QuitoutCorrection;
+					case TimerPhase.Running: run.MaxGameTime -= quitoutCorrection;
 						break;
 
 					case TimerPhase.NotRunning: run.MaxGameTime = 0;
