@@ -54,15 +54,15 @@ namespace LiveSplit.DarkSouls.Memory
 			return ProcessHooked;
 		}
 		
-		public byte GetWorld()
-		{
-			return MemoryTools.ReadByte(handle, pointers.Zone + 0xA13);
-		}
-
-		public byte GetArea()
-		{
-			return MemoryTools.ReadByte(handle, pointers.Zone + 0xA12);
-		}
+		//public byte GetWorld()
+		//{
+		//	return MemoryTools.ReadByte(handle, pointers.Zone + 0xA13);
+		//}
+		//
+		//public byte GetArea()
+		//{
+		//	return MemoryTools.ReadByte(handle, pointers.Zone + 0xA12);
+		//}
 
 		//public bool IsPlayerLoaded()
 		//{
@@ -92,33 +92,33 @@ namespace LiveSplit.DarkSouls.Memory
 		}
 		
 
-		public BonfireStates GetBonfireState(BonfireFlags bonfire)
-		{
-			IntPtr pointer = (IntPtr)0x137E204;
-			pointer = (IntPtr)MemoryTools.ReadInt32(handle, pointer);
-			pointer = (IntPtr)MemoryTools.ReadInt32(handle, IntPtr.Add(pointer, 0xB48));
-			pointer = (IntPtr)MemoryTools.ReadInt32(handle, IntPtr.Add(pointer, 0x24));
-			pointer = (IntPtr)MemoryTools.ReadInt32(handle, pointer);
-
-			IntPtr bonfirePointer = (IntPtr)MemoryTools.ReadInt32(handle, IntPtr.Add(pointer, 0x8));
-
-			while (bonfirePointer != IntPtr.Zero)
-			{
-				int bonfireId = MemoryTools.ReadInt32(handle, IntPtr.Add(bonfirePointer, 0x4));
-
-				if (bonfireId == (int)bonfire)
-				{
-					int bonfireState = MemoryTools.ReadInt32(handle, IntPtr.Add(bonfirePointer, 0x8));
-
-					return (BonfireStates)bonfireState;
-				}
-
-				pointer = (IntPtr)MemoryTools.ReadInt32(handle, pointer);
-				bonfirePointer = (IntPtr)MemoryTools.ReadInt32(handle, IntPtr.Add(pointer, 0x8));
-			}
-
-			return BonfireStates.Undiscovered;
-		}
+		//public BonfireStates GetBonfireState(BonfireFlags bonfire)
+		//{
+		//	IntPtr pointer = (IntPtr)0x137E204;
+		//	pointer = (IntPtr)MemoryTools.ReadInt32(handle, pointer);
+		//	pointer = (IntPtr)MemoryTools.ReadInt32(handle, IntPtr.Add(pointer, 0xB48));
+		//	pointer = (IntPtr)MemoryTools.ReadInt32(handle, IntPtr.Add(pointer, 0x24));
+		//	pointer = (IntPtr)MemoryTools.ReadInt32(handle, pointer);
+		//
+		//	IntPtr bonfirePointer = (IntPtr)MemoryTools.ReadInt32(handle, IntPtr.Add(pointer, 0x8));
+		//
+		//	while (bonfirePointer != IntPtr.Zero)
+		//	{
+		//		int bonfireId = MemoryTools.ReadInt32(handle, IntPtr.Add(bonfirePointer, 0x4));
+		//
+		//		if (bonfireId == (int)bonfire)
+		//		{
+		//			int bonfireState = MemoryTools.ReadInt32(handle, IntPtr.Add(bonfirePointer, 0x8));
+		//
+		//			return (BonfireStates)bonfireState;
+		//		}
+		//
+		//		pointer = (IntPtr)MemoryTools.ReadInt32(handle, pointer);
+		//		bonfirePointer = (IntPtr)MemoryTools.ReadInt32(handle, IntPtr.Add(pointer, 0x8));
+		//	}
+		//
+		//	return BonfireStates.Undiscovered;
+		//}
 
 		public bool CheckFlag(int flag)
 		{

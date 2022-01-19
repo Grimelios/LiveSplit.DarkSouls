@@ -272,5 +272,27 @@ namespace LiveSplit.DarkSouls.Memory
 			(int)ItemInfusion.Occult,
 			(int)ItemInfusion.Raw
 		};
-	}
+
+        public static readonly int[] OrderedZones =
+        {
+            (int)ZoneType.Depths,
+            (int)ZoneType.UndeadBurgAndUndeadParish,
+            (int)ZoneType.Firelink,
+            (int)ZoneType.PaintedWorldOfAriamis,
+            (int)ZoneType.DarkrootGardenAndDarkrootBasin,
+            (int)ZoneType.EntireDlc,
+            (int)ZoneType.Catacombs,
+            (int)ZoneType.TombOfTheGiants,
+            (int)ZoneType.GreatHollowAndAshLake,
+            (int)ZoneType.BlightTownAndQuelaagsDomain,
+            (int)ZoneType.DemonRuinsAndLostIzalith,
+            (int)ZoneType.SensFortress,
+            (int)ZoneType.AnorLondo,
+            (int)ZoneType.NewLondoRuinsValleyofDrakesTheAbyss,
+            (int)ZoneType.DukesArchivesAndCrystalCave,
+            (int)ZoneType.FirelinkAltarAndKilnoftheFirstFlame,
+            (int)ZoneType.UndeadAsylum,
+            (int)ZoneType.Unknown
+        };
+    }
 }

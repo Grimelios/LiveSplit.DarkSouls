@@ -38,7 +38,7 @@ namespace Tester
 
                 Console.Clear();
                 var test = darkSouls.GetCurrentTestValue();
-                Console.WriteLine($"{darkSouls.GetZone()}");
+                Console.WriteLine($"{darkSouls.GetBonfireState(Bonfire.UndeadAsylumInterior)} {darkSouls.GetZone()}");
                 Thread.Sleep(50);
             }
         }

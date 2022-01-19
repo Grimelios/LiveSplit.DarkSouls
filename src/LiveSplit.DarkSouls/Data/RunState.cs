@@ -12,7 +12,7 @@ namespace LiveSplit.DarkSouls.Data
 		// Item splits are more complex than other splits, so they use a special data object for easier tracking. Same
 		// is true for zones (although zones are way simpler).
 		public Item TargetItem { get; set; }
-		public Zone Zone { get; set; }
+		public ZoneType Zone { get; set; }
 
 		public int GameTime { get; set; }
 		public int MaxGameTime { get; set; }

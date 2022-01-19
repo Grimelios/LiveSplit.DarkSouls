@@ -84,10 +84,14 @@ namespace DarkSoulsMemory.Internal.DarkSoulsPtde
         private IntPtr _netManImp;
         private void InitNetManImp()
         {
-            if (TryScan(new byte?[] { 0x83, 0x3d, null, null, null, null, 0x00, 0x75, 0x4b, 0xa1, 0xc8, 0x87, 0x37, 0x01, 0x50, 0x6a, 0x08, 0x68, 0x78, 0x0b, 0x00, 0x00 }, out _netManImp))
+            if (TryScan(new byte?[] { 0x83, 0x3d, null, null, null, null, 0x00, 0x75, 0x4b, 0xa1 }, out _netManImp))
             {
                 _netManImp = (IntPtr)ReadInt32(_netManImp + 2);
             }
+            //if (TryScan(new byte?[] { 0x83, 0x3d, null, null, null, null, 0x00, 0x75, 0x4b, 0xa1, 0xc8, 0x87, 0x37, 0x01, 0x50, 0x6a, 0x08, 0x68, 0x78, 0x0b, 0x00, 0x00 }, out _netManImp))
+            //{
+            //    _netManImp = (IntPtr)ReadInt32(_netManImp + 2);
+            //}
         }
 
         #endregion
@@ -240,19 +244,10 @@ namespace DarkSoulsMemory.Internal.DarkSoulsPtde
 
         public List<int> GetCurrentTestValue()
         {
-            var netManImpIns = (IntPtr)ReadInt32(_netManImp);
-
-
-            var zonePtr = (IntPtr)ReadInt32((IntPtr)0x137E204);//TODO: hardcoded address
-             
-            //var addr = zonePtr + 0xa12;
-            //addr = zonePtr + 0xa13;
-            //var world = ReadInt32(zonePtr + 0xA13);
-            //var area = ReadInt32(zonePtr + 0xA12);
-
-            var world = ReadByte(netManImpIns + 0xA13);
-            var area = ReadByte(netManImpIns + 0xA12);
-            return new List<int>() { world, area };
+           
+            return new List<int>()
+            {
+            };
         }
 
 

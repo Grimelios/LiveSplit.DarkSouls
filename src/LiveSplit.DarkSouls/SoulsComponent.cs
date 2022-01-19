@@ -442,7 +442,7 @@ namespace LiveSplit.DarkSouls
 					else
 					{
 						run.Id = Flags.OrderedBonfires[bonfireIndex];
-						run.Data = (int)memory.GetBonfireState((BonfireFlags)run.Id);
+						run.Data = (int)darkSouls.GetBonfireState((Bonfire)run.Id);
 						run.Target = Flags.OrderedBonfireStates[criteria];
 					}
 
@@ -539,35 +539,6 @@ namespace LiveSplit.DarkSouls
                             categories.Add(ItemCategory.UsableItems);
                             break;
                     }
-
-                    //if (categories.Contains(ItemCategory.Consumables) && id.BaseId >= 200 && id.BaseId <= 215)
-                    //{
-                    //    var estus = Item.AllItems.First(j => j.Type == ItemType.EstusFlask);
-                    //    var instance = new Item(estus.Name, estus.Id, estus.Type, estus.Category, estus.StackLimit, estus.Upgrade);
-					//
-                    //    //Item ID is both the item + reinforcement. Level field does not change in the games memory for the estus flask.
-                    //    //Goes like this:
-                    //    //200 == empty level 0
-                    //    //201 == full level 0
-                    //    //202 == empty level 1
-                    //    //203 == full level 1
-                    //    //203 == empty level 2
-                    //    //204 == full level 2
-                    //    //etc
-					//
-                    //    //If the flask is not empty, the amount of charges is stored in the quantity field.
-                    //    //If the ID - 200 is an even number, the flask is empty. For this case we can even ignore the 200 and just check the ID
-					//
-                    //    instance.Quantity = id.BaseId % 2 == 0 ? 0 : data[4];
-					//
-                    //    //Calculating the upgrade level
-                    //    instance.UpgradeLevel = (id.BaseId - 200) / 2;
-					//	
-                    //    instance.Infusion = infusion;
-                    //    instance.UpgradeLevel = level;
-                    //    run.TargetItem = instance;
-                    //    break;
-                    //}
                     
                     var lookupItem = Item.AllItems.FirstOrDefault(j => categories.Contains(j.Category) && j.Id == itemId);
                     if (lookupItem != null)
@@ -592,8 +563,8 @@ namespace LiveSplit.DarkSouls
 					break;
 
 				case SplitTypes.Zone:
-					run.Zone = GetZone();
-					run.Target = data[0];
+					run.Zone = darkSouls.GetZone();
+					run.Target = Flags.OrderedZones[data[0]];
 
 					break;
 			}
@@ -990,7 +961,8 @@ namespace LiveSplit.DarkSouls
 				return false;
 			}
 
-			int state = (int)memory.GetBonfireState((BonfireFlags)run.Id);
+            var test = (Bonfire)run.Id;
+			int state = (int)darkSouls.GetBonfireState((Bonfire)run.Id);
 
 			// Increasing bonfires states (unlit, lit, then the different levels of kindling) always increase the state
 			// value.
@@ -1162,42 +1134,26 @@ namespace LiveSplit.DarkSouls
         }
 
 		private bool ProcessZone(int[] data)
-		{
-			Zone zone = GetZone();
-			Zone previousZone = run.Zone;
+        {
+            var zoneType = darkSouls.GetZone();
+            var previousZone = run.Zone;
 
-			List<Zone> list = zoneMap[(Zones)run.Target];
-
-			run.Zone = zone;
-
-			// The first zone in the list is the target zone (the actual data object, not the enum value).
-			if (!list[0].Equals(zone))
+			run.Zone = zoneType;
+			
+			if ((ZoneType)run.Target != zoneType)
 			{
 				return false;
 			}
-
-			// The remaining items in the list are zones from which you can travel to the target zone.
-			for (int i = 1; i < list.Count; i++)
-			{
-				if (list[i].Equals(previousZone))
-				{
-					return true;
-				}
+            
+            if (zoneType != previousZone && zoneType == (ZoneType)run.Target)
+            {
+				return true;
 			}
+			
 
 			return false;
 		}
-
-		// Note that null is returned when no zone is active (i.e. you're on the title screen).
-		private Zone GetZone()
-		{
-			int world = memory.GetWorld();
-			int area = memory.GetArea();
-
-			// Both world and area are set to 255 on load screens and the main menu.
-			return world == byte.MaxValue ? null : new Zone(world, area);
-		}
-
+		
 		private bool ProcessQuitout(int[] data)
         {
             bool loaded = darkSouls.IsPlayerLoaded();

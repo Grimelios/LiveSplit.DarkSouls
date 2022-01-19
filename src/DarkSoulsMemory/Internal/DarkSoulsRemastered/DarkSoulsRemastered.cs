@@ -266,13 +266,16 @@ namespace DarkSoulsMemory.Internal.DarkSoulsRemastered
         public ZoneType GetZone()
         {
             var netManImpIns = (IntPtr)ReadInt32(_netManImp);
-            var world = ReadInt32(netManImpIns + 2592); 
-            var area  = ReadInt32(netManImpIns + 2596);
+            var world = ReadByte(netManImpIns + 0xa23);
+            var area = ReadByte(netManImpIns + 0xa22);
 
-            var worldNew = ReadInt32(netManImpIns + 2696);
-            var areaNew  = ReadInt32(netManImpIns + 2700);
+            var zone = _zones.FirstOrDefault(i => i.World == world && i.Area == area);
+            if (zone != null)
+            {
+                return zone.ZoneType;
+            }
 
-            throw new NotImplementedException();
+            return ZoneType.Unknown;
         }
 
 
@@ -306,39 +309,13 @@ namespace DarkSoulsMemory.Internal.DarkSoulsRemastered
 
         public List<int> GetCurrentTestValue()
         {
-            var instance = (IntPtr)ReadInt32(_playerIns);
-            var playerCtrl = (IntPtr)ReadInt32(instance + 104);
-
-            var multiplayerAreaId = ReadInt32(playerCtrl + 0x354);
-            var areaId = ReadInt32(playerCtrl + 0x358);
-
-
-
-
-
-
-            ////1c4520e0
-            //var instance = (IntPtr)ReadInt32(_playerIns);
-            //instance = (IntPtr)ReadInt32(instance + 104);
-            //var addr = instance + 0x354;
-            //var multiplayerAreaId = ReadInt32(instance + 0x354);
-            //var AreaId = ReadInt32(instance + 0x358);
-            ////01c05b458
-            //
-            //var netManImpIns = (IntPtr)ReadInt32(_netManImp);
-            //var world = ReadInt32(netManImpIns + 2592);
-            //var area = ReadInt32(netManImpIns + 2596);
-
 
 
             return new List<int>()
             {
-                multiplayerAreaId,
-                areaId,
             };
 
         }
-
 
         //public int NewGameType()
         //{
