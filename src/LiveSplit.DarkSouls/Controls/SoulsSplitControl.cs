@@ -120,6 +120,7 @@ namespace LiveSplit.DarkSouls.Controls
 				{ SplitTypes.Item, GetItemControls },
 				{ SplitTypes.Quitout, GetQuitoutControls },
 				{ SplitTypes.Zone, GetZoneControls },
+				{ SplitTypes.Box, GetBoxControls },
 			};	
 		}
 
@@ -149,11 +150,12 @@ namespace LiveSplit.DarkSouls.Controls
 					// A few split types use a textbox. All other controls are dropdowns.
 					if (control is TextBox textbox)
 					{
-						string text = textbox.Text;
-
-						data[i] = text.Length > 0 ? int.Parse(text) : -1;
-
-						continue;
+					    if (textbox.Enabled)
+                        {
+                            string text = textbox.Text;
+                            data[i] = text.Length > 0 ? int.Parse(text) : -1;
+						}
+                        continue;
 					}
 
 					var dropdown = (ComboBox)control;
@@ -206,7 +208,7 @@ namespace LiveSplit.DarkSouls.Controls
 
 			// For non-manual splits, the finished state will already have been refreshed (as dropdowns are set).
 			// Quitouts are also finished by default (since they use no additional controls).
-			if (type == SplitTypes.Manual || type == SplitTypes.Quitout)
+			if (type == SplitTypes.Manual || type == SplitTypes.Quitout || type == SplitTypes.Box)
 			{
 				RefreshFinished(true);
 			}
@@ -224,6 +226,10 @@ namespace LiveSplit.DarkSouls.Controls
 			{
 				parent.UnfinishedCount--;
 			}
+			else if (IsFinished && previouslyFinished)
+            {
+                return;
+            }
 			else if (previouslyFinished && !IsFinished)
 			{
 				parent.UnfinishedCount++;
@@ -239,6 +245,7 @@ namespace LiveSplit.DarkSouls.Controls
 			{
 				case SplitTypes.Manual: return true;
 				case SplitTypes.Quitout: return true;
+				case SplitTypes.Box: return true;
 				case SplitTypes.Unassigned: return false;
 			}
 
@@ -340,13 +347,21 @@ namespace LiveSplit.DarkSouls.Controls
 				}
 			}
 
-			// Item splits require two lines.
-			if (splitType == SplitTypes.Item)
+			// Item/box splits require two lines.
+			if (splitType == SplitTypes.Item || splitType == SplitTypes.Box)
 			{
 				Height = Height * 2 - ItemSplitCorrection;
 				splitDetailsPanel.Height = splitDetailsPanel.Height * 2 + ControlSpacing;
 
-				Control[] secondaryControls = GetItemSecondaryControls();
+				Control[] secondaryControls;
+                if (splitType == SplitTypes.Item)
+                {
+					secondaryControls = GetItemSecondaryControls();
+                }
+				else
+                {
+                    secondaryControls = GetBoxLine();
+				}
 
 				int y = controls[0].Bounds.Bottom + ControlSpacing;
 
@@ -363,7 +378,10 @@ namespace LiveSplit.DarkSouls.Controls
 					control.Location = point;
 					panelControls.Add(control);
 
-					LinkItemLines(controls, secondaryControls);
+                    if (splitType == SplitTypes.Item)
+                    {
+                        LinkItemLines(controls, secondaryControls);
+					}
 				}
 
 				// Changing an existing split to an item split can cause later splits to be shifted down.
@@ -372,12 +390,13 @@ namespace LiveSplit.DarkSouls.Controls
 					parent.ShiftSplits(Index + 1);
 				}
 			}
-			else if (previousSplitType == SplitTypes.Item)
+			else if (previousSplitType == SplitTypes.Item || previousSplitType == SplitTypes.Box)
 			{
 				Height = (Height + ItemSplitCorrection) / 2;
 				splitDetailsPanel.Height = (splitDetailsPanel.Height - ControlSpacing) / 2;
 				parent.ShiftSplits(Index + 1);
 			}
+			
 
 			if (previouslyFinished)
 			{
@@ -568,7 +587,36 @@ namespace LiveSplit.DarkSouls.Controls
 			};
 		}
 
-		private Control[] GetItemControls()
+        private Control[] GetBoxControls()
+        {
+            return GetBoxLine();
+        }
+
+        private Control[] GetBoxLine()
+        {
+			//var textBox = new TextBox()
+			//{
+			//	Text = label,
+			//	Enabled = false,
+			//};
+
+            var x = GetNumericTextbox(50, 20, true, 0, 0, true);
+            var y = GetNumericTextbox(50, 20, true, 0, 0, true);
+            var z = GetNumericTextbox(50, 20, true, 0, 0, true);
+
+			x.TextChanged += (o, e) => RefreshFinished();
+			y.TextChanged += (o, e) => RefreshFinished();
+			z.TextChanged += (o, e) => RefreshFinished();
+
+			return new Control[]
+            {
+				x,
+                y,
+                z,
+            };
+		}
+
+        private Control[] GetItemControls()
 		{
 			const int ItemTypeWidth = 93;
 			const int ItemListWidth = 224;
@@ -894,7 +942,7 @@ namespace LiveSplit.DarkSouls.Controls
 			return new Control[] { zoneList };
 		}
 
-		private SoulsDropdown GetDropdown(string[] items, string prompt, int width, bool enabled = true)
+        private SoulsDropdown GetDropdown(string[] items, string prompt, int width, bool enabled = true)
 		{
 			SoulsDropdown box = new SoulsDropdown(this)
 			{
@@ -920,20 +968,19 @@ namespace LiveSplit.DarkSouls.Controls
 			return box;
 		}
 
-		private TextBox GetNumericTextbox(int width, int maxLength, bool enabled, int? value = null,
-			int? forcedValue = null)
+		private TextBox GetNumericTextbox(int width, int maxLength, bool enabled, int? value = null, int? forcedValue = null, bool allowNegative = false)
 		{
 			var textbox = new TextBox
 			{
-				Enabled = enabled,
+                Enabled = enabled,
 				Width = width,
 				AutoSize = false,
 
 				// This height results in the text box exactly lining up with adjacent dropdowns.
 				Height = 21,
 				MaxLength = maxLength,
-				TextAlign = HorizontalAlignment.Center
-			};
+				TextAlign = HorizontalAlignment.Center,
+            };
 
 			if (value.HasValue)
 			{
@@ -949,6 +996,12 @@ namespace LiveSplit.DarkSouls.Controls
 				// V) while still excluding letters and punctuation.
 				if (c >= '!' && c <= '~' && !char.IsDigit(args.KeyChar))
 				{
+					//Add exception for negative numbers, need these for box splits
+                    if (allowNegative && c == '-')
+                    {
+                        return;
+                    }
+
 					args.Handled = true;
 				}
 			};
@@ -977,7 +1030,7 @@ namespace LiveSplit.DarkSouls.Controls
 
 				foreach (char c in text)
 				{
-					if (char.IsDigit(c))
+					if (char.IsDigit(c) || (allowNegative && c == '-'))
 					{
 						builder.Append(c);
 					}

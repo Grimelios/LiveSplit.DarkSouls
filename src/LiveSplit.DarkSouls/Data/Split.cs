@@ -20,8 +20,7 @@ namespace LiveSplit.DarkSouls.Data
 			// A split is considered valid if all dropdowns have valid values (or the split is manual/quitout). Note
 			// that disabled dropdowns have their index stored as int.MaxValue rather than -1 (in order to keep the
 			// simple rule that -1 always means unfinished).
-			IsFinished = type == SplitTypes.Manual || type == SplitTypes.Quitout ||
-				(data != null && data.All(d => d >= 0));
+			IsFinished = type == SplitTypes.Manual || type == SplitTypes.Quitout || type == SplitTypes.Box || (data != null && data.All(d => d >= 0));
 		}
 
 		public SplitTypes Type { get; set; }

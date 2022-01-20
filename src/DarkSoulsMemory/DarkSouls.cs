@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Numerics;
 using DarkSoulsMemory.Internal;
 
 namespace DarkSoulsMemory
@@ -110,11 +109,11 @@ namespace DarkSoulsMemory
         /// Returns the player's position
         /// </summary>
         /// <returns></returns>
-        public Vector3 GetPlayerPosition()
+        public Vector3f GetPlayerPosition()
         {
             if (_darkSouls == null)
             {
-                return Vector3.Zero;
+                return new Vector3f(0,0,0);
             }
 
             return _darkSouls.GetPlayerPosition();

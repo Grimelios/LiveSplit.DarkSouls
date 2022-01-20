@@ -54,10 +54,11 @@
 			<file path="Components/DarkSoulsMemory.dll"     status="changed" />
 		</files>
 		<changelog>
-			<change>+All hardcoded addresses have been replaced with AOB scans - this means that the splitter should work consistently for everyone, and be compatible with the "community" version of the game</change>
-			<change>+Added support for the remastered version of the game</change>
-			<change>+Added re-attaching: whenever the game crashes or you are forced to restart because of memes, the splitter when now automatically re-attach to the game. You can also switch from PTDE to remastered, and the splitter will re-attach to that automatically too. You should not have to restart the splitter again</change>
-			<change>+Moved all attaching/game data reading logic into a separate library. You can reuse this in your own application!</change>
+			<change>All hardcoded addresses have been replaced with AOB scans - this means that the splitter should work consistently for everyone, and be compatible with the "community" version of the game</change>
+			<change>Added support for the remastered version of the game</change>
+			<change>Added re-attaching: whenever the game crashes or you are forced to restart because of memes, the splitter when now automatically re-attach to the game. You can also switch from PTDE to remastered, and the splitter will re-attach to that automatically too. You should not have to restart the splitter again</change>
+			<change>Moved all attaching/game data reading logic into a separate library. You can reuse this in your own application!</change>
+			<change>Added box splits to detect if the player enters a given box</change>
 		</changelog>
 	</update>
 </updates>

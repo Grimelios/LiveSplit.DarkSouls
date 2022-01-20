@@ -129,3 +129,4 @@ That's it! My contact information is above (both Twitter and Discord) if you hav
  + Added support for the remastered version of the game
  + Added re-attaching: whenever the game crashes or you are forced to restart because of memes, the splitter when now automatically re-attach to the game. You can also switch from PTDE to remastered, and the splitter will re-attach to that automatically too. You should not have to restart the splitter again
  + Moved all attaching/game data reading logic into a separate library. You can reuse this in your own application!
+ + Added box splits to detect if the player enters a given box

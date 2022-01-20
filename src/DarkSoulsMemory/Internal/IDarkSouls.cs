@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -68,7 +67,7 @@ namespace DarkSoulsMemory.Internal
         /// Returns the player's position
         /// </summary>
         /// <returns></returns>
-        Vector3 GetPlayerPosition();
+        Vector3f GetPlayerPosition();
 
 
         /// <summary>

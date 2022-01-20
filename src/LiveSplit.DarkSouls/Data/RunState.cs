@@ -13,6 +13,7 @@ namespace LiveSplit.DarkSouls.Data
 		// is true for zones (although zones are way simpler).
 		public Item TargetItem { get; set; }
 		public ZoneType Zone { get; set; }
+		public Box Box { get; set; }
 
 		public int GameTime { get; set; }
 		public int MaxGameTime { get; set; }
@@ -21,5 +22,5 @@ namespace LiveSplit.DarkSouls.Data
 		public int Target { get; set; }
 
 		public bool Flag { get; set; }
-	}
+    }
 }

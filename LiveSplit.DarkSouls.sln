@@ -13,6 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tester", "src\Tester\Tester
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misc", "misc", "{FFD3A9BB-C170-4984-B504-A4A3B9BF3DA5}"
 	ProjectSection(SolutionItems) = preProject
+		beta testing.md = beta testing.md
 		README.md = README.md
 		Components\Updates.xml = Components\Updates.xml
 	EndProjectSection

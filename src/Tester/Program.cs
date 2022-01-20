@@ -16,7 +16,7 @@ namespace Tester
                 
                 Console.Clear();
                 //Console.WriteLine($"{darkSouls.GetCovenant()} {darkSouls.GetPlayerHealth()}");
-                Console.WriteLine($"{darkSouls.CheckFlag(11010700)}");
+                Console.WriteLine($"{darkSouls.GetPlayerPosition()}");
                 Thread.Sleep(50);
             }
         }

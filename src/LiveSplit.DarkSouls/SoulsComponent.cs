@@ -1,18 +1,16 @@
-﻿using LiveSplit.DarkSouls.Controls;
+﻿using DarkSoulsMemory;
+using LiveSplit.DarkSouls.Controls;
 using LiveSplit.DarkSouls.Data;
 using LiveSplit.DarkSouls.Memory;
 using LiveSplit.Model;
 using LiveSplit.UI;
-using LiveSplit.UI.Components;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using System.Linq;
-using System.Numerics;
 using System.Windows.Forms;
 using System.Xml;
-using DarkSoulsMemory;
+using IComponent = LiveSplit.UI.Components.IComponent;
 
 namespace LiveSplit.DarkSouls
 {
@@ -27,8 +25,8 @@ namespace LiveSplit.DarkSouls
 
 		private SoulsMasterControl masterControl;
 		private Dictionary<SplitTypes, Func<int[], bool>> splitFunctions;
-		private Vector3[] covenantLocations;
-		private Vector3[] bonfireLocations;
+		private Vector3f[] covenantLocations;
+		private Vector3f[] bonfireLocations;
 		private RunState run;
 		
 		private bool preparedForWarp;
@@ -68,6 +66,7 @@ namespace LiveSplit.DarkSouls
 				{ SplitTypes.Item, ProcessItem },
 				{ SplitTypes.Quitout, ProcessQuitout },
 				{ SplitTypes.Zone, ProcessZone },
+				{ SplitTypes.Box, ProcessBox },
 			};
 
 			// This array is used for covenant discovery splits. Discovery occurs when the player is prompted to join a
@@ -75,16 +74,16 @@ namespace LiveSplit.DarkSouls
 			// it's shared among all covenants. As such, position is used to narrow down the covenant.
 			covenantLocations = new []
 			{
-				new Vector3(-28, -53, 87), // Way of White (in front of Petrus)
-				new Vector3(9, 29, 121), // Way of White (beside Rhea) 
-				new Vector3(622, 164, 255), // Princess (in front of Gwynevere)
-				new Vector3(36, 12, -32), // Sunlight (in front of the sunlight altar) 
-				new Vector3(93, -311, 4), // Darkwraith (in front of Kaathe)
-				new Vector3(-702, -412, -333), // Dragon (in front of the everlasting dragon)
-				new Vector3(-161, -265, -32), // Gravelord (below Nito)
-				new Vector3(285, -3, -105), // Forest (below Alvina) 
-				new Vector3(430, 60, 255), // Darkmoon (just outside Gwyndolin's boss arena)
-				new Vector3(138, -252, 94) // Chaos (in front of the fair lady)
+				new Vector3f(-28, -53, 87), // Way of White (in front of Petrus)
+				new Vector3f(9, 29, 121), // Way of White (beside Rhea) 
+				new Vector3f(622, 164, 255), // Princess (in front of Gwynevere)
+				new Vector3f(36, 12, -32), // Sunlight (in front of the sunlight altar) 
+				new Vector3f(93, -311, 4), // Darkwraith (in front of Kaathe)
+				new Vector3f(-702, -412, -333), // Dragon (in front of the everlasting dragon)
+				new Vector3f(-161, -265, -32), // Gravelord (below Nito)
+				new Vector3f(285, -3, -105), // Forest (below Alvina) 
+				new Vector3f(430, 60, 255), // Darkmoon (just outside Gwyndolin's boss arena)
+				new Vector3f(138, -252, 94) // Chaos (in front of the fair lady)
 			};
 
 			// Previously, bonfire resting was determined by reading the last bonfire from memory (i.e. the bonfire to
@@ -100,49 +99,49 @@ namespace LiveSplit.DarkSouls
 			// will be the closest).
 			bonfireLocations = new []
 			{
-				new Vector3(171, 173, 255), // Anor Londo - Entrance
-				new Vector3(504, 135, 175), // Anor Londo - Interior
-				new Vector3(593, 161, 254), // Anor Londo - Princess
-				new Vector3(391, 70, 255), // Anor Londo - Tomb
-				new Vector3(-388, -408, 156), // Ash Lake - Entrance
-				new Vector3(-700, -414, -323), // Ash Lake - Dragon
-				new Vector3(-277, -137, 73), // Blighttown - Bridge
-				new Vector3(-198, -215, 100), // Blighttown - Swamp
-				new Vector3(44, -119, 204), // Catacombs - Entrance
-				new Vector3(48, -112, 301), // Catacombs - Illusion
-				new Vector3(854, -577, 849), // Chasm of the Abyss
-				new Vector3(96, 134, 864), // Crystal Caves
-				new Vector3(165, -77, -55), // Darkroot Basin
-				new Vector3(257, -3, -12), // Darkroot Garden
-				new Vector3(141, -253, 94), // Daughter of Chaos
-				new Vector3(253, -334, 22), // Demon Ruins - Central
-				new Vector3(194, -267, 130), // Demon Ruins - Entrance
-				new Vector3(118, -357, 139), // Demon Ruins - Firesage
-				new Vector3(349, 278, 594), // Duke's Archives - Balcony
-				new Vector3(230, 200, 481), // Duke's Archives - Entrance
-				new Vector3(378, 270, 552), // Duke's Archives - Prison
-				new Vector3(52, -64, 106), // Firelink Altar
-				new Vector3(-51, -61, 55), // Firelink Shrine
-				new Vector3(-318, -236, 123), // Great Hollow
-				new Vector3(581, -444, 444), // Lost Izalith - Bed of Chaos
-				new Vector3(456, -380, 170), // Lost Izalith - Illusion
-				new Vector3(229, -384, 91), // Lost Izalith - Lava Field
-				new Vector3(972, -314, 583), // Oolacile Sanctuary
-				new Vector3(863, -448, 912), // Oolacile Township - Dungeon
-				new Vector3(1041, -332, 875), // Oolacile Township - Entrance
-				new Vector3(-24, 52, 944), // Painted World
-				new Vector3(897, -329, 452), // Sanctuary Garden
-				new Vector3(73, 60, 301), // Sen's Fortress
-				new Vector3(85, -311, 3), // The Abyss
-				new Vector3(-121, -74, 13), // The Depths
-				new Vector3(77, -214, 45), // Tomb of the Giants - Alcove
-				new Vector3(-159, -265, -34), // Tomb of the Giants - Nito
-				new Vector3(97, -200, 104), // Tomb of the Giants - Patches
-				new Vector3(3, 196, 7), // Undead Asylum - Courtyard
-				new Vector3(34, 193, -26), // Undead Asylum - Interior
-				new Vector3(3, -10, -61), // Undead Burg
-				new Vector3(88, 15, 107), // Undead Parish - Andre
-				new Vector3(24, 10, -23) // Undead Parish - Sunlight
+				new Vector3f(171, 173, 255), // Anor Londo - Entrance
+				new Vector3f(504, 135, 175), // Anor Londo - Interior
+				new Vector3f(593, 161, 254), // Anor Londo - Princess
+				new Vector3f(391, 70, 255), // Anor Londo - Tomb
+				new Vector3f(-388, -408, 156), // Ash Lake - Entrance
+				new Vector3f(-700, -414, -323), // Ash Lake - Dragon
+				new Vector3f(-277, -137, 73), // Blighttown - Bridge
+				new Vector3f(-198, -215, 100), // Blighttown - Swamp
+				new Vector3f(44, -119, 204), // Catacombs - Entrance
+				new Vector3f(48, -112, 301), // Catacombs - Illusion
+				new Vector3f(854, -577, 849), // Chasm of the Abyss
+				new Vector3f(96, 134, 864), // Crystal Caves
+				new Vector3f(165, -77, -55), // Darkroot Basin
+				new Vector3f(257, -3, -12), // Darkroot Garden
+				new Vector3f(141, -253, 94), // Daughter of Chaos
+				new Vector3f(253, -334, 22), // Demon Ruins - Central
+				new Vector3f(194, -267, 130), // Demon Ruins - Entrance
+				new Vector3f(118, -357, 139), // Demon Ruins - Firesage
+				new Vector3f(349, 278, 594), // Duke's Archives - Balcony
+				new Vector3f(230, 200, 481), // Duke's Archives - Entrance
+				new Vector3f(378, 270, 552), // Duke's Archives - Prison
+				new Vector3f(52, -64, 106), // Firelink Altar
+				new Vector3f(-51, -61, 55), // Firelink Shrine
+				new Vector3f(-318, -236, 123), // Great Hollow
+				new Vector3f(581, -444, 444), // Lost Izalith - Bed of Chaos
+				new Vector3f(456, -380, 170), // Lost Izalith - Illusion
+				new Vector3f(229, -384, 91), // Lost Izalith - Lava Field
+				new Vector3f(972, -314, 583), // Oolacile Sanctuary
+				new Vector3f(863, -448, 912), // Oolacile Township - Dungeon
+				new Vector3f(1041, -332, 875), // Oolacile Township - Entrance
+				new Vector3f(-24, 52, 944), // Painted World
+				new Vector3f(897, -329, 452), // Sanctuary Garden
+				new Vector3f(73, 60, 301), // Sen's Fortress
+				new Vector3f(85, -311, 3), // The Abyss
+				new Vector3f(-121, -74, 13), // The Depths
+				new Vector3f(77, -214, 45), // Tomb of the Giants - Alcove
+				new Vector3f(-159, -265, -34), // Tomb of the Giants - Nito
+				new Vector3f(97, -200, 104), // Tomb of the Giants - Patches
+				new Vector3f(3, 196, 7), // Undead Asylum - Courtyard
+				new Vector3f(34, 193, -26), // Undead Asylum - Interior
+				new Vector3f(3, -10, -61), // Undead Burg
+				new Vector3f(88, 15, 107), // Undead Parish - Andre
+				new Vector3f(24, 10, -23) // Undead Parish - Sunlight
 			};
 		}
 
@@ -214,6 +213,11 @@ namespace LiveSplit.DarkSouls
 
 		public void SetSettings(XmlNode settings)
 		{
+			if (settings == null)
+            {
+                return;
+            }
+
 			bool useGameTime = bool.Parse(settings["UseGameTime"].InnerText);
 			bool resetEquipment = bool.Parse(settings["ResetEquipment"].InnerText);
 			bool autostart = bool.Parse(settings["TimerAutostart"].InnerText);
@@ -501,6 +505,15 @@ namespace LiveSplit.DarkSouls
 					run.Target = Flags.OrderedZones[data[0]];
 
 					break;
+
+				case SplitTypes.Box:
+                    var box = new Box(
+                        new Vector3f(data[0], data[1], data[2]),
+                        new Vector3f(data[3], data[4], data[5])
+                    );
+                    run.Box = box;
+
+                    break;
 			}
 		}
 
@@ -1065,6 +1078,18 @@ namespace LiveSplit.DarkSouls
 
 			return false;
 		}
+
+        private bool ProcessBox(int[] data)
+        {
+            var playerPosition = darkSouls.GetPlayerPosition();
+
+			if(run.Box.LowerBound.X < playerPosition.X && run.Box.LowerBound.Y < playerPosition.Y && run.Box.LowerBound.Z < playerPosition.Z &&
+			   run.Box.UpperBound.X > playerPosition.X && run.Box.UpperBound.Y > playerPosition.Y && run.Box.UpperBound.Z > playerPosition.Z)
+            {
+                return true;
+            }
+            return false;
+        }
 		
 		private bool ProcessQuitout(int[] data)
         {
@@ -1106,9 +1131,9 @@ namespace LiveSplit.DarkSouls
 			return false;
 		}
 
-		private int ComputeClosestTarget(Vector3[] targets, int radius)
+		private int ComputeClosestTarget(Vector3f[] targets, int radius)
 		{
-			Vector3 playerPosition = darkSouls.GetPlayerPosition();
+			Vector3f playerPosition = darkSouls.GetPlayerPosition();
 
 			int closestIndex = -1;
 

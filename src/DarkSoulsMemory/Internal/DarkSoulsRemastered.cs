@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 
 namespace DarkSoulsMemory.Internal
 {
@@ -188,7 +187,7 @@ namespace DarkSoulsMemory.Internal
             return ItemPrompt.Unknown;
         }
 
-        public Vector3 GetPlayerPosition()
+        public Vector3f GetPlayerPosition()
         {
             var position = (IntPtr)ReadInt32(_playerIns);
             position = (IntPtr)ReadInt32(position + 0x68);
@@ -201,7 +200,7 @@ namespace DarkSoulsMemory.Internal
             var x = ReadFloat(position);
             var y = ReadFloat(position + 0x4);
             var z = ReadFloat(position + 0x8);
-            return new Vector3(x, y, z);
+            return new Vector3f(x, y, z);
         }
 
 
