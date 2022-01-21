@@ -141,6 +141,11 @@ namespace DarkSoulsMemory.Internal
 
         public bool IsBossDefeated(BossType bossType)
         {
+            if (_worldProgression == IntPtr.Zero)
+            {
+                InitWorldProgressionPtr();
+            }
+
             var boss = _bosses.First(i => i.BossType == bossType);
             var memVal = ReadInt32(_worldProgression + boss.Offset);
             return memVal.IsBitSet(boss.Bit);
@@ -403,19 +408,19 @@ namespace DarkSoulsMemory.Internal
 
         private readonly List<Boss> _bosses = new List<Boss>()
         {
-            new Boss(BossType.GapingDragon      , 0x0   , 1),
-            new Boss(BossType.Gargoyles         , 0x0   , 2),
-            new Boss(BossType.Priscilla         , 0x0   , 3),
-            new Boss(BossType.Sif               , 0x0   , 4),
-            new Boss(BossType.Pinwheel          , 0x0   , 5),
-            new Boss(BossType.Nito              , 0x0   , 6),
-            new Boss(BossType.BedOfChaos        , 0x0   , 9),
-            new Boss(BossType.Quelaag           , 0x0   , 8),
-            new Boss(BossType.IronGolem         , 0x0   , 10),
-            new Boss(BossType.OrnsteinAndSmough , 0x0   , 11),
-            new Boss(BossType.FourKings         , 0x0   , 12),
-            new Boss(BossType.Seath             , 0x0   , 13),
-            new Boss(BossType.Gwyn              , 0x0   , 14),
+            new Boss(BossType.GapingDragon      , 0x0   , 29),
+            new Boss(BossType.Gargoyles         , 0x0   , 28),
+            new Boss(BossType.Priscilla         , 0x0   , 27),
+            new Boss(BossType.Sif               , 0x0   , 26),
+            new Boss(BossType.Pinwheel          , 0x0   , 25),
+            new Boss(BossType.Nito              , 0x0   , 24),
+            new Boss(BossType.BedOfChaos        , 0x0   , 21),
+            new Boss(BossType.Quelaag           , 0x0   , 22),
+            new Boss(BossType.IronGolem         , 0x0   , 20),
+            new Boss(BossType.OrnsteinAndSmough , 0x0   , 19),
+            new Boss(BossType.FourKings         , 0x0   , 18),
+            new Boss(BossType.Seath             , 0x0   , 17),
+            new Boss(BossType.Gwyn              , 0x0   , 16),
             new Boss(BossType.AsylumDemon       , 0x0   , 15),
             new Boss(BossType.TaurusDemon       , 0xF70 , 26),
             new Boss(BossType.CapraDemon        , 0xF70 , 25),
