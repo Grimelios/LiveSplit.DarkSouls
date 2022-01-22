@@ -16,6 +16,7 @@ namespace DarkSoulsMemory.Internal
             InitNetManImp();
             InitGameDataMan();
             InitFlags();
+            InitCharacter();
         }
 
         public bool Attach()
@@ -23,7 +24,7 @@ namespace DarkSoulsMemory.Internal
             if (AttachByName("DARKSOULS"))
             {
                 //these ptrs must refresh every frame
-                InitCharacter();
+                //InitCharacter();
             }
 
             return _isHooked;
@@ -38,9 +39,7 @@ namespace DarkSoulsMemory.Internal
         {
             if (TryScan(new byte?[] { 0x56, 0x8B, 0xF1, 0x8B, 0x46, 0x1C, 0x50, 0xA1, null, null, null, null, 0x32, 0xC9}, out _worldProgression))
             {
-                _worldProgression = (IntPtr)ReadInt32(_worldProgression + 8); 
-                _worldProgression = (IntPtr)ReadInt32(_worldProgression);
-                _worldProgression = (IntPtr)ReadInt32(_worldProgression);
+                _worldProgression = (IntPtr)ReadInt32(_worldProgression + 8);
             }
         }
 
@@ -50,8 +49,6 @@ namespace DarkSoulsMemory.Internal
             if (TryScan(new byte?[]{0xc7, 0x44, 0x24, 0x18, 0x00, 0x00, 0x00, 0x00, 0xa1, null, null, null, null, 0x8b, 0xb0}, out _menuPrompt))
             {
                 _menuPrompt = (IntPtr)ReadInt32(_menuPrompt + 9);
-                _menuPrompt = (IntPtr)ReadInt32(_menuPrompt);
-                _menuPrompt = (IntPtr)ReadInt32(_menuPrompt + 0x9E8);
             }
         }
         
@@ -61,9 +58,6 @@ namespace DarkSoulsMemory.Internal
             if (TryScan(new byte?[]{0x8B, 0x15, null, null, null, null, 0xF3, 0x0F, 0x10, 0x44, 0x24, 0x30, 0x52}, out _character))
             {
                 _character = (IntPtr)ReadInt32(_character + 2);
-                _character = (IntPtr)ReadInt32(_character);
-                _character = (IntPtr)ReadInt32(_character + 0x4);
-                _character = (IntPtr)ReadInt32(_character);
             }
         }
 
@@ -72,8 +66,7 @@ namespace DarkSoulsMemory.Internal
         {
             if (TryScan(new byte?[] { 0x8B, 0x0D, null, null, null, null, 0x8B, 0x7E, 0x1C, 0x8B, 0x49, 0x08, 0x8B, 0x46, 0x20, 0x81, 0xC1, 0xB8, 0x01, 0x00, 0x00, 0x57, 0x51, 0x32, 0xDB }, out _gameDataMan))
             {
-                _gameDataMan = _gameDataMan + 2;
-                _gameDataMan = (IntPtr)ReadInt32(_gameDataMan);
+                _gameDataMan = (IntPtr)ReadInt32(_gameDataMan + 2);
             }
         }
 
@@ -87,13 +80,11 @@ namespace DarkSoulsMemory.Internal
         }
 
         private IntPtr _flags;
-
         private void InitFlags()
         {
             if (TryScan(new byte?[] { 0x33, 0xc4, 0x50, 0x8d, 0x44, 0x24, 0x0c, 0x64, 0xa3, 0x00, 0x00, 0x00, 0x00, 0x83, 0x3d, null, null, null, null, 0x00, 0x75, 0x4a }, out _flags))
             {
-                _flags = _flags + 15;
-                _flags = (IntPtr)ReadInt32(_flags);
+                _flags = (IntPtr)ReadInt32(_flags + 15);
             }
         }
 
@@ -108,53 +99,33 @@ namespace DarkSoulsMemory.Internal
         }
 
 
-        private int _previousMillis = 0;
+        //private int _previousMillis = 0;
         public bool IsPlayerLoaded()
         {
-            //Can't find an address that has this flag, but I did notice that the timer only starts running when the player is loaded.
-            var millis = GetGameTimeInMilliseconds();
-
-            //Millis is 0 in main menu, when no save is loaded
-            if (millis == 0)
-            {
-                _previousMillis = 0;
-                return false;
-            }
-
-            //Detect a non 0 value of the clock - a save has just been loaded but the clock might not be running yet
-            if (_previousMillis == 0)
-            {
-                _previousMillis = millis;
-                return false;
-            }
-
-            //Clock is running since it has been initially loaded. 
-            if (_previousMillis != millis)
-            {
-                _previousMillis = millis;
-                return true;
-            }
-
-            return false;
+            var characterIns = (IntPtr)ReadInt32(_character);
+            //characterIns = (IntPtr)ReadInt32(characterIns + 0x4);
+            //characterIns = (IntPtr)ReadInt32(characterIns);
+            return characterIns != IntPtr.Zero;
         }
 
 
         public bool IsBossDefeated(BossType bossType)
         {
-            if (_worldProgression == IntPtr.Zero)
-            {
-                InitWorldProgressionPtr();
-            }
+            var worldProgressionIns = (IntPtr)ReadInt32(_worldProgression);
+            worldProgressionIns = (IntPtr)ReadInt32(worldProgressionIns);
 
             var boss = _bosses.First(i => i.BossType == bossType);
-            var memVal = ReadInt32(_worldProgression + boss.Offset);
+            var memVal = ReadInt32(worldProgressionIns + boss.Offset);
             return memVal.IsBitSet(boss.Bit);
         }
 
 
         public MenuPrompt GetMenuPrompt()
         {
-            var mem = ReadByte(_menuPrompt);
+            var menuPromptIns = (IntPtr)ReadInt32(_menuPrompt);
+            menuPromptIns = (IntPtr)ReadInt32(menuPromptIns + 0x9E8);
+
+            var mem = ReadByte(menuPromptIns);
 
             if (Enum.IsDefined(typeof(MenuPrompt), (int)mem))
             {
@@ -167,7 +138,12 @@ namespace DarkSoulsMemory.Internal
 
         public ForcedAnimation GetForcedAnimation()
         {
-            var mem = ReadInt32(_character + 0xFC);
+
+            var characterIns = (IntPtr)ReadInt32(_character);
+            characterIns = (IntPtr)ReadInt32(characterIns + 0x4);
+            characterIns = (IntPtr)ReadInt32(characterIns);
+
+            var mem = ReadInt32(characterIns + 0xFC);
 
             if (Enum.IsDefined(typeof(ForcedAnimation), mem))
             {
@@ -180,7 +156,11 @@ namespace DarkSoulsMemory.Internal
 
         public ItemPrompt GetItemPrompt()
         {
-            var mem = ReadInt32(_character + 0x62C);
+            var characterIns = (IntPtr)ReadInt32(_character);
+            characterIns = (IntPtr)ReadInt32(characterIns + 0x4);
+            characterIns = (IntPtr)ReadInt32(characterIns);
+
+            var mem = ReadInt32(characterIns + 0x62C);
             if (mem.TryParseEnum(out ItemPrompt i))
             {
                 return i;
@@ -192,7 +172,11 @@ namespace DarkSoulsMemory.Internal
 
         public Vector3f GetPlayerPosition()
         {
-            var map = (IntPtr)ReadInt32(_character + 0x28);
+            var characterIns = (IntPtr)ReadInt32(_character);
+            characterIns = (IntPtr)ReadInt32(characterIns + 0x4);
+            characterIns = (IntPtr)ReadInt32(characterIns);
+
+            var map = (IntPtr)ReadInt32(characterIns + 0x28);
             var position = (IntPtr)ReadInt32(map + 0x1c);
             var x = ReadFloat(position + 0x10);
             var y = ReadFloat(position + 0x14);
@@ -497,5 +481,15 @@ namespace DarkSoulsMemory.Internal
 
         #endregion
 
+#if DEBUG
+        public int GetTestValue()
+        {
+            var characterIns = (IntPtr)ReadInt32(_character);
+            characterIns = (IntPtr)ReadInt32(characterIns + 0x4);
+            characterIns = (IntPtr)ReadInt32(characterIns);
+
+            return characterIns.ToInt32();
+        }
+#endif
     }
 }

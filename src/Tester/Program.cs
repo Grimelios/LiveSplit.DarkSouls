@@ -16,7 +16,8 @@ namespace Tester
                 
                 Console.Clear();
                 //Console.WriteLine($"{darkSouls.GetCovenant()} {darkSouls.GetPlayerHealth()}");
-                Console.WriteLine($"{darkSouls.IsBossDefeated(BossType.Priscilla)}");
+                //Console.WriteLine($"{darkSouls.GetTestValue()}");
+                Console.WriteLine($"{darkSouls.GetGameTimeInMilliseconds()} {darkSouls.IsPlayerLoaded()}");
                 Thread.Sleep(50);
             }
         }

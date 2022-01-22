@@ -60,8 +60,6 @@ namespace DarkSoulsMemory.Internal
             if (TryScan(new byte?[] { 0x48, 0x8B, 0x0D, null, null, null, null, 0x41, 0xB8, 0x01, 0x00, 0x00, 0x00, 0x44 }, out _worldProgression))
             {
                 _worldProgression = _worldProgression + ReadInt32(_worldProgression + 3) + 7;
-                _worldProgression = (IntPtr)ReadInt32(_worldProgression);
-                _worldProgression = (IntPtr)ReadInt32(_worldProgression);
             }
         }
 
@@ -74,26 +72,13 @@ namespace DarkSoulsMemory.Internal
             }
         }
 
-        private IntPtr _playerIns = IntPtr.Zero;
-        private IntPtr _playerCtrl;
-        private IntPtr _forcedAnimation;
-        private IntPtr _itemPrompt;
+        private IntPtr _playerIns;
         public void InitCharacter()
         {
-            //Only scan once during initialization
-            if (_playerIns == IntPtr.Zero)
+            if (TryScan(new byte?[] { 0x48, 0x8B, 0x05, null, null, null, null, 0x48, 0x39, 0x48, 0x68, 0x0F, 0x94, 0xC0, 0xC3 }, out _playerIns))
             {
-                if (TryScan(new byte?[] { 0x48, 0x8B, 0x05, null, null, null, null, 0x48, 0x39, 0x48, 0x68, 0x0F, 0x94, 0xC0, 0xC3 }, out _playerIns))
-                {
-                    _playerIns = _playerIns + ReadInt32(_playerIns + 3) + 7;
-                }
+                _playerIns = _playerIns + ReadInt32(_playerIns + 3) + 7;
             }
-
-            //Always update child pointers
-            var instance = (IntPtr)ReadInt32(_playerIns);
-            _playerCtrl = instance + 0x68;
-            _forcedAnimation = (IntPtr)ReadInt32(_playerCtrl) + 0x16C;
-            _itemPrompt = (IntPtr)ReadInt32(_playerCtrl) + 0x814;
         }
 
         private IntPtr _flags;
@@ -104,8 +89,6 @@ namespace DarkSoulsMemory.Internal
                 _flags = _flags + ReadInt32(_flags + 3) + 7;
             }
         }
-            
-
 
         #endregion
 
@@ -116,43 +99,22 @@ namespace DarkSoulsMemory.Internal
             var gameDataManIns = (IntPtr)ReadInt32(_gameDataMan);
             return ReadInt32(gameDataManIns + 0xA4);
         }
-
-        private int _previousMillis = 0;
+        
         public bool IsPlayerLoaded()
         {
-            //Can't find an address that has this flag, but I did notice that the timer only starts running when the player is loaded.
-            var millis = GetGameTimeInMilliseconds();
-
-            //Millis is 0 in main menu, when no save is loaded
-            if (millis == 0)
-            {
-                _previousMillis = 0;
-                return false;
-            }
-
-            //Detect a non 0 value of the clock - a save has just been loaded but the clock might not be running yet
-            if (_previousMillis == 0)
-            {
-                _previousMillis = millis;
-                return false;
-            }
-
-            //Clock is running since it has been initially loaded. 
-            if (_previousMillis != millis)
-            {
-                _previousMillis = millis;
-                return true;
-            }
-
-            return false;
+            var instance = (IntPtr)ReadInt32(_playerIns);
+            return instance != IntPtr.Zero;
         }
 
 
 
         public bool IsBossDefeated(BossType bossType)
         {
+            var worldProgressionIns = (IntPtr)ReadInt32(_worldProgression);
+            worldProgressionIns = (IntPtr)ReadInt32(worldProgressionIns);
+
             var boss = _bosses.First(i => i.BossType == bossType);
-            var memVal = ReadByte(_worldProgression + boss.Offset);
+            var memVal = ReadByte(worldProgressionIns + boss.Offset);
             return memVal.IsBitSet(boss.Bit);
         }
 
@@ -168,7 +130,11 @@ namespace DarkSoulsMemory.Internal
 
         public ForcedAnimation GetForcedAnimation()
         {
-            var anim = ReadInt32(_forcedAnimation);
+            var instance = (IntPtr)ReadInt32(_playerIns);
+            var playerCtrl = instance + 0x68;
+            var forcedAnimationAddr = (IntPtr)ReadInt32(playerCtrl) + 0x16C;
+
+            var anim = ReadInt32(forcedAnimationAddr);
             if (anim.TryParseEnum(out ForcedAnimation forcedAnimation))
             {
                 return forcedAnimation;
@@ -178,8 +144,11 @@ namespace DarkSoulsMemory.Internal
 
         public ItemPrompt GetItemPrompt()
         {
-            InitCharacter();
-            var mem = ReadInt32(_itemPrompt);
+            var instance = (IntPtr)ReadInt32(_playerIns);
+            var playerCtrl = instance + 0x68;
+            var itemPromptAddr = (IntPtr)ReadInt32(playerCtrl) + 0x814;
+            
+            var mem = ReadInt32(itemPromptAddr);
             if (mem.TryParseEnum(out ItemPrompt itemPrompt))
             {
                 return itemPrompt;
@@ -510,5 +479,13 @@ namespace DarkSoulsMemory.Internal
 
         #endregion
 
+#if DEBUG
+        public int GetTestValue()
+        {
+            var instance = (IntPtr)ReadInt32(_playerIns);
+
+            return instance.ToInt32();
+        }
+#endif
     }
 }

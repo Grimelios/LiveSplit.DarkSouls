@@ -117,5 +117,10 @@ namespace DarkSoulsMemory.Internal
         /// Check if arbitrary flag is set
         /// </summary>
         bool CheckFlag(int flag);
+
+
+#if DEBUG
+        int GetTestValue();
+#endif
     }
 }

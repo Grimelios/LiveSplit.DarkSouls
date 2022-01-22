@@ -272,5 +272,18 @@ namespace DarkSoulsMemory
 
             return _darkSouls != null;
         }
+
+
+#if DEBUG
+        public int GetTestValue()
+        {
+            if (_darkSouls == null)
+            {
+                return 0;
+            }
+
+            return _darkSouls.GetTestValue();
+        }
+#endif
     }
 }
