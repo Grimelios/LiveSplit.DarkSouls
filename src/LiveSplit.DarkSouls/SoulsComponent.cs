@@ -509,7 +509,7 @@ namespace LiveSplit.DarkSouls
 				case SplitTypes.Box:
                     var box = new Box(
                         new Vector3f(data[0], data[1], data[2]),
-                        new Vector3f(data[3], data[4], data[5])
+                        new Vector3f(data[5], data[6], data[7])
                     );
                     run.Box = box;
 
@@ -778,7 +778,7 @@ namespace LiveSplit.DarkSouls
 		private void PrepareWarp()
 		{
 			preparedForWarp = true;
-			isLoadScreenVisible = !darkSouls.IsPlayerLoaded();
+			isLoadScreenVisible = darkSouls.GetGameTimeInMilliseconds() != 0 && darkSouls.GetZone() == ZoneType.Unknown && darkSouls.GetPlayerHealth() != 0;//  !darkSouls.IsPlayerLoaded();
 		}
 
 		private bool CheckWarp()
@@ -789,7 +789,7 @@ namespace LiveSplit.DarkSouls
 				isBonfireWarpConfirmed = darkSouls.GetMenuPrompt() == MenuPrompt.BonfireWarp  && darkSouls.GetForcedAnimation() == ForcedAnimation.BonfireWarp;
 			}
 
-			bool visible = !darkSouls.IsPlayerLoaded();
+			bool visible = darkSouls.GetGameTimeInMilliseconds() != 0 && darkSouls.GetZone() == ZoneType.Unknown && darkSouls.GetPlayerHealth() != 0;// !darkSouls.IsPlayerLoaded();
 			bool previouslyVisible = isLoadScreenVisible;
 
 			isLoadScreenVisible = visible;
@@ -1064,17 +1064,18 @@ namespace LiveSplit.DarkSouls
             var previousZone = run.Zone;
 
 			run.Zone = zoneType;
-			
-			if ((ZoneType)run.Target != zoneType)
-			{
-				return false;
-			}
-            
-            if (zoneType != previousZone && zoneType == (ZoneType)run.Target)
+
+            var onEnter = data[1] == 0;
+
+            if (onEnter && zoneType != previousZone && zoneType == (ZoneType)run.Target)
             {
-				return true;
+                return CheckDefaultTimingOptions(data[2]);
+            }
+
+            if (!onEnter && zoneType != previousZone && zoneType != (ZoneType)run.Target)
+            {
+                return CheckDefaultTimingOptions(data[2]);
 			}
-			
 
 			return false;
 		}
@@ -1082,12 +1083,21 @@ namespace LiveSplit.DarkSouls
         private bool ProcessBox(int[] data)
         {
             var playerPosition = darkSouls.GetPlayerPosition();
+			var playerIsInBox = run.Box.LowerBound.X < playerPosition.X && run.Box.LowerBound.Y < playerPosition.Y && run.Box.LowerBound.Z < playerPosition.Z &&
+			                         run.Box.UpperBound.X > playerPosition.X && run.Box.UpperBound.Y > playerPosition.Y && run.Box.UpperBound.Z > playerPosition.Z;
 
-			if(run.Box.LowerBound.X < playerPosition.X && run.Box.LowerBound.Y < playerPosition.Y && run.Box.LowerBound.Z < playerPosition.Z &&
-			   run.Box.UpperBound.X > playerPosition.X && run.Box.UpperBound.Y > playerPosition.Y && run.Box.UpperBound.Z > playerPosition.Z)
+            var triggerOnEnter = data[3] == 0;
+
+			if(triggerOnEnter && playerIsInBox)
             {
-                return true;
+                return CheckDefaultTimingOptions(data[4]);
             }
+
+            if (!triggerOnEnter && !playerIsInBox)
+            {
+                return CheckDefaultTimingOptions(data[4]);
+			}
+
             return false;
         }
 		

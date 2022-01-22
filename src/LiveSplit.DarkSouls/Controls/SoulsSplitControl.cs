@@ -589,10 +589,10 @@ namespace LiveSplit.DarkSouls.Controls
 
         private Control[] GetBoxControls()
         {
-            return GetBoxLine();
+            return GetBoxLine(true);
         }
 
-        private Control[] GetBoxLine()
+        private Control[] GetBoxLine(bool withSettings = false)
         {
 			//var textBox = new TextBox()
 			//{
@@ -607,6 +607,23 @@ namespace LiveSplit.DarkSouls.Controls
 			x.TextChanged += (o, e) => RefreshFinished();
 			y.TextChanged += (o, e) => RefreshFinished();
 			z.TextChanged += (o, e) => RefreshFinished();
+
+			if (withSettings)
+            {
+                var trigger = GetDropdown(new[] { "on enter", "on leave" }, "trigger", 70);
+                trigger.SelectedIndex = 0;
+                var timing = GetDropdown(new[] { "immediate", "on quitout", "on warp" }, "timing", 93);
+                timing.SelectedIndex = 0;
+
+                return new Control[]
+                {
+                    x,
+                    y,
+                    z,
+					trigger,
+					timing,
+                };
+			}
 
 			return new Control[]
             {
@@ -938,8 +955,14 @@ namespace LiveSplit.DarkSouls.Controls
 			const int ZoneListWidth = 152;
 
 			var zoneList = GetDropdown(lists.Zones, "Zones", ZoneListWidth);
+			
+            var trigger = GetDropdown(new[] { "on enter", "on leave" }, "trigger", 70);
+            trigger.SelectedIndex = 0;
+            var timing = GetDropdown(new[] { "immediate", "on quitout", "on warp" }, "timing", 93);
+            timing.SelectedIndex = 0;
 
-			return new Control[] { zoneList };
+
+			return new Control[] { zoneList, trigger, timing };
 		}
 
         private SoulsDropdown GetDropdown(string[] items, string prompt, int width, bool enabled = true)

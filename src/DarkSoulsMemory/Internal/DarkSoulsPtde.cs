@@ -15,7 +15,7 @@ namespace DarkSoulsMemory.Internal
             InitMenuPrompt();
             InitNetManImp();
             InitGameDataMan();
-            InitFlags();
+            //InitFlags();
             InitCharacter();
         }
 
@@ -79,14 +79,14 @@ namespace DarkSoulsMemory.Internal
             }
         }
 
-        private IntPtr _flags;
-        private void InitFlags()
-        {
-            if (TryScan(new byte?[] { 0x33, 0xc4, 0x50, 0x8d, 0x44, 0x24, 0x0c, 0x64, 0xa3, 0x00, 0x00, 0x00, 0x00, 0x83, 0x3d, null, null, null, null, 0x00, 0x75, 0x4a }, out _flags))
-            {
-                _flags = (IntPtr)ReadInt32(_flags + 15);
-            }
-        }
+        //private IntPtr _flags;
+        //private void InitFlags()
+        //{
+        //    if (TryScan(new byte?[] { 0x33, 0xc4, 0x50, 0x8d, 0x44, 0x24, 0x0c, 0x64, 0xa3, 0x00, 0x00, 0x00, 0x00, 0x83, 0x3d, null, null, null, null, 0x00, 0x75, 0x4a }, out _flags))
+        //    {
+        //        _flags = (IntPtr)ReadInt32(_flags + 15);
+        //    }
+        //}
 
         #endregion
         
@@ -325,7 +325,7 @@ namespace DarkSoulsMemory.Internal
                     offset += section * 128;
                     offset += (number - (number % 32)) / 8;
                     
-                    address = ReadInt32((IntPtr)_flags);
+                    address = ReadInt32((IntPtr)_worldProgression);
                     address = ReadInt32((IntPtr)address);
                     address += offset;
 
@@ -484,11 +484,23 @@ namespace DarkSoulsMemory.Internal
 #if DEBUG
         public int GetTestValue()
         {
+            //WorldState = (IntPtr)MemoryTools.ReadInt(handle, (IntPtr)0x13784A0);
+            //return MemoryTools.ReadBoolean(handle, pointers.WorldState - 0x37EF4);
+
+
+
+
+            var worldState = (IntPtr)ReadInt32((IntPtr)0x13784A0);
+            var thing = ReadByte(worldState - 0x37ef4);
+            var loadscreen = thing.IsBitSet(0);
+
+            //return MemoryTools.ReadBoolean(handle, pointers.WorldState - 0x37EF4);
+
             var characterIns = (IntPtr)ReadInt32(_character);
             characterIns = (IntPtr)ReadInt32(characterIns + 0x4);
             characterIns = (IntPtr)ReadInt32(characterIns);
 
-            return characterIns.ToInt32();
+            return loadscreen ? 1 : 0;
         }
 #endif
     }
