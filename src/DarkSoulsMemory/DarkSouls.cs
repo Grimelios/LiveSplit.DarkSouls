@@ -248,15 +248,15 @@ namespace DarkSoulsMemory
         {
             if (_darkSouls == null)
             {
-                var processes = Process.GetProcesses().FirstOrDefault(i => i.ProcessName.ToLower().StartsWith("darksouls"));
-                if (processes != null)
+                var process = Process.GetProcesses().FirstOrDefault(i => i.ProcessName.ToLower().StartsWith("darksouls"));
+                if (process != null)
                 {
-                    if (processes.ProcessName == "DarkSoulsRemastered")
+                    if (process.ProcessName == "DarkSoulsRemastered")
                     {
                         _darkSouls = new DarkSoulsRemastered();
                     }
 
-                    if (processes.ProcessName == "DARKSOULS")
+                    if (process.ProcessName == "DARKSOULS")
                     {
                         _darkSouls = new DarkSoulsPtde();
                     }
@@ -273,7 +273,6 @@ namespace DarkSoulsMemory
             return _darkSouls != null;
         }
 
-
 #if DEBUG
         public int GetTestValue()
         {
@@ -283,6 +282,33 @@ namespace DarkSoulsMemory
             }
 
             return _darkSouls.GetTestValue();
+        }
+
+        public void SetCheat(CheatType cheatType, bool enabled)
+        {
+            if (_darkSouls == null)
+            {
+                return;
+            }
+            _darkSouls.SetCheat(cheatType, enabled);
+        }
+
+        public void BonfireWarp(WarpType warpType)
+        {
+            if (_darkSouls == null)
+            {
+                return;
+            }
+            _darkSouls.BonfireWarp(warpType);
+        }
+
+        public void Teleport(Vector3f position, float angle)
+        {
+            if (_darkSouls == null)
+            {
+                return;
+            }
+            _darkSouls.Teleport(position, angle);
         }
 #endif
     }

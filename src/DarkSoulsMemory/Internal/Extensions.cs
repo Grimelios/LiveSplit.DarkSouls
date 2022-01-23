@@ -119,5 +119,14 @@ namespace DarkSoulsMemory.Internal
             return rawId % divisor;
         }
 
+        public static float DegreeToRadians(this decimal degree)
+        {
+            return (float)((double)degree / 360 * (Math.PI * 2) - Math.PI);
+        }
+
+        public static float DegreeToRadians(this float degree)
+        {
+            return (float)((double)degree / 360 * (Math.PI * 2) - Math.PI);
+        }
     }
 }

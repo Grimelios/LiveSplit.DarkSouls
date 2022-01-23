@@ -17,5 +17,23 @@ namespace DarkSoulsMemory.Internal
 
         [DllImport("kernel32.dll")]
         public static extern uint VirtualQueryEx(IntPtr hProcess, IntPtr lpAddress, out BaseMemoryReaderWriter.MemoryRegion lpBuffer, uint dwLength);
+
+        [DllImport("kernel32.dll")]
+        public static extern uint WaitForSingleObject(IntPtr hHandle, uint dwMilliseconds);
+        [DllImport("kernel32.dll")]
+        public static extern IntPtr CreateRemoteThread(IntPtr hProcess, IntPtr lpThreadAttributes, uint dwStackSize, IntPtr lpStartAddress, IntPtr lpParameter, uint dwCreationFlags, IntPtr lpThreadId);
+        [DllImport("kernel32.dll")]
+        public static extern IntPtr VirtualAllocEx(IntPtr hProcess, IntPtr lpAddress, IntPtr dwSize, uint flAllocationType, uint flProtect);
+
+        [DllImport("kernel32.dll")]
+        public static extern bool VirtualFreeEx(IntPtr hProcess, IntPtr lpAddress, IntPtr dwSize, uint dwFreeType);
+
+        [DllImport("kernel32.dll")]
+        public static extern bool CloseHandle(IntPtr hObject);
+
+        public const uint PAGE_EXECUTE_READWRITE = 0x40;
+        public const uint PAGE_READWRITE = 0x04;
+        public const uint MEM_COMMIT = 0x00001000;
+        public const uint MEM_RELEASE = 0x00008000;
     }
 }

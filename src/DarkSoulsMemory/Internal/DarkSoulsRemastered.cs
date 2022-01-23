@@ -7,6 +7,7 @@ namespace DarkSoulsMemory.Internal
     internal class DarkSoulsRemastered : BaseMemoryReaderWriter, IDarkSouls
     {
         #region init/attaching =======================================================================================================================================
+
         public DarkSoulsRemastered()
         {
             Attach();
@@ -24,7 +25,7 @@ namespace DarkSoulsMemory.Internal
             if (AttachByName("DarkSoulsRemastered"))
             {
                 //These ptrs must refresh every frame
-               
+
                 InitCharacter();
             }
 
@@ -36,55 +37,83 @@ namespace DarkSoulsMemory.Internal
         #region init base pointers =======================================================================================================================================
 
         private IntPtr _gameDataMan;
+
         private void InitGameDataManPtr()
         {
-            if (TryScan(new byte?[] { 0x48, 0x8B, 0x05, null, null, null, null, 0x45, 0x33, 0xED, 0x48, 0x8B, 0xF1, 0x48, 0x85, 0xC0 }, out _gameDataMan))
+            if (TryScan(
+                    new byte?[]
+                    {
+                        0x48, 0x8B, 0x05, null, null, null, null, 0x45, 0x33, 0xED, 0x48, 0x8B, 0xF1, 0x48, 0x85, 0xC0
+                    }, out _gameDataMan))
             {
                 _gameDataMan = _gameDataMan + ReadInt32(_gameDataMan + 3) + 7;
             }
         }
 
         private IntPtr _netManImp;
+
         private void InitNetManImp()
         {
-            if (TryScan(new byte?[] { 0x48, 0x8b, 0x05, null, null, null, null, 0x48, 0x05, 0x08, 0x0a, 0x00, 0x00, 0x48, 0x89, 0x44, 0x24, 0x50, 0xe8, 0x34, 0xfc, 0xfd, 0xff }, out _netManImp))
+            if (TryScan(
+                    new byte?[]
+                    {
+                        0x48, 0x8b, 0x05, null, null, null, null, 0x48, 0x05, 0x08, 0x0a, 0x00, 0x00, 0x48, 0x89, 0x44,
+                        0x24, 0x50, 0xe8, 0x34, 0xfc, 0xfd, 0xff
+                    }, out _netManImp))
             {
                 _netManImp = _netManImp + ReadInt32(_netManImp + 3) + 7;
             }
         }
 
         private IntPtr _worldProgression;
+
         private void InitWorldProgressionPtr()
         {
             //This pointer path doesn't change when quiting to main menu. Can just resolve the pointer and keep using it for as long as the game is running.
-            if (TryScan(new byte?[] { 0x48, 0x8B, 0x0D, null, null, null, null, 0x41, 0xB8, 0x01, 0x00, 0x00, 0x00, 0x44 }, out _worldProgression))
+            if (TryScan(
+                    new byte?[] { 0x48, 0x8B, 0x0D, null, null, null, null, 0x41, 0xB8, 0x01, 0x00, 0x00, 0x00, 0x44 },
+                    out _worldProgression))
             {
                 _worldProgression = _worldProgression + ReadInt32(_worldProgression + 3) + 7;
             }
         }
 
         private IntPtr _menuPrompt;
+
         private void InitMenuPrompt()
         {
-            if (TryScan(new byte?[] { 0x48, 0x8d, 0x0d, null, null, null, null, 0x48, 0x89, 0x8a, 0x38, 0x0a, 0x00, 0x00 }, out _menuPrompt))
+            if (TryScan(
+                    new byte?[] { 0x48, 0x8d, 0x0d, null, null, null, null, 0x48, 0x89, 0x8a, 0x38, 0x0a, 0x00, 0x00 },
+                    out _menuPrompt))
             {
                 _menuPrompt = _menuPrompt + ReadInt32(_menuPrompt + 3) + 7;
             }
         }
 
         private IntPtr _playerIns;
+
         public void InitCharacter()
         {
-            if (TryScan(new byte?[] { 0x48, 0x8B, 0x05, null, null, null, null, 0x48, 0x39, 0x48, 0x68, 0x0F, 0x94, 0xC0, 0xC3 }, out _playerIns))
+            if (TryScan(
+                    new byte?[]
+                    {
+                        0x48, 0x8B, 0x05, null, null, null, null, 0x48, 0x39, 0x48, 0x68, 0x0F, 0x94, 0xC0, 0xC3
+                    }, out _playerIns))
             {
                 _playerIns = _playerIns + ReadInt32(_playerIns + 3) + 7;
             }
         }
 
         private IntPtr _flags;
+
         private void InitFlags()
         {
-            if (TryScan(new byte?[] { 0x48, 0x8B, 0x0D, null, null, null, null, 0x99, 0x33, 0xC2, 0x45, 0x33, 0xC0, 0x2B, 0xC2, 0x8D, 0x50, 0xF6 }, out _flags))
+            if (TryScan(
+                    new byte?[]
+                    {
+                        0x48, 0x8B, 0x0D, null, null, null, null, 0x99, 0x33, 0xC2, 0x45, 0x33, 0xC0, 0x2B, 0xC2, 0x8D,
+                        0x50, 0xF6
+                    }, out _flags))
             {
                 _flags = _flags + ReadInt32(_flags + 3) + 7;
             }
@@ -99,7 +128,7 @@ namespace DarkSoulsMemory.Internal
             var gameDataManIns = (IntPtr)ReadInt32(_gameDataMan);
             return ReadInt32(gameDataManIns + 0xA4);
         }
-        
+
         public bool IsPlayerLoaded()
         {
             var instance = (IntPtr)ReadInt32(_playerIns);
@@ -125,6 +154,7 @@ namespace DarkSoulsMemory.Internal
             {
                 return menuPrompt;
             }
+
             return MenuPrompt.Unknown;
         }
 
@@ -139,6 +169,7 @@ namespace DarkSoulsMemory.Internal
             {
                 return forcedAnimation;
             }
+
             return ForcedAnimation.Unknown;
         }
 
@@ -147,12 +178,13 @@ namespace DarkSoulsMemory.Internal
             var instance = (IntPtr)ReadInt32(_playerIns);
             var playerCtrl = instance + 0x68;
             var itemPromptAddr = (IntPtr)ReadInt32(playerCtrl) + 0x814;
-            
+
             var mem = ReadInt32(itemPromptAddr);
             if (mem.TryParseEnum(out ItemPrompt itemPrompt))
             {
                 return itemPrompt;
             }
+
             return ItemPrompt.Unknown;
         }
 
@@ -165,7 +197,7 @@ namespace DarkSoulsMemory.Internal
             position = (IntPtr)ReadInt32(position + 0x50);
             position = (IntPtr)ReadInt32(position + 0x20);
             position = position + 0x120;
-            
+
             var x = ReadFloat(position);
             var y = ReadFloat(position + 0x4);
             var z = ReadFloat(position + 0x8);
@@ -197,7 +229,7 @@ namespace DarkSoulsMemory.Internal
 
             var bytes = ReadBytes(itemList2, itemList2Len * 0x1c);
             var items = ItemReader.GetCurrentInventoryItems(bytes, itemList2Len, itemCount, keyCount);
-            
+
             return items;
         }
 
@@ -205,7 +237,7 @@ namespace DarkSoulsMemory.Internal
 
         public BonfireState GetBonfireState(Bonfire bonfire)
         {
-            
+
             if (TryScan(new byte?[] { 0x48, 0x8b, 0x05, null, null, null, null, 0x48, 0x05, 0x08, 0x0a, 0x00, 0x00, 0x48, 0x89, 0x44, 0x24, 0x50, 0xe8, 0x34, 0xfc, 0xfd, 0xff }, out IntPtr netManImpIns))
             {
                 netManImpIns = (IntPtr)ReadInt32(_netManImp);
@@ -226,6 +258,7 @@ namespace DarkSoulsMemory.Internal
                         {
                             state = BonfireState.Undiscovered;
                         }
+
                         return state;
                     }
 
@@ -235,6 +268,7 @@ namespace DarkSoulsMemory.Internal
                     frpgNetBonfireDbItem = (IntPtr)ReadInt32(unknownStruct2 + 0x10);
                 }
             }
+
             return BonfireState.Undiscovered;
         }
 
@@ -256,7 +290,13 @@ namespace DarkSoulsMemory.Internal
 
         public void ResetInventoryIndices()
         {
-            if (TryScan(new byte?[] { 0x48, 0x8D, 0x15, null, null, null, null, 0xC1, 0xE1, 0x10, 0x49, 0x8B, 0xC6, 0x41, 0x0B, 0x8F, 0x14, 0x02, 0x00, 0x00, 0x44, 0x8B, 0xC6, 0x42, 0x89, 0x0C, 0xB2, 0x41, 0x8B, 0xD6, 0x49, 0x8B, 0xCF }, out IntPtr basePtr))
+            if (TryScan(
+                    new byte?[]
+                    {
+                        0x48, 0x8D, 0x15, null, null, null, null, 0xC1, 0xE1, 0x10, 0x49, 0x8B, 0xC6, 0x41, 0x0B, 0x8F,
+                        0x14, 0x02, 0x00, 0x00, 0x44, 0x8B, 0xC6, 0x42, 0x89, 0x0C, 0xB2, 0x41, 0x8B, 0xD6, 0x49, 0x8B,
+                        0xCF
+                    }, out IntPtr basePtr))
             {
                 basePtr = ReadPtr(basePtr + 3) + 7;
                 for (int i = 0; i < 20; i++)
@@ -302,6 +342,7 @@ namespace DarkSoulsMemory.Internal
             {
                 return covenant;
             }
+
             return CovenantType.None;
         }
 
@@ -310,10 +351,13 @@ namespace DarkSoulsMemory.Internal
             var gameDataManIns = (IntPtr)ReadInt32(_gameDataMan);
             return ReadInt32(gameDataManIns + 0x78);
         }
-        
+
         #endregion
 
+
+
         #region Flags
+
         public bool CheckFlag(int flag)
         {
             return GetEventFlagState(flag);
@@ -327,6 +371,7 @@ namespace DarkSoulsMemory.Internal
 
                 return (flags & mask) != 0;
             }
+
             return false;
         }
 
@@ -367,33 +412,33 @@ namespace DarkSoulsMemory.Internal
 
         private readonly Dictionary<string, int> _eventFlagGroups = new Dictionary<string, int>
         {
-            {"0", 0x00000},
-            {"1", 0x00500},
-            {"5", 0x05F00},
-            {"6", 0x0B900},
-            {"7", 0x11300},
+            { "0", 0x00000 },
+            { "1", 0x00500 },
+            { "5", 0x05F00 },
+            { "6", 0x0B900 },
+            { "7", 0x11300 },
         };
 
         private readonly Dictionary<string, int> _eventFlagAreas = new Dictionary<string, int>
         {
-            {"000", 00},
-            {"100", 01},
-            {"101", 02},
-            {"102", 03},
-            {"110", 04},
-            {"120", 05},
-            {"121", 06},
-            {"130", 07},
-            {"131", 08},
-            {"132", 09},
-            {"140", 10},
-            {"141", 11},
-            {"150", 12},
-            {"151", 13},
-            {"160", 14},
-            {"170", 15},
-            {"180", 16},
-            {"181", 17},
+            { "000", 00 },
+            { "100", 01 },
+            { "101", 02 },
+            { "102", 03 },
+            { "110", 04 },
+            { "120", 05 },
+            { "121", 06 },
+            { "130", 07 },
+            { "131", 08 },
+            { "132", 09 },
+            { "140", 10 },
+            { "141", 11 },
+            { "150", 12 },
+            { "151", 13 },
+            { "160", 14 },
+            { "170", 15 },
+            { "180", 16 },
+            { "181", 17 },
         };
 
         #endregion
@@ -416,30 +461,30 @@ namespace DarkSoulsMemory.Internal
 
         private readonly List<Boss> _bosses = new List<Boss>()
         {
-            new Boss(BossType.AsylumDemon       , 0x1   , 7),
-            new Boss(BossType.Kalameet          , 0x2303, 3),
-            new Boss(BossType.Gargoyles         , 0x3   , 4),
-            new Boss(BossType.CapraDemon        , 0xF73 , 1),
-            new Boss(BossType.CeaselessDischarge, 0x1   , 3),
-            new Boss(BossType.CentipedeDemon    , 0x3C73, 2),
-            new Boss(BossType.Quelaag           , 0x2   , 6),
-            new Boss(BossType.Priscilla         , 0x3   , 3),
-            new Boss(BossType.Gwyndolin         , 0x4673, 3),
-            new Boss(BossType.Firesage          , 0x3F30, 5),
-            new Boss(BossType.OrnsteinAndSmough , 0x2   , 3),
-            new Boss(BossType.FourKings         , 0x2   , 2),
-            new Boss(BossType.GapingDragon      , 0x3   , 5),
-            new Boss(BossType.Nito              , 0x3   , 0),
-            new Boss(BossType.Sif               , 0x3   , 2),
-            new Boss(BossType.Gwyn              , 0x2   , 0),
-            new Boss(BossType.IronGolem         , 0x2   , 4),
+            new Boss(BossType.AsylumDemon, 0x1, 7),
+            new Boss(BossType.Kalameet, 0x2303, 3),
+            new Boss(BossType.Gargoyles, 0x3, 4),
+            new Boss(BossType.CapraDemon, 0xF73, 1),
+            new Boss(BossType.CeaselessDischarge, 0x1, 3),
+            new Boss(BossType.CentipedeDemon, 0x3C73, 2),
+            new Boss(BossType.Quelaag, 0x2, 6),
+            new Boss(BossType.Priscilla, 0x3, 3),
+            new Boss(BossType.Gwyndolin, 0x4673, 3),
+            new Boss(BossType.Firesage, 0x3F30, 5),
+            new Boss(BossType.OrnsteinAndSmough, 0x2, 3),
+            new Boss(BossType.FourKings, 0x2, 2),
+            new Boss(BossType.GapingDragon, 0x3, 5),
+            new Boss(BossType.Nito, 0x3, 0),
+            new Boss(BossType.Sif, 0x3, 2),
+            new Boss(BossType.Gwyn, 0x2, 0),
+            new Boss(BossType.IronGolem, 0x2, 4),
             new Boss(BossType.MoonlightButterfly, 0x2173, 3),
-            new Boss(BossType.Pinwheel          , 0x3   , 1),
-            new Boss(BossType.Seath             , 0x2   , 1),
-            new Boss(BossType.TaurusDemon       , 0xF73 , 2),
-            new Boss(BossType.BedOfChaos        , 0x2   , 5),
-            new Boss(BossType.Manus             , 0x1   , 6),
-            new Boss(BossType.Artorias          , 0x2303, 6),
+            new Boss(BossType.Pinwheel, 0x3, 1),
+            new Boss(BossType.Seath, 0x2, 1),
+            new Boss(BossType.TaurusDemon, 0xF73, 2),
+            new Boss(BossType.BedOfChaos, 0x2, 5),
+            new Boss(BossType.Manus, 0x1, 6),
+            new Boss(BossType.Artorias, 0x2303, 6),
         };
 
         private class Zone
@@ -485,6 +530,78 @@ namespace DarkSoulsMemory.Internal
             var instance = (IntPtr)ReadInt32(_playerIns);
 
             return instance.ToInt32();
+        }
+
+        public void SetCheat(CheatType cheatType, bool enabled)
+        {
+            if (TryScan(new byte?[]{ 0x80, 0x3D, null, null, null, null, 0x00, 0x48, 0x8b, 0x8f, null, null, null, null, 0x0f, 0xb6, 0xdb }, out IntPtr chrDbg))
+            {
+                chrDbg = chrDbg + ReadInt32(chrDbg + 2) + 7;
+                var bytes = BitConverter.GetBytes(enabled);
+                Write(chrDbg + (int)cheatType, bytes);
+            }
+        }
+
+
+        //Warping code was stolen from Nordgaren, https://github.com/Nordgaren/DSR-Gadget-Local-Loader
+
+        private const string BonfireWarpAssembly = @"0:  48 b9 fe fe fe fe fe    movabs rcx,0xfefefefefefefefe
+7:  fe fe fe
+a:  48 8b 09                mov    rcx,QWORD PTR [rcx]
+d:  ba 01 00 00 00          mov    edx,0x1
+12: 48 83 ec 38             sub    rsp,0x38
+16: 49 be fe fe fe fe fe    movabs r14,0xfefefefefefefefe
+1d: fe fe fe
+20: 41 ff d6                call   r14
+23: 48 83 c4 38             add    rsp,0x38
+27: c3                      ret ";
+
+        private IntPtr _bonfireWarp = IntPtr.Zero;
+        private IntPtr _chrClassWarp = IntPtr.Zero;
+
+        public void BonfireWarp(WarpType warpType)
+        {
+            if (_bonfireWarp == IntPtr.Zero)
+            {
+                TryScan(new byte?[] { 0x48, 0x89, 0x5C, 0x24, 0x08, 0x57, 0x48, 0x83, 0xEC, 0x20, 0x48, 0x8B, 0xD9, 0x8B, 0xFA, 0x48, 0x8B, 0x49, 0x08, 0x48, 0x85, 0xC9, 0x0F, 0x84, null, null, null, null, 0xE8, null, null, null, null, 0x48, 0x8B, 0x4B, 0x08 }, out _bonfireWarp);
+            }
+
+            if (_chrClassWarp == IntPtr.Zero)
+            {
+                if(TryScan(new byte?[]{ 0x48, 0x8B, 0x05, null, null, null, null, 0x66, 0x0F, 0x7F, 0x80, null, null, null, null, 0x0F, 0x28, 0x02, 0x66, 0x0F, 0x7F, 0x80, null, null, null, null, 0xC6, 0x80 }, out _chrClassWarp))
+                {
+                    _chrClassWarp = _chrClassWarp + ReadInt32(_chrClassWarp + 3) + 7;
+                }
+            }
+
+
+            var chrClassWarpIns = (IntPtr)ReadInt32(_chrClassWarp);
+            //var lastBonfire = (WarpType)ReadInt32(chrClassWarpIns + 0xB34);
+            WriteInt32(chrClassWarpIns + 0xB34, (int)warpType);
+            
+            byte[] asm = AssemblyHelper.LoadDefuseOutput(BonfireWarpAssembly);
+            byte[] bytes = BitConverter.GetBytes(_gameDataMan.ToInt64());
+            Array.Copy(bytes, 0, asm, 0x2, 8);
+            bytes = BitConverter.GetBytes(_bonfireWarp.ToInt64());
+            Array.Copy(bytes, 0, asm, 0x18, 8);
+            Execute(asm);
+        }
+
+
+        //Teleporting code was stolen from Nordgaren, https://github.com/Nordgaren/DSR-Gadget-Local-Loader
+        public void Teleport(Vector3f position, float angle)
+        {
+            var instance = (IntPtr)ReadInt32(_playerIns);
+            var playerCtrl = instance + 0x68;
+            playerCtrl = (IntPtr)ReadInt32(playerCtrl);
+            playerCtrl = (IntPtr)ReadInt32(playerCtrl + 104);
+
+            WriteFloat(playerCtrl + 0x110, position.X);
+            WriteFloat(playerCtrl + 0x114, position.Y);
+            WriteFloat(playerCtrl + 0x118, position.Z);
+            WriteFloat(playerCtrl + 0x124, angle.DegreeToRadians());
+            var bytes = BitConverter.GetBytes(true);
+            Write(playerCtrl + 0x108, bytes);
         }
 #endif
     }

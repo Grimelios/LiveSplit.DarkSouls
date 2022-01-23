@@ -10,6 +10,10 @@ namespace Tester
         {
             var darkSouls = new DarkSouls();
 
+
+
+
+
             while (true)
             {
                 darkSouls.Refresh();

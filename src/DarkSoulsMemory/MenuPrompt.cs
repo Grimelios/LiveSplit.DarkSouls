@@ -11,6 +11,7 @@ namespace DarkSoulsMemory
         Unknown = -1,
 
         None = 0,
+        GameWillStartInOfflineMode = 69,
         HomewardBone = 86,
         DarkSign = 87,
         FireKeeperSoul0 = 176,//I bet each fire keeper soul has it's own ID

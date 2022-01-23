@@ -220,5 +220,49 @@ namespace DarkSoulsMemory.Internal
             Kernel32.WriteProcessMemory(_process.Handle, address, BitConverter.GetBytes(value), 4, bytesWritten);
         }
 
+        internal void Write(IntPtr address, byte[] bytes)
+        {
+            Kernel32.WriteProcessMemory(_process.Handle, address, bytes, (uint)bytes.Length, 0);
+        }
+
+        internal void WriteInt32(IntPtr address, int value)
+        {
+            byte[] bytes = BitConverter.GetBytes(value);
+            Write(address, bytes);
+        }
+
+        internal void WriteFloat(IntPtr address, float value)
+        {
+            byte[] bytes = BitConverter.GetBytes(value);
+            Write(address, bytes);
+        }
+
+        #region assembly execution
+        //Stolen from Nordgaren, https://github.com/Nordgaren/DSR-Gadget-Local-Loader
+        public IntPtr Allocate(uint size, uint flProtect = Kernel32.PAGE_READWRITE)
+        {
+            return Kernel32.VirtualAllocEx(_process.Handle, IntPtr.Zero, (IntPtr)size, Kernel32.MEM_COMMIT, flProtect);
+        }
+
+        public bool Free(IntPtr address)
+        {
+            return Kernel32.VirtualFreeEx(_process.Handle, address, IntPtr.Zero, Kernel32.MEM_RELEASE);
+        }
+        public uint Execute(IntPtr address, uint timeout = 0xFFFFFFFF)
+        {
+            IntPtr thread = Kernel32.CreateRemoteThread(_process.Handle, IntPtr.Zero, 0, address, IntPtr.Zero, 0, IntPtr.Zero);
+            uint result = Kernel32.WaitForSingleObject(thread, timeout);
+            Kernel32.CloseHandle(thread);
+            return result;
+        }
+        public uint Execute(byte[] bytes, uint timeout = 0xFFFFFFFF)
+        {
+            IntPtr address = Allocate((uint)bytes.Length, Kernel32.PAGE_EXECUTE_READWRITE);
+            Write(address, bytes);
+            uint result = Execute(address, timeout);
+            Free(address);
+            return result;
+        }
+        #endregion
     }
 }

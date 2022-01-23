@@ -502,6 +502,26 @@ namespace DarkSoulsMemory.Internal
 
             return loadscreen ? 1 : 0;
         }
+
+        public void SetCheat(CheatType cheatType, bool enabled)
+        {
+            //if (TryScan(new byte?[] { 0x80, 0x3D, null, null, null, null, 0x00, 0x48, 0x8b, 0x8f, null, null, null, null, 0x0f, 0xb6, 0xdb }, out IntPtr chrDbg))
+            //{
+            //    chrDbg = chrDbg + ReadInt32(chrDbg + 2) + 7;
+            //    var bytes = BitConverter.GetBytes(enabled);
+            //    Write(chrDbg + (int)cheatType, bytes);
+            //}
+        }
+
+        public void BonfireWarp(WarpType warpType)
+        {
+
+        }
+
+        public void Teleport(Vector3f position, float angle)
+        {
+
+        }
 #endif
     }
 }
