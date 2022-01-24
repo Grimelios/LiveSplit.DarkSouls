@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using Keystone;
 
 namespace DarkSoulsMemory.Internal
 {
@@ -143,7 +145,7 @@ namespace DarkSoulsMemory.Internal
             characterIns = (IntPtr)ReadInt32(characterIns + 0x4);
             characterIns = (IntPtr)ReadInt32(characterIns);
 
-            var mem = ReadInt32(characterIns + 0xFC);
+            var mem = ReadInt32(characterIns + 0xFC);//PlayRegion offset 0x284,
 
             if (Enum.IsDefined(typeof(ForcedAnimation), mem))
             {
@@ -487,9 +489,6 @@ namespace DarkSoulsMemory.Internal
             //WorldState = (IntPtr)MemoryTools.ReadInt(handle, (IntPtr)0x13784A0);
             //return MemoryTools.ReadBoolean(handle, pointers.WorldState - 0x37EF4);
 
-
-
-
             var worldState = (IntPtr)ReadInt32((IntPtr)0x13784A0);
             var thing = ReadByte(worldState - 0x37ef4);
             var loadscreen = thing.IsBitSet(0);
@@ -503,25 +502,181 @@ namespace DarkSoulsMemory.Internal
             return loadscreen ? 1 : 0;
         }
 
+
+        //Cheat code stolen from JKAnderson, https://github.com/JKAnderson/DS-Gadget
+
+        private IntPtr _chrDbg = IntPtr.Zero;
+        private IntPtr _exterminate = IntPtr.Zero;
         public void SetCheat(CheatType cheatType, bool enabled)
         {
-            //if (TryScan(new byte?[] { 0x80, 0x3D, null, null, null, null, 0x00, 0x48, 0x8b, 0x8f, null, null, null, null, 0x0f, 0xb6, 0xdb }, out IntPtr chrDbg))
-            //{
-            //    chrDbg = chrDbg + ReadInt32(chrDbg + 2) + 7;
-            //    var bytes = BitConverter.GetBytes(enabled);
-            //    Write(chrDbg + (int)cheatType, bytes);
-            //}
+            if (_chrDbg == IntPtr.Zero)
+            {
+                if(TryScan(new byte?[]{0x51, 0x8B, 0x4C, 0x24, 0x08, 0x3B, 0x8A, 0xE4, 0x02, 0x00, 0x00, null, null, 0xF6, 0x82, 0xC5, 0x03, 0x00, 0x00, 0x04, null, null, 0x80, 0x3D, null, null, null, null, 0x00 }, out _chrDbg))
+                {
+                    _chrDbg = (IntPtr)ReadInt32(_chrDbg + 0x18);
+                }
+            }
+
+            if (_exterminate == IntPtr.Zero)
+            {
+                if (TryScan(new byte?[] { 0x8B, 0x11, 0x8B, 0x82, 0xA4, 0x00, 0x00, 0x00, 0xFF, 0xD0, 0x84, 0xC0, null, null, 0x80, 0x3D, null, null, null, null, 0x00 }, out _exterminate))
+                {
+                    _exterminate = (IntPtr)ReadInt32(_exterminate + 0x10);
+                }
+            }
+
+            if (!_cheatOffsets.ContainsKey(cheatType))
+            {
+                throw new Exception($"{cheatType} not supported for dark souls PTDE.");
+            }
+            
+            var bytes = BitConverter.GetBytes(enabled);
+            if (cheatType == CheatType.PlayerExterminate)
+            {
+                Write(_exterminate, bytes);
+            }
+            else
+            {
+                Write(_chrDbg + _cheatOffsets[cheatType], bytes);
+            }
         }
 
+        private Dictionary<CheatType, int> _cheatOffsets = new Dictionary<CheatType, int>()
+        {
+            { CheatType.AllNoStaminaConsume, 0 },
+            { CheatType.AllNoMpConsume, 1 },
+            { CheatType.AllNoArrowConsume, 2 },
+            { CheatType.PlayerHide, 3 },
+            { CheatType.PlayerSilence, 4 },
+            { CheatType.AllNoDead, 5 },
+            { CheatType.AllNoDamage, 6 },
+            { CheatType.AllNoHit, 7 },
+            { CheatType.AllNoAttack, 8 },
+            { CheatType.AllNoMove, 9 },
+            { CheatType.AllNoUpdateAI, 0xA },
+            { CheatType.PlayerExterminate, 0x0 },
+        };
+
+        private const string BonfireWarpAsm = @"mov esi, [0x{0:X}]
+mov edi, 0x1
+push edi
+call 0x{1:X}
+ret";
+
+        private IntPtr _funcBonfireWarp = IntPtr.Zero;
+        private IntPtr _funcBonfireWarpUnknown1 = IntPtr.Zero;
+        private IntPtr _worldState = IntPtr.Zero;
         public void BonfireWarp(WarpType warpType)
         {
+            if (_funcBonfireWarp == IntPtr.Zero)
+            {
+                TryScan(new byte?[]{ 0x33, 0xC0, 0x39, 0x46, 0x04, null, null, 0x8B, 0x0D, null, null, null, null, 0x8B, 0x15, null, null, null, null, 0xC6, 0x41, 0x44, 0x01, }, out _funcBonfireWarp);
+            }
 
+            if (_funcBonfireWarpUnknown1 == IntPtr.Zero)
+            {
+                if (TryScan(new byte?[] { 0x89, 0x73, 0x44, 0xC6, 0x44, 0x24, 0x2C, 0x00, 0xC7, 0x82, 0x84, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, 0x8B, 0x3D, null, null, null, null, 0x85, 0xFF }, out _funcBonfireWarpUnknown1))
+                {
+                    _funcBonfireWarpUnknown1 = (IntPtr)ReadInt32(_funcBonfireWarpUnknown1 + 20);
+                }
+            }
+
+            if (_worldState == IntPtr.Zero)
+            {
+                if (TryScan(new byte?[] { 0x8B, 0x54, 0x24, 0x10, 0x8B, 0xC8, 0xF7, 0xD9, 0x39, 0x8A, 0xB8, 0x0E, 0x00, 0x00, 0xB3, 0x01, 0x0F, 0x95, 0xC2, 0x8B, 0x0D, null, null, null, null, 0x80, 0xB9, 0xA5, 0x0B, 0x00, 0x00, 0x00 }, out _worldState))
+                {
+                    _worldState = (IntPtr)ReadInt32(_worldState + 0x15);
+                }
+            }
+
+            //Set the last bonfire (warp target)
+            var worlStateIns = (IntPtr)ReadInt32(_worldState);
+            WriteInt32(worlStateIns + 0xB04, (int)warpType);
+
+
+            
+
+            var asm = string.Format(BonfireWarpAsm, (int)_funcBonfireWarpUnknown1, (int)_funcBonfireWarp);
+            var engine = new Engine(Architecture.X86, Mode.X32);
+            var bytes = engine.Assemble(asm, 0).Buffer;
+
+            var testy = ByteArrayToString(bytes);
+
+            IntPtr insertPtr = Allocate((uint)bytes.Length);
+            // Then rebase and inject
+            // Note: you can't use String.Format here because IntPtr is not IFormattable
+            bytes = engine.Assemble(asm, (ulong)insertPtr).Buffer;
+
+            testy = ByteArrayToString(bytes);
+
+            Write(insertPtr, bytes);
+            Execute(insertPtr);
+            Free(insertPtr);
+
+
+
+            //var firstBytes = BitConverter.GetBytes((int)_funcBonfireWarpUnknown1);
+            //var secondBytes = BitConverter.GetBytes((int)_funcBonfireWarp);
+            //
+            //
+            //var asdBytes = new byte?[] { 0x8b, 0x35, 0x90, 0xd7, 0x37, 0x01, 0xbf, 0x01, 0x00, 0x00, 0x00, 0x57, 0xe8, 0x7f, 0x63, 0xd7, 0x00, 0xc3 };
+            //var asmBytes = new byte[]  { 0x8b, 0x35, 0xff, 0xff, 0xff, 0xff, 0xbf, 0x01, 0x00, 0x00, 0x00, 0x57, 0xe8, 0x7f, 0xff, 0xff, 0xff, 0xc3 };
+            //
+            //Array.Copy(firstBytes, 0, asmBytes, 2, 4);
+            //
+            //0x00d76390
+            //0x01c50000 29687808
+
+            //"8b3590d73701bf0100000057e87f
+            //6312ff     6492927
+            //c3"
+            //??ff1263   16716387
+
+            //0x00d76390 14115728
+            //144   0x90
+            //99    0x63
+            //215   0xD7
+            //0     0x00
+
+            //byte[] bytes = FasmNet.Assemble("use32\norg 0x0\n" + asm);
+            //IntPtr insertPtr = Allocate((uint)bytes.Length);
+            //// Then rebase and inject
+            //// Note: you can't use String.Format here because IntPtr is not IFormattable
+            //bytes = FasmNet.Assemble("use32\norg 0x" + insertPtr.ToString("X") + "\n" + asm);
+            //
+            //Write(insertPtr, bytes);
+            //Execute(insertPtr);
+            //Free(insertPtr);
         }
+
+        public static string ByteArrayToString(byte[] ba)
+        {
+            StringBuilder hex = new StringBuilder(ba.Length * 2);
+            foreach (byte b in ba)
+                hex.AppendFormat("{0:x2}", b);
+            return hex.ToString();
+        }
+
 
         public void Teleport(Vector3f position, float angle)
         {
 
+            var charMapDataPtr = (IntPtr)ReadInt32(_character);
+            charMapDataPtr = (IntPtr)ReadInt32(charMapDataPtr + 0x4);
+            charMapDataPtr = (IntPtr)ReadInt32(charMapDataPtr);
+            charMapDataPtr = (IntPtr)ReadInt32(charMapDataPtr + 0x28);
+
+            //var mem = ReadInt32(characterIns + 0xFC);
+
+
+            WriteFloat(charMapDataPtr + 0xD0, position.X);
+            WriteFloat(charMapDataPtr + 0xD4, position.Y);
+            WriteFloat(charMapDataPtr + 0xD8, position.Z);
+            WriteFloat(charMapDataPtr + 0xE4, angle.DegreeToRadians());
+            var bytes = BitConverter.GetBytes(true);
+            Write(charMapDataPtr + 0xc8, bytes);
         }
+        
 #endif
     }
 }

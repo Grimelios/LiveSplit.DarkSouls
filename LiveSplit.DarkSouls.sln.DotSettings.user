@@ -1,6 +1,16 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=5d5c0d83_002Db1bd_002D4126_002D939a_002D27cb5d282453/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="DarkSoulsRemastered" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=5d5c0d83_002Db1bd_002D4126_002D939a_002D27cb5d282453/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="DarkSoulsRemastered" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::8E761529-D49C-4854-9434-42E2EE97471F::.NETFramework,Version=v4.8::Testing.DarkSoulsRemastered&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::8E761529-D49C-4854-9434-42E2EE97471F::.NETFramework,Version=v4.8::Testing.Tests&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=8fd88db4_002D53e2_002D4ca7_002D8cb7_002D157d3f82cf96/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="Tests" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::8E761529-D49C-4854-9434-42E2EE97471F::.NETFramework,Version=v4.8::Testing.Tests&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=e84ee9a5_002Db1e5_002D4362_002D9449_002D48f47cca0826/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="Tests #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::8E761529-D49C-4854-9434-42E2EE97471F::.NETFramework,Version=v4.8::Testing.Tests&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

@@ -11,6 +11,18 @@ namespace Testing.Tas
 {
     internal static class User32
     {
+        [DllImport("user32.dll")]
+        private static extern int GetWindowThreadProcessId(IntPtr hWnd, uint lpdwProcessId = 0);
+
+        delegate bool EnumThreadDelegate(IntPtr hWnd, IntPtr lParam);
+        [DllImport("user32.dll")]
+        static extern bool EnumThreadWindows(int dwThreadId, EnumThreadDelegate lpfn, IntPtr lParam);
+        [DllImport("user32.dll")]
+
+        static extern bool AttachThreadInput(int idAttach, int idAttachTo, bool fAttach);
+
+        [DllImport("kernel32.dll")]
+        static extern int GetCurrentThreadId();
         [DllImport("User32.dll")]
         public static extern int SetForegroundWindow(IntPtr ptr);
 
@@ -42,7 +54,7 @@ namespace Testing.Tas
         /// simulate key press
         /// </summary>
         /// <param name="keyCode"></param>
-        public static void SendKeyPress(KeyCode keyCode)
+        public static void SendKeyPress(KeyCode keyCode, ScanCode scanCode)
         {
             INPUT input = new INPUT
             {
@@ -51,7 +63,7 @@ namespace Testing.Tas
             input.Data.Keyboard = new KEYBDINPUT()
             {
                 Vk = (ushort)keyCode,
-                Scan = 0,
+                Scan = (ushort)scanCode,
                 Flags = 0,
                 Time = 0,
                 ExtraInfo = IntPtr.Zero,
@@ -64,7 +76,7 @@ namespace Testing.Tas
             input2.Data.Keyboard = new KEYBDINPUT()
             {
                 Vk = (ushort)keyCode,
-                Scan = 0,
+                Scan = (ushort)scanCode,
                 Flags = 2,
                 Time = 0,
                 ExtraInfo = IntPtr.Zero
@@ -78,7 +90,7 @@ namespace Testing.Tas
         /// Send a key down and hold it down until sendkeyup method is called
         /// </summary>
         /// <param name="keyCode"></param>
-        public static void SendKeyDown(KeyCode keyCode)
+        public static void SendKeyDown(KeyCode keyCode, ScanCode scanCode)
         {
             INPUT input = new INPUT
             {
@@ -86,7 +98,7 @@ namespace Testing.Tas
             };
             input.Data.Keyboard = new KEYBDINPUT();
             input.Data.Keyboard.Vk = (ushort)keyCode;
-            input.Data.Keyboard.Scan = 0;
+            input.Data.Keyboard.Scan = (ushort)scanCode;
             input.Data.Keyboard.Flags = 0;
             input.Data.Keyboard.Time = 0;
             input.Data.Keyboard.ExtraInfo = IntPtr.Zero;
@@ -101,7 +113,7 @@ namespace Testing.Tas
         /// Release a key that is being hold down
         /// </summary>
         /// <param name="keyCode"></param>
-        public static void SendKeyUp(KeyCode keyCode)
+        public static void SendKeyUp(KeyCode keyCode, ScanCode scanCode)
         {
             INPUT input = new INPUT
             {
@@ -109,7 +121,7 @@ namespace Testing.Tas
             };
             input.Data.Keyboard = new KEYBDINPUT();
             input.Data.Keyboard.Vk = (ushort)keyCode;
-            input.Data.Keyboard.Scan = 0;
+            input.Data.Keyboard.Scan = (ushort)scanCode;
             input.Data.Keyboard.Flags = 2;
             input.Data.Keyboard.Time = 0;
             input.Data.Keyboard.ExtraInfo = IntPtr.Zero;
@@ -202,6 +214,32 @@ namespace Testing.Tas
             public uint Flags;
             public uint Time;
             public IntPtr ExtraInfo;
+        }
+
+
+        public enum ScanCode : ushort
+        {
+            ESC = 1,
+            Q = 16,
+            W = 17,
+            E = 18,
+            R = 19,
+            I = 23,
+            O = 24,
+            P = 25,
+            A = 30,
+            S = 31,
+            D = 32,
+
+            Up = 72,
+            Left = 75,
+            Center = 76,
+            Right = 77,
+            Down = 80,
+
+            Space = 57,
+            PageUp = 73,
+            PageDown = 81
         }
 
         public enum KeyCode : ushort

@@ -290,13 +290,7 @@ namespace DarkSoulsMemory.Internal
 
         public void ResetInventoryIndices()
         {
-            if (TryScan(
-                    new byte?[]
-                    {
-                        0x48, 0x8D, 0x15, null, null, null, null, 0xC1, 0xE1, 0x10, 0x49, 0x8B, 0xC6, 0x41, 0x0B, 0x8F,
-                        0x14, 0x02, 0x00, 0x00, 0x44, 0x8B, 0xC6, 0x42, 0x89, 0x0C, 0xB2, 0x41, 0x8B, 0xD6, 0x49, 0x8B,
-                        0xCF
-                    }, out IntPtr basePtr))
+            if (TryScan(new byte?[] { 0x48, 0x8D, 0x15, null, null, null, null, 0xC1, 0xE1, 0x10, 0x49, 0x8B, 0xC6, 0x41, 0x0B, 0x8F, 0x14, 0x02, 0x00, 0x00, 0x44, 0x8B, 0xC6, 0x42, 0x89, 0x0C, 0xB2, 0x41, 0x8B, 0xD6, 0x49, 0x8B, 0xCF }, out IntPtr basePtr))
             {
                 basePtr = ReadPtr(basePtr + 3) + 7;
                 for (int i = 0; i < 20; i++)
@@ -485,6 +479,10 @@ namespace DarkSoulsMemory.Internal
             new Boss(BossType.BedOfChaos, 0x2, 5),
             new Boss(BossType.Manus, 0x1, 6),
             new Boss(BossType.Artorias, 0x2303, 6),
+
+            //Unsupported
+            new Boss(BossType.StrayDemon, 0, 0),
+            new Boss(BossType.SanctuaryGuardian, 0, 0),
         };
 
         private class Zone

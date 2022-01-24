@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -23,6 +24,39 @@ namespace DarkSoulsMemory.Internal
                     bytes.Add(Byte.Parse(hex.Value, System.Globalization.NumberStyles.AllowHexSpecifier));
             }
             return bytes.ToArray();
+        }
+
+
+        public static byte[] FasmAssemble(string asm)
+        {
+            var path = Environment.CurrentDirectory + "\\Fasm32.exe";
+
+            var process = new Process()
+            {
+                StartInfo = new ProcessStartInfo()
+                {
+                    FileName = path,
+                    Arguments = "\"" + asm + "\"",
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true
+                },
+            };
+
+            process.Start();
+            process.WaitForExit();
+
+            while (!process.StandardOutput.EndOfStream)
+            {
+                var asd = process.StandardOutput.ReadLine();
+                // do something with line
+            }
+
+            string err = process.StandardError.ReadToEnd();
+
+            string line = process.StandardOutput.ReadToEnd();
+            return null;
         }
     }
 }
