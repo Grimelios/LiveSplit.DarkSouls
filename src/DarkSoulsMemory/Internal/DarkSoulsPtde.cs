@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+
+#if DEBUG
 using Keystone;
+#endif
 
 namespace DarkSoulsMemory.Internal
 {
@@ -507,6 +510,7 @@ namespace DarkSoulsMemory.Internal
 
         private IntPtr _chrDbg = IntPtr.Zero;
         private IntPtr _exterminate = IntPtr.Zero;
+        private IntPtr _playerNoDead = IntPtr.Zero;
         public void SetCheat(CheatType cheatType, bool enabled)
         {
             if (_chrDbg == IntPtr.Zero)
@@ -525,19 +529,40 @@ namespace DarkSoulsMemory.Internal
                 }
             }
 
+            if (_playerNoDead == IntPtr.Zero)
+            {
+                if (TryScan(
+                        new byte?[]
+                        {
+                            0x53, 0x56, 0x8B, 0xF0, 0x8A, 0x9E, 0xC4, 0x03, 0x00, 0x00, 0x8B, 0x06, 0x8B, 0x90, 0xA4,
+                            0x00, 0x00, 0x00, 0xC0, 0xEB, 0x05, 0x8B, 0xCE, 0x80, 0xE3, 0x01, 0xFF, 0xD2, 0x84, 0xC0,
+                            null, null, 0x80, 0x3D, null, null, null, null, 0x00
+                        }, out _playerNoDead))
+                {
+                    _playerNoDead = (IntPtr)ReadInt32(_playerNoDead + 0x22);
+                }
+            }
+
+
             if (!_cheatOffsets.ContainsKey(cheatType))
             {
                 throw new Exception($"{cheatType} not supported for dark souls PTDE.");
             }
             
             var bytes = BitConverter.GetBytes(enabled);
-            if (cheatType == CheatType.PlayerExterminate)
+            switch (cheatType)
             {
-                Write(_exterminate, bytes);
-            }
-            else
-            {
-                Write(_chrDbg + _cheatOffsets[cheatType], bytes);
+                case CheatType.PlayerNoDead:
+                    Write(_playerNoDead, bytes);
+                    break;
+                
+                case CheatType.PlayerExterminate:
+                    Write(_exterminate, bytes);
+                    break;
+
+                default:
+                    Write(_chrDbg + _cheatOffsets[cheatType], bytes);
+                    break;
             }
         }
 
@@ -554,7 +579,10 @@ namespace DarkSoulsMemory.Internal
             { CheatType.AllNoAttack, 8 },
             { CheatType.AllNoMove, 9 },
             { CheatType.AllNoUpdateAI, 0xA },
+            
+            //Just in this list so that no unsupported exception is thrown, the offsets are meaningless because they have their own ptrs
             { CheatType.PlayerExterminate, 0x0 },
+            { CheatType.PlayerNoDead, 0x0 },
         };
 
         private const string BonfireWarpAsm = @"mov esi, [0x{0:X}]
@@ -612,41 +640,6 @@ ret";
             Write(insertPtr, bytes);
             Execute(insertPtr);
             Free(insertPtr);
-
-
-
-            //var firstBytes = BitConverter.GetBytes((int)_funcBonfireWarpUnknown1);
-            //var secondBytes = BitConverter.GetBytes((int)_funcBonfireWarp);
-            //
-            //
-            //var asdBytes = new byte?[] { 0x8b, 0x35, 0x90, 0xd7, 0x37, 0x01, 0xbf, 0x01, 0x00, 0x00, 0x00, 0x57, 0xe8, 0x7f, 0x63, 0xd7, 0x00, 0xc3 };
-            //var asmBytes = new byte[]  { 0x8b, 0x35, 0xff, 0xff, 0xff, 0xff, 0xbf, 0x01, 0x00, 0x00, 0x00, 0x57, 0xe8, 0x7f, 0xff, 0xff, 0xff, 0xc3 };
-            //
-            //Array.Copy(firstBytes, 0, asmBytes, 2, 4);
-            //
-            //0x00d76390
-            //0x01c50000 29687808
-
-            //"8b3590d73701bf0100000057e87f
-            //6312ff     6492927
-            //c3"
-            //??ff1263   16716387
-
-            //0x00d76390 14115728
-            //144   0x90
-            //99    0x63
-            //215   0xD7
-            //0     0x00
-
-            //byte[] bytes = FasmNet.Assemble("use32\norg 0x0\n" + asm);
-            //IntPtr insertPtr = Allocate((uint)bytes.Length);
-            //// Then rebase and inject
-            //// Note: you can't use String.Format here because IntPtr is not IFormattable
-            //bytes = FasmNet.Assemble("use32\norg 0x" + insertPtr.ToString("X") + "\n" + asm);
-            //
-            //Write(insertPtr, bytes);
-            //Execute(insertPtr);
-            //Free(insertPtr);
         }
 
         public static string ByteArrayToString(byte[] ba)

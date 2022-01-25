@@ -24,21 +24,23 @@ namespace Testing
         public void OneTimeSetUp()
         {
             var gameType = GameType.DarkSoulsRemastered;
+            var nbgiPath = @"C:\Users\Frank\Documents\NBGI";
 
             switch (gameType)
             {
                 case GameType.DarkSoulsRemastered:
-                    SaveFileLocation = @"C:\Users\Frank\Documents\NBGI\DARK SOULS REMASTERED\72957510";
+                    SaveFileLocation = $@"{nbgiPath}\DARK SOULS REMASTERED\72957510";
                     ReplacementSave = "remastered";
                     break;
 
                 case GameType.DarkSoulsPtde:
-                    SaveFileLocation = @"C:\Users\Frank\Documents\NBGI\DarkSouls\GroupMink920669";
+                    SaveFileLocation = $@"{nbgiPath}\DarkSouls\GroupMink920669";
                     ReplacementSave = "ptde";
                     break;
 
+                //The save file is being made here but it seems like ptde/cracked use the same settings.. is kind of vague if this is using it's own savefile or not..
                 case GameType.DarkSoulsCracked:
-                    SaveFileLocation = @"C:\Users\Frank\Documents\NBGI\DarkSouls";
+                    SaveFileLocation = $@"{nbgiPath}\DarkSouls";
                     ReplacementSave = "cracked";
                     break;
             }
@@ -63,6 +65,7 @@ namespace Testing
             _darkSouls.SetCheat(CheatType.AllNoUpdateAI         , true);
             
             _assistant = new ToolAssistant(_darkSouls, gameType);
+            _assistant.SaveQuit();
             _assistant.MainMenuContinue();
 
 
@@ -155,7 +158,7 @@ namespace Testing
             Thread.Sleep(3000);
 
             _assistant.Punch();
-            Thread.Sleep(5500);
+            Thread.Sleep(7000);
         }
 
         private static void KillStrayDemon()
@@ -169,7 +172,7 @@ namespace Testing
             Thread.Sleep(22000); //22 sec :(
             _assistant.SkipCutscene();
             
-            Thread.Sleep(3000);//game loads back into asylum
+            Thread.Sleep(1500);//game loads back into asylum
             _assistant.SkipCutscene();
             Thread.Sleep(100);
             
@@ -182,7 +185,7 @@ namespace Testing
             Thread.Sleep(2000);
             _assistant.Punch();
 
-            Thread.Sleep(8000);
+            Thread.Sleep(9000);
         }
 
         private static void KillGargoyles()
@@ -297,7 +300,7 @@ namespace Testing
         private static void KillCeaselessDischarge()
         {
             _darkSouls.BonfireWarp(WarpType.DemonRuinsBonfire1);
-            Thread.Sleep(3000);
+            Thread.Sleep(3500);
 
             //Foggate must be traversed to active the fight
             _darkSouls.Teleport(new Vector3f(248.0f, -283.0f, 70.0f), 49);
@@ -324,7 +327,7 @@ namespace Testing
             Thread.Sleep(2000);
 
             _assistant.Punch();
-            Thread.Sleep(7000);
+            Thread.Sleep(8000);
         }
 
         private static void KillCentipedeDemon()
@@ -418,7 +421,7 @@ namespace Testing
         private static void KillGwyndolin()
         {
             _darkSouls.BonfireWarp(WarpType.AnorLondoGwyndolinonfire);
-            Thread.Sleep(3000);
+            Thread.Sleep(3500);
 
             //Trigger fight
             _darkSouls.Teleport(new Vector3f(436.0f, 60.0f, 255.0f), 90);
@@ -438,7 +441,7 @@ namespace Testing
         private static void KillPriscilla()
         {
             _darkSouls.BonfireWarp(WarpType.PaintedWorldOfAriamisBonfire);
-            Thread.Sleep(3000);
+            Thread.Sleep(3500);
 
             _darkSouls.Teleport(new Vector3f(-22.8f, 60.2f, 697.5f), 180);
             Thread.Sleep(2000);
@@ -568,7 +571,7 @@ namespace Testing
             _darkSouls.Teleport(new Vector3f(-153.3f, -265.1f, -47.2f), 263);
             Thread.Sleep(2000);
             _assistant.Punch();
-            Thread.Sleep(10000);
+            Thread.Sleep(12000);
         }
        
         
@@ -588,11 +591,11 @@ namespace Testing
         private static void KillArtorias()
         {
             _darkSouls.BonfireWarp(WarpType.OolacileTownshipBonfire);
-            Thread.Sleep(3000);
+            Thread.Sleep(3500);
 
             //Trigger fight
             _darkSouls.Teleport(new Vector3f(1035.2f, -330.0f, 810.8f), 71);
-            Thread.Sleep(2000);
+            Thread.Sleep(3000);
             _assistant.SkipCutscene();
             Thread.Sleep(100);
 
@@ -600,12 +603,12 @@ namespace Testing
             _darkSouls.Teleport(new Vector3f(1057.0f, -330.0f, 815.0f), 78);
             Thread.Sleep(2000);
             _assistant.Punch();
-            Thread.Sleep(5000);
+            Thread.Sleep(7000);
         }
         private static void KillKalameet()
         {
             _darkSouls.BonfireWarp(WarpType.OolacileTownshipBonfire);
-            Thread.Sleep(3000);
+            Thread.Sleep(3500);
 
             //Trigger kalameet flyby
             _darkSouls.Teleport(new Vector3f(854.2f, -344.3f, 736.3f), 238);
@@ -622,12 +625,28 @@ namespace Testing
 
 
             Thread.Sleep(18000);
-
-
-            //death from above
-            //_darkSouls.Teleport(new Vector3f(843.4f, -310.0f, 721.4f), 207);
-
         }
+        //private static void KillKalameet()
+        //{
+        //    _darkSouls.BonfireWarp(WarpType.OolacileTownshipBonfire);
+        //    Thread.Sleep(3000);
+        //
+        //    //Trigger kalameet flyby
+        //    _darkSouls.Teleport(new Vector3f(854.2f, -344.3f, 736.3f), 238);
+        //    Thread.Sleep(1000);
+        //
+        //    //bait + wait
+        //    _darkSouls.Teleport(new Vector3f(801.0f, -372.0f, 798.9f), 0);
+        //    Thread.Sleep(18000);
+        //
+        //    //Death from above + get back in arena
+        //    _darkSouls.Teleport(new Vector3f(801.0f, -342.0f, 818.9f), 0);
+        //    Thread.Sleep(3000);
+        //    _darkSouls.Teleport(new Vector3f(801.0f, -372.0f, 798.9f), 0);
+        //
+        //
+        //    Thread.Sleep(18000);
+        //}
 
         private static void KillManus()
         {
@@ -648,7 +667,7 @@ namespace Testing
             _darkSouls.Teleport(new Vector3f(417.4f, -116.0f, 169.0f), 300);
             Thread.Sleep(100);
 
-            _darkSouls.Teleport(new Vector3f(386.6f, -117.6f, 190.0f), 318);
+            _darkSouls.Teleport(new Vector3f(387.0f, -117.6f, 190.2f), 318);
             Thread.Sleep(1500);
             _assistant.Punch();
             Thread.Sleep(13000);

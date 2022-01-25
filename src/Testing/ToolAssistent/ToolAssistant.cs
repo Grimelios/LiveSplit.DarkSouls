@@ -188,43 +188,92 @@ namespace Testing.Tas
             Thread.Sleep(3800);
         }
 
+        public void MenuLeft()
+        {
+            if (_gameType == GameType.DarkSoulsRemastered)
+            {
+                Keypress(User32.KeyCode.LEFT, User32.ScanCode.Left);
+            }
+            else
+            {
+                Keypress(User32.KeyCode.KEY_C, User32.ScanCode.C);
+            }
+        }
+
+        public void MenuRight()
+        {
+            if (_gameType == GameType.DarkSoulsRemastered)
+            {
+                Keypress(User32.KeyCode.RIGHT, User32.ScanCode.Right);
+            }
+            else
+            {
+                Keypress(User32.KeyCode.KEY_V, User32.ScanCode.V);
+            }
+        }
+
+        public void MenuUp()
+        {
+            if (_gameType == GameType.DarkSoulsRemastered)
+            {
+                Keypress(User32.KeyCode.UP, User32.ScanCode.Up);
+            }
+            else
+            {
+                Keypress(User32.KeyCode.KEY_Z, User32.ScanCode.Z);
+            }
+        }
+
+        public void MenuDown()
+        {
+            if (_gameType == GameType.DarkSoulsRemastered)
+            {
+                Keypress(User32.KeyCode.DOWN, User32.ScanCode.Down);
+            }
+            else
+            {
+                Keypress(User32.KeyCode.KEY_X, User32.ScanCode.X);
+            }
+        }
+
+        public void MenuConfirm()
+        {
+            Keypress(User32.KeyCode.KEY_E, User32.ScanCode.E);
+        }
 
         public void SaveQuit()
         {
             Focus();
+            
+            Keypress(User32.KeyCode.ESC, User32.ScanCode.ESC);
+            Thread.Sleep(500);
 
-            var keyPressDelay = _gameType == GameType.DarkSoulsRemastered ? 32 : 200;
-            var sleepTime = _gameType == GameType.DarkSoulsRemastered ? 50 : 100;
+            MenuLeft();
+            Thread.Sleep(50);
 
-            Keypress(User32.KeyCode.ESC, User32.ScanCode.ESC, keyPressDelay);
-            Thread.Sleep(200);
+            MenuConfirm();
+            Thread.Sleep(50);
 
-            Keypress(User32.KeyCode.PAGEDOWN, User32.ScanCode.PageDown, keyPressDelay);
-            Thread.Sleep(sleepTime);
+            MenuUp();
+            Thread.Sleep(50);
 
-            Keypress(User32.KeyCode.KEY_E, User32.ScanCode.E, keyPressDelay);
-            Thread.Sleep(sleepTime);
+            MenuConfirm();
+            Thread.Sleep(50);
 
-            Keypress(User32.KeyCode.UP, User32.ScanCode.Up, keyPressDelay);
-            Thread.Sleep(sleepTime);
+            MenuLeft();
+            Thread.Sleep(50);
 
-            Keypress(User32.KeyCode.KEY_E, User32.ScanCode.E, keyPressDelay);
-            Thread.Sleep(sleepTime);
-
-            Keypress(User32.KeyCode.LEFT, User32.ScanCode.Left, keyPressDelay);
-            Thread.Sleep(sleepTime);
-
-            Keypress(User32.KeyCode.KEY_E, User32.ScanCode.E, keyPressDelay);
+            MenuConfirm();
 
             //Press any key
             Thread.Sleep(1500);
-            Keypress(User32.KeyCode.KEY_E, User32.ScanCode.E, keyPressDelay);
+            MenuConfirm();
 
             if (_gameType == GameType.DarkSoulsRemastered)
             {
                 //Clear offline message
                 Thread.Sleep(1500);
-                Keypress(User32.KeyCode.KEY_E, User32.ScanCode.E, keyPressDelay);
+                MenuConfirm();
             }
         }
 
@@ -233,35 +282,35 @@ namespace Testing.Tas
         public void EquipArtoriasRing()
         {
             Focus();
-
-            var keyPressDelay = _gameType == GameType.DarkSoulsRemastered ? 32 : 200;
-            var sleepTime = _gameType == GameType.DarkSoulsRemastered ? 50 : 100;
-
-            Keypress(User32.KeyCode.ESC, User32.ScanCode.ESC, keyPressDelay);
+            
+            Keypress(User32.KeyCode.ESC, User32.ScanCode.ESC);
             Thread.Sleep(200);
 
-            Keypress(User32.KeyCode.RIGHT, User32.ScanCode.Right, keyPressDelay);
-            Thread.Sleep(sleepTime);
+            MenuRight();
+            Thread.Sleep(50);
 
-            Keypress(User32.KeyCode.KEY_E, User32.ScanCode.E, keyPressDelay);
-            Thread.Sleep(sleepTime);
+            MenuConfirm();
+            Thread.Sleep(50);
 
-            Keypress(User32.KeyCode.LEFT, User32.ScanCode.Left, keyPressDelay);
-            Thread.Sleep(sleepTime);
+            MenuLeft();
+            Thread.Sleep(50);
             
-            for (int i = 0; i < 2; i++)
-            {
-                Keypress(User32.KeyCode.DOWN, User32.ScanCode.Down, keyPressDelay);
-                Thread.Sleep(sleepTime);
-            }
+            MenuUp();
+            Thread.Sleep(50);
+
+            //for (int i = 0; i < 2; i++)
+            //{
+            //    MenuDown();
+            //    Thread.Sleep(50);
+            //}
 
             for (int i = 0; i < 2; i++)
             {
-                Keypress(User32.KeyCode.KEY_E, User32.ScanCode.E, keyPressDelay);
-                Thread.Sleep(sleepTime);
+                MenuConfirm();
+                Thread.Sleep(50);
             }
 
-            Keypress(User32.KeyCode.ESC, User32.ScanCode.ESC, keyPressDelay);
+            Keypress(User32.KeyCode.ESC, User32.ScanCode.ESC);
         }
         
         public void Interact()

@@ -144,6 +144,12 @@ namespace DarkSoulsMemory.Internal
 
             var boss = _bosses.First(i => i.BossType == bossType);
             var memVal = ReadByte(worldProgressionIns + boss.Offset);
+            var test1 = ReadInt32(worldProgressionIns + 0x1);
+            var test2 = ReadInt32(worldProgressionIns + 0x3F30);
+            var test3 = ReadInt32(worldProgressionIns + 0x3C30);
+            var test5 = ReadInt32(worldProgressionIns + 0x3C31);
+            var test4 = ReadInt32(worldProgressionIns + 0x3C76);
+
             return memVal.IsBitSet(boss.Bit);
         }
 
@@ -455,34 +461,40 @@ namespace DarkSoulsMemory.Internal
 
         private readonly List<Boss> _bosses = new List<Boss>()
         {
-            new Boss(BossType.AsylumDemon, 0x1, 7),
-            new Boss(BossType.Kalameet, 0x2303, 3),
-            new Boss(BossType.Gargoyles, 0x3, 4),
-            new Boss(BossType.CapraDemon, 0xF73, 1),
-            new Boss(BossType.CeaselessDischarge, 0x1, 3),
-            new Boss(BossType.CentipedeDemon, 0x3C73, 2),
-            new Boss(BossType.Quelaag, 0x2, 6),
-            new Boss(BossType.Priscilla, 0x3, 3),
-            new Boss(BossType.Gwyndolin, 0x4673, 3),
-            new Boss(BossType.Firesage, 0x3F30, 5),
-            new Boss(BossType.OrnsteinAndSmough, 0x2, 3),
-            new Boss(BossType.FourKings, 0x2, 2),
-            new Boss(BossType.GapingDragon, 0x3, 5),
-            new Boss(BossType.Nito, 0x3, 0),
-            new Boss(BossType.Sif, 0x3, 2),
-            new Boss(BossType.Gwyn, 0x2, 0),
-            new Boss(BossType.IronGolem, 0x2, 4),
-            new Boss(BossType.MoonlightButterfly, 0x2173, 3),
-            new Boss(BossType.Pinwheel, 0x3, 1),
-            new Boss(BossType.Seath, 0x2, 1),
-            new Boss(BossType.TaurusDemon, 0xF73, 2),
-            new Boss(BossType.BedOfChaos, 0x2, 5),
-            new Boss(BossType.Manus, 0x1, 6),
-            new Boss(BossType.Artorias, 0x2303, 6),
 
-            //Unsupported
-            new Boss(BossType.StrayDemon, 0, 0),
-            new Boss(BossType.SanctuaryGuardian, 0, 0),
+            new Boss(BossType.AsylumDemon,          0x1   , 7),
+            new Boss(BossType.TaurusDemon,          0xF73 , 2),
+            new Boss(BossType.MoonlightButterfly,   0x1E73, 3),
+            new Boss(BossType.Gargoyles,            0x3   , 4),
+            new Boss(BossType.CapraDemon,           0xF73 , 1),
+            new Boss(BossType.GapingDragon,         0x3   , 5),
+            new Boss(BossType.StrayDemon,           0xF73 , 4),
+
+            new Boss(BossType.Quelaag,              0x2   , 6),
+            new Boss(BossType.CeaselessDischarge,   0x3C73, 3),
+            new Boss(BossType.Firesage,             0x3C30, 5),
+            new Boss(BossType.CentipedeDemon,       0x3C73, 2),
+            new Boss(BossType.BedOfChaos,           0x2   , 5),
+
+            new Boss(BossType.IronGolem,            0x2   , 4),
+            new Boss(BossType.OrnsteinAndSmough,    0x2   , 3),
+            new Boss(BossType.Gwyndolin,            0x4673, 3),
+            new Boss(BossType.Priscilla,            0x3   , 3),
+
+            new Boss(BossType.Sif,                  0x3   , 2),
+            new Boss(BossType.FourKings,            0x2   , 2),
+
+            new Boss(BossType.Gwyn,                 0x2   , 0),
+
+            new Boss(BossType.Pinwheel,             0x3   , 1),
+            new Boss(BossType.Nito,                 0x3   , 0),
+
+            new Boss(BossType.Seath,                0x2   , 1),
+
+            new Boss(BossType.Manus,                0x1   , 6),
+            new Boss(BossType.Artorias,             0x2303, 6),
+            new Boss(BossType.Kalameet,             0x2303, 3),
+            new Boss(BossType.SanctuaryGuardian,    0x2303, 7),
         };
 
         private class Zone

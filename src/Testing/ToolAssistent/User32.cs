@@ -230,6 +230,11 @@ namespace Testing.Tas
             A = 30,
             S = 31,
             D = 32,
+            
+            Z = 0x2c,
+            X = 0x2d,
+            C = 0x2e,
+            V = 0x2f,
 
             Up = 72,
             Left = 75,
