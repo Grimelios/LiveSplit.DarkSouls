@@ -957,9 +957,9 @@ namespace LiveSplit.DarkSouls.Controls
 			var zoneList = GetDropdown(lists.Zones, "Zones", ZoneListWidth);
 			
             var trigger = GetDropdown(new[] { "on enter", "on leave" }, "trigger", 70);
-            trigger.SelectedIndex = 0;
+            //trigger.SelectedIndex = 0;
             var timing = GetDropdown(new[] { "immediate", "on quitout", "on warp" }, "timing", 93);
-            timing.SelectedIndex = 0;
+            //timing.SelectedIndex = 0;
 
 
 			return new Control[] { zoneList, trigger, timing };
