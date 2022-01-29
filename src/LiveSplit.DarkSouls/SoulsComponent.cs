@@ -99,28 +99,28 @@ namespace LiveSplit.DarkSouls
 			// will be the closest).
 			bonfireLocations = new []
 			{
-				new Vector3f(171, 173, 255), // Anor Londo - Entrance
-				new Vector3f(504, 135, 175), // Anor Londo - Interior
-				new Vector3f(593, 161, 254), // Anor Londo - Princess
-				new Vector3f(391, 70, 255), // Anor Londo - Tomb
-				new Vector3f(-388, -408, 156), // Ash Lake - Entrance
+				new Vector3f( 171,  173, 255),    // Anor Londo - Entrance
+				new Vector3f( 504,  135, 175),    // Anor Londo - Interior
+				new Vector3f( 593,  161, 254),    // Anor Londo - Princess
+				new Vector3f( 391,  70 , 255),     // Anor Londo - Tomb
+				new Vector3f(-388, -408, 156),  // Ash Lake - Entrance
 				new Vector3f(-700, -414, -323), // Ash Lake - Dragon
-				new Vector3f(-277, -137, 73), // Blighttown - Bridge
-				new Vector3f(-198, -215, 100), // Blighttown - Swamp
-				new Vector3f(44, -119, 204), // Catacombs - Entrance
-				new Vector3f(48, -112, 301), // Catacombs - Illusion
-				new Vector3f(854, -577, 849), // Chasm of the Abyss
-				new Vector3f(96, 134, 864), // Crystal Caves
-				new Vector3f(165, -77, -55), // Darkroot Basin
-				new Vector3f(257, -3, -12), // Darkroot Garden
-				new Vector3f(141, -253, 94), // Daughter of Chaos
-				new Vector3f(253, -334, 22), // Demon Ruins - Central
-				new Vector3f(194, -267, 130), // Demon Ruins - Entrance
-				new Vector3f(118, -357, 139), // Demon Ruins - Firesage
-				new Vector3f(349, 278, 594), // Duke's Archives - Balcony
-				new Vector3f(230, 200, 481), // Duke's Archives - Entrance
-				new Vector3f(378, 270, 552), // Duke's Archives - Prison
-				new Vector3f(52, -64, 106), // Firelink Altar
+				new Vector3f(-277, -137, 73),   // Blighttown - Bridge
+				new Vector3f(-198, -215, 100),  // Blighttown - Swamp
+				new Vector3f( 44 , -119, 204),    // Catacombs - Entrance
+				new Vector3f( 48 , -112, 301),    // Catacombs - Illusion
+				new Vector3f( 854, -577, 849),   // Chasm of the Abyss
+				new Vector3f( 96 , 134, 864),     // Crystal Caves
+				new Vector3f( 165, -77, -55),    // Darkroot Basin
+				new Vector3f( 257, -3, -12),     // Darkroot Garden
+				new Vector3f( 141, -253, 94),    // Daughter of Chaos
+				new Vector3f( 253, -334, 22),    // Demon Ruins - Central
+				new Vector3f( 194, -267, 130), // Demon Ruins - Entrance
+				new Vector3f( 118, -357, 139), // Demon Ruins - Firesage
+				new Vector3f( 349, 278, 594), // Duke's Archives - Balcony
+				new Vector3f( 230, 200, 481), // Duke's Archives - Entrance
+				new Vector3f( 378, 270, 552), // Duke's Archives - Prison
+				new Vector3f( 52 , -64, 106), // Firelink Altar
 				new Vector3f(-51, -61, 55), // Firelink Shrine
 				new Vector3f(-318, -236, 123), // Great Hollow
 				new Vector3f(581, -444, 444), // Lost Izalith - Bed of Chaos
