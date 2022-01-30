@@ -447,7 +447,7 @@ namespace LiveSplit.DarkSouls
                         infusion = (ItemInfusion)Flags.OrderedInfusions[data[2]];
                     }
 
-                    var level = data[3];
+                    var level = data[3] == int.MaxValue ? 0 : data[3];
                     var quantity = data[4];
 					
 					var categories = new List<ItemCategory>();

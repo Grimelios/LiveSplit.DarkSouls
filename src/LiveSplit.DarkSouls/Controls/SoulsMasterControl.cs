@@ -52,5 +52,15 @@ namespace LiveSplit.DarkSouls.Controls
 				CollectionControl.AddSplit(split);
 			}
 		}
-	}
+
+        private void collectionControl_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void igtCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+    }
 }

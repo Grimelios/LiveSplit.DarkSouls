@@ -10,13 +10,12 @@ namespace Tester
         {
             var darkSouls = new DarkSouls();
 
-            darkSouls.BonfireWarp(WarpType.DepthsGapingDragonsRoom);
+            var items = darkSouls.GetCurrentInventoryItems();
 
-            return;
-            darkSouls.Teleport(new Vector3f(0,0,0), 0);
-            darkSouls.SetCheat(CheatType.PlayerExterminate, true);
-            darkSouls.SetCheat(CheatType.AllNoStaminaConsume, true);
-            darkSouls.SetCheat(CheatType.AllNoUpdateAI, true);
+
+            //darkSouls.BonfireWarp(WarpType.DarkrootBasinBonfire);
+            //darkSouls.SetCheat(CheatType.PlayerExterminate, true);
+            //darkSouls.SetCheat(CheatType.AllNoStaminaConsume, true);
 
             return;
 
